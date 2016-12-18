@@ -18,9 +18,11 @@ around with your schema. Heavily inspired by
 
 # Docs
 
-# Installation
+# Quick Installation guide
 
 # How to contribute
+
+Please refer to our [contributing guidelines]()
 
 # FAQ
 
@@ -30,6 +32,14 @@ I am a huge fun of Harry Potter so I picked the
 [deluminator](https://en.wikipedia.org/wiki/Magical_objects_in_Harry_Potter#Deluminator_.28Put-Outer.29),
 one of my favourite magical devices from the series. It can be used as an
 homing device.
+
+# Code of Conduct
+
+You are expected to follow the [following](/CODE_OF_CONDUCT.md) code of
+conduct when interacting with the projects via issues, pull requests or in any
+other form. Many thanks to the awesome
+[http://contributor-covenant.org/](http://contributor-covenant.org/)
+initiative! 
 
 # License
 
