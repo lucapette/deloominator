@@ -22,7 +22,7 @@ around with your schema. Heavily inspired by
 
 # How to contribute
 
-Please refer to our [contributing guidelines]()
+Please refer to our [contributing guidelines](/CONTRIBUTING.md).
 
 # FAQ
 
@@ -39,7 +39,7 @@ You are expected to follow the [following](/CODE_OF_CONDUCT.md) code of
 conduct when interacting with the projects via issues, pull requests or in any
 other form. Many thanks to the awesome
 [http://contributor-covenant.org/](http://contributor-covenant.org/)
-initiative! 
+initiative!
 
 # License
 
