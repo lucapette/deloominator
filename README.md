@@ -4,6 +4,11 @@ Shed the light on your data!
 
 # Overview
 
+deluminator helps you exploring your data with SQL. You can create charts and
+dashboard to share with your team. You can schedule reports or just play
+around with your schema. Heavily inspired by
+[https://github.com/ankane/blazer](blazer).
+
 # Features
 
 # Docs
@@ -11,6 +16,15 @@ Shed the light on your data!
 # Installation
 
 # How to contribute
+
+# FAQ
+
+## What the heck is a deluminator?
+
+I am a huge fun of Harry Potter so I picked the
+[deluminator](https://en.wikipedia.org/wiki/Magical_objects_in_Harry_Potter#Deluminator_.28Put-Outer.29),
+one of my favourite magical devices from the series. It can be used as an
+homing device.
 
 # License
 
