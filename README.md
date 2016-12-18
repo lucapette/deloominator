@@ -11,6 +11,11 @@ around with your schema. Heavily inspired by
 
 # Features
 
+- No dependencies
+- Lots of charts
+- Realtime dashboards
+- Easy chart sharing
+
 # Docs
 
 # Installation
