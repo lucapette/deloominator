@@ -18,7 +18,27 @@ around with your schema. Heavily inspired by
 
 # Docs
 
-# Quick Installation guide
+# Installation guide
+
+## Homebrew
+
+`deluminator` can be installed through Homebrew:
+
+``` sh
+$ brew tap lucapette/tap
+$ brew install deluminator
+```
+
+## Standalone
+
+`deluminator` can be easily installed as an executable. Download the latest
+[compiled binaries](https://github.com/lucapette/deluminator/releases) and put it
+anywhere in your executable path.
+
+## Source
+
+Please refer to our [contributing guidelines](/CONTRIBUTING.md) to build and
+install `deluminator` from the source.
 
 # How to contribute
 
