@@ -2,7 +2,7 @@ setup: ## Install all the build dependencies
 
 test: ## Run all the tests
 
-ci: ## Run all the tests and code checks 
+ci: ## Run all the tests and code checks
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
