@@ -57,9 +57,8 @@ homing device.
 
 You are expected to follow our [code of conduct](/CODE_OF_CONDUCT.md) when
 interacting with the projects via issues, pull requests or in any other form.
-Many thanks to the awesome
-[http://contributor-covenant.org/](http://contributor-covenant.org/)
-initiative!
+Many thanks to the awesome [contributor
+covenant](http://contributor-covenant.org/) initiative!
 
 # License
 
