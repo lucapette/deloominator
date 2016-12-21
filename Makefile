@@ -1,6 +1,9 @@
+TEST?=$$(go list ./... | grep -v '/deluminator/vendor/')
+
 setup: ## Install all the build dependencies
 
 test: ## Run all the tests
+	go test $(TEST) -timeout=30s
 
 ci: ## Run all the tests and code checks
 
