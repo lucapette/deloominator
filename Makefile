@@ -9,7 +9,7 @@ test: ## Run all the tests
 ci: ## Run all the tests and code checks
 
 assets: ## Embed static assets
-	go-bindata -o api/static.go -pkg api assets
+	go-bindata -o api/static.go -pkg api assets/...
 
 build: assets ## Build a beta version of deluminator
 	go build
