@@ -1,12 +1,16 @@
 package main
 
-import "github.com/lucapette/deluminator/api"
-import "log"
+import (
+	"os"
+	"os/signal"
+
+	"github.com/lucapette/deluminator/api"
+)
 
 func main() {
-	err := api.Start(3000)
+	api.Start(3000)
 
-	if err != nil {
-		log.Panic(err)
-	}
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	<-c
 }
