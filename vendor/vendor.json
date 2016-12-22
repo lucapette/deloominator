@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "urMd7A9QPAJYY0GZJL9qBhlUmD8=",
+			"path": "github.com/gorilla/mux",
+			"revision": "757bef944d0f21880861c2dd9c871ca543023cba",
+			"revisionTime": "2016-09-20T23:08:13Z"
+		},
+		{
 			"checksumSHA1": "pZrnx0NTU91ci2mqD+0rMHHMWtA=",
 			"path": "github.com/sclevine/agouti",
 			"revision": "da6ce95d89acab048b648c71fb45b57622d3457e",
