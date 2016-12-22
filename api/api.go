@@ -1,13 +1,13 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 )
 
@@ -15,7 +15,11 @@ func LogHandler(exe func(http.ResponseWriter, *http.Request)) func(http.Response
 	f := func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		exe(w, r)
-		log.Printf("%v\n", time.Now().Sub(start))
+		log.WithFields(log.Fields{
+			"spent":  time.Now().Sub(start),
+			"path":   r.URL.Path,
+			"method": r.Method,
+		}).Info("request completed")
 	}
 	return f
 }
