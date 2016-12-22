@@ -1,9 +1,12 @@
 package main
 
-import "fmt"
 import "github.com/lucapette/deluminator/api"
+import "log"
 
 func main() {
-	fmt.Println("It works!")
-	api.Start(3000)
+	err := api.Start(3000)
+
+	if err != nil {
+		log.Panic(err)
+	}
 }

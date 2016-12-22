@@ -1,9 +1,22 @@
 package api
 
-import "fmt"
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
+)
+
+func HomeHandler(w http.ResponseWriter, request *http.Request) {
+	w.Write([]byte("it works!"))
+}
 
 func Start(port int) error {
-	fmt.Printf("%d", port)
+	router := mux.NewRouter()
 
-	return nil
+	router.HandleFunc("/", HomeHandler)
+
+	err := http.ListenAndServe(":"+strconv.Itoa(port), router)
+
+	return err
 }
