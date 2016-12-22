@@ -13,6 +13,7 @@ assets: ## Embed static assets
 
 build: assets ## Build a beta version of deluminator
 	go build
+	gofmt -w api/static.go
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
