@@ -43,7 +43,7 @@ When you are satisfied with the changes, I suggest you run:
 $ make ci
 ```
 
-Which runs the tests and other tests to ensure code quality and consistency.
+Which runs all the tests and other checks to ensure code quality and consistency.
 
 ## Submit a pull request
 
