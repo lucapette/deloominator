@@ -32,7 +32,11 @@ func homeHandler(w http.ResponseWriter, request *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	w.Write(asset)
+	_, err = w.Write(asset)
+
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func assetsHandler(w http.ResponseWriter, request *http.Request) {
@@ -47,7 +51,11 @@ func assetsHandler(w http.ResponseWriter, request *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/"+kind)
-	w.Write(asset)
+	_, err = w.Write(asset)
+
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func Start(port int) {
