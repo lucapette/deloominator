@@ -1,12 +1,14 @@
-TEST?=$$(go list ./... | grep -v '/deluminator/vendor/')
+SOURCE_FILES?=$$(go list ./... | grep -v '/deluminator/vendor/')
 
-setup: ## Install all the build dependencies
+setup: ## Install all the build and test dependencies
 	go get -u github.com/jteeuwen/go-bindata/...
+	go get -u github.com/kisielk/errcheck
 
 test: ## Run all the tests
-	go test $(TEST) -timeout=30s
+	go test $(SOURCE_FILES) -timeout=30s
 
 ci: ## Run all the tests and code checks
+	errcheck $(SOURCE_FILES)
 
 assets: ## Embed static assets
 	go-bindata -o api/static.go -pkg api assets/...
