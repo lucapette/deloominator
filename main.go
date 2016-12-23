@@ -5,17 +5,29 @@ import (
 	"os/signal"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/lucapette/deluminator/api"
 )
 
+type Config struct {
+	Port int `default:"3000"`
+}
+
 func main() {
-	log.Info("starting deluminator")
+	var c Config
+	err := envconfig.Process("deluminator", &c)
 
-	api.Start(3000)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
-	<-c
+	log.WithField("port", c.Port).Info("starting deluminator")
+
+	api.Start(c.Port)
+
+	s := make(chan os.Signal, 1)
+	signal.Notify(s, os.Interrupt, os.Kill)
+	<-s
 }
 
 func init() {
