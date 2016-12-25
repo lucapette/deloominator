@@ -7,6 +7,10 @@ type DataSource struct {
 type DataSources map[string]DataSource
 
 func NewSources(dataSources []string) (sources DataSources, err error) {
+	sources = make(DataSources, len(dataSources))
 
-	return nil, nil
+	// for source := range sources {
+	// }
+
+	return sources, nil
 }

@@ -5,7 +5,7 @@ setup: ## Install all the build and test dependencies
 	go get -u github.com/kisielk/errcheck
 
 test: ## Run all the tests
-	go test $(SOURCE_FILES) -timeout=30s
+	go test -v $(SOURCE_FILES) -timeout=30s
 
 lint: ## Run all the linters
 	errcheck $(SOURCE_FILES)
