@@ -18,13 +18,13 @@ type DSN struct {
 	Options  string
 }
 
-var validDSN = regexp.MustCompile(`(?P<driver>.+)://(?P<cred>(?P<username>.+):(?P<pass>.+)@)?(?P<host>.+):(?P<port>.+)?/(?P<db_name>[^?]+)\??(?P<options>.+)?`)
+var validDSN = regexp.MustCompile(`(?P<driver>[^:]+)://(?P<cred>(?P<username>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+)(?P<opt_port>:(?P<port>[^/]+))?/(?P<db_name>[^?]+)\??(?P<options>.+)?`)
 
-func ParseDSN(source string) (DSN, error) {
+func ParseDSN(source string) (dsn *DSN, err error) {
 	fields := validDSN.FindStringSubmatch(source)
 
 	if fields == nil {
-		return DSN{}, fmt.Errorf("%s is not a valid Data Source Name", source)
+		return dsn, fmt.Errorf("%s is not a valid Data Source Name", source)
 	}
 
 	groupedMatches := make(map[string]string, len(fields))
@@ -32,13 +32,17 @@ func ParseDSN(source string) (DSN, error) {
 		groupedMatches[validDSN.SubexpNames()[i]] = match
 	}
 
-	port, err := strconv.Atoi(groupedMatches["port"])
+	var port int
 
-	if err != nil {
-		return DSN{}, fmt.Errorf("%s is not a valid Data Source Name. %s is not a valid port", source, groupedMatches["port"])
+	if len(groupedMatches["port"]) > 0 {
+		port, err = strconv.Atoi(groupedMatches["port"])
+
+		if err != nil {
+			return dsn, fmt.Errorf("%s is not a valid Data Source Name. %s is not a valid port", source, groupedMatches["port"])
+		}
 	}
 
-	return DSN{
+	dsn = &DSN{
 		Driver:   groupedMatches["driver"],
 		Username: groupedMatches["username"],
 		Pass:     groupedMatches["pass"],
@@ -46,5 +50,6 @@ func ParseDSN(source string) (DSN, error) {
 		Port:     port,
 		DBName:   groupedMatches["db_name"],
 		Options:  groupedMatches["options"],
-	}, nil
+	}
+	return dsn, nil
 }

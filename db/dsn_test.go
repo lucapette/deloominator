@@ -10,11 +10,11 @@ import (
 func TestParseDSN(t *testing.T) {
 	sourceTests := []struct {
 		source   string
-		expected db.DSN
+		expected *db.DSN
 	}{
 		{ // full
 			"postgresql://grace:hopper@hal9000:3000/test?foo=bar",
-			db.DSN{
+			&db.DSN{
 				Driver:   "postgresql",
 				Username: "grace",
 				Pass:     "hopper",
@@ -26,7 +26,7 @@ func TestParseDSN(t *testing.T) {
 		},
 		{ // no port
 			"postgresql://grace:hopper@hal9000/test?foo=bar",
-			db.DSN{
+			&db.DSN{
 				Driver:   "postgresql",
 				Username: "grace",
 				Pass:     "hopper",
@@ -37,7 +37,7 @@ func TestParseDSN(t *testing.T) {
 		},
 		{ // no credentials
 			"postgresql://hal9000:3000/test?foo=bar",
-			db.DSN{
+			&db.DSN{
 				Driver:  "postgresql",
 				Host:    "hal9000",
 				Port:    3000,
