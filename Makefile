@@ -7,8 +7,10 @@ setup: ## Install all the build and test dependencies
 test: ## Run all the tests
 	go test $(SOURCE_FILES) -timeout=30s
 
-ci: ## Run all the tests and code checks
+lint: ## Run all the linters
 	errcheck $(SOURCE_FILES)
+
+ci: lint test ## Run all the tests and code checks
 
 assets: ## Embed static assets
 	go-bindata -o api/static.go -pkg api assets/...
