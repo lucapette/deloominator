@@ -3,6 +3,7 @@ SOURCE_FILES?=$$(go list ./... | grep -v '/deluminator/vendor/')
 setup: ## Install all the build and test dependencies
 	go get -u github.com/jteeuwen/go-bindata/...
 	go get -u github.com/kisielk/errcheck
+	go get -u github.com/golang/lint/golint
 
 test: ## Run all the tests
 	go test -v $(SOURCE_FILES) -timeout=30s
@@ -10,6 +11,7 @@ test: ## Run all the tests
 lint: ## Run all the linters
 	errcheck $(SOURCE_FILES)
 	go vet $(SOURCE_FILES)
+	golint ./... | grep -v vendor
 
 ci: lint test ## Run all the tests and code checks
 
