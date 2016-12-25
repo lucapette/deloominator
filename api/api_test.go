@@ -1,8 +1,10 @@
 package api_test
 
 import (
+	"io/ioutil"
 	"testing"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/lucapette/deluminator/api"
 	"github.com/sclevine/agouti"
 )
@@ -38,4 +40,8 @@ func TestServerStart(t *testing.T) {
 	if err := driver.Stop(); err != nil {
 		t.Fatal("Failed to close pages and stop WebDriver:", err)
 	}
+}
+
+func init() {
+	log.SetOutput(ioutil.Discard)
 }
