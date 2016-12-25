@@ -11,8 +11,8 @@ import (
 )
 
 type Config struct {
-	Port        int `default:"3000"`
-	DataSources []string
+	Port        int      `default:"3000"`
+	DataSources []string `split_words:"true"`
 }
 
 func main() {

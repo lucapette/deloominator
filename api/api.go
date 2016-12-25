@@ -14,7 +14,7 @@ import (
 
 type Config struct {
 	Port    int
-	Sources []db.DataSources
+	Sources db.DataSources
 }
 
 func LogHandler(exe func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
