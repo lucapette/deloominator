@@ -9,6 +9,7 @@ test: ## Run all the tests
 
 lint: ## Run all the linters
 	errcheck $(SOURCE_FILES)
+	go vet $(SOURCE_FILES)
 
 ci: lint test ## Run all the tests and code checks
 

@@ -32,7 +32,7 @@ func TestServerStart(t *testing.T) {
 	}
 
 	if actual != expected {
-		t.Fatal("%s expected but got %s", expected, actual)
+		t.Fatalf("%s expected but got %s", expected, actual)
 	}
 
 	if err := driver.Stop(); err != nil {
