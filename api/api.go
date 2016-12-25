@@ -9,7 +9,13 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
+	"github.com/lucapette/deluminator/db"
 )
+
+type Config struct {
+	Port    int
+	Sources []db.DataSources
+}
 
 func LogHandler(exe func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	f := func(w http.ResponseWriter, r *http.Request) {
@@ -58,14 +64,14 @@ func assetsHandler(w http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func Start(port int) {
+func Start(config *Config) {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", LogHandler(homeHandler))
 	router.HandleFunc("/assets/{kind}/{name}", LogHandler(assetsHandler))
 
 	go func() {
-		err := http.ListenAndServe(":"+strconv.Itoa(port), router)
+		err := http.ListenAndServe(":"+strconv.Itoa(config.Port), router)
 		if err != nil {
 			log.Println("Cant start server:", err)
 			os.Exit(1)

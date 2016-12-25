@@ -18,7 +18,7 @@ func TestServerStart(t *testing.T) {
 		t.Fatal("Failed to open page:", err)
 	}
 
-	api.Start(3000)
+	api.Start(&api.Config{Port: 3000})
 
 	if err := page.Navigate("http://localhost:3000"); err != nil {
 		t.Fatal("Failed to navigate:", err)
