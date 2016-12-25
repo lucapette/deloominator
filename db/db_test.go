@@ -62,7 +62,7 @@ func TestNewSource(t *testing.T) {
 
 func TestNewSources(t *testing.T) {
 	dataSources := []string{"postgresql://localhost/test"}
-	sources, err := db.NewSources(dataSources)
+	sources, err := db.NewDataSources(dataSources)
 
 	if err != nil {
 		t.Fatal(err)

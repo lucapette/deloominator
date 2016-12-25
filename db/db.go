@@ -56,7 +56,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	return ds, nil
 }
 
-func NewSources(dataSources []string) (sources DataSources, err error) {
+func NewDataSources(dataSources []string) (sources DataSources, err error) {
 	sources = make(DataSources, len(dataSources))
 
 	for _, source := range dataSources {
