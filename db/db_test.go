@@ -6,7 +6,7 @@ import (
 	"github.com/lucapette/deluminator/db"
 )
 
-func TestNewSource(t *testing.T) {
+func TestNewSources(t *testing.T) {
 	dataSources := []string{"postgresql://localhost/test"}
 	sources, err := db.NewSources(dataSources)
 
