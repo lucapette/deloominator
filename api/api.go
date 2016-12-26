@@ -8,8 +8,9 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/gorilla/mux"
 	"github.com/lucapette/deluminator/db"
+	"goji.io"
+	"goji.io/pat"
 )
 
 type Config struct {
@@ -45,10 +46,9 @@ func homeHandler(w http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func assetsHandler(w http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	kind := vars["kind"]
-	name := vars["name"]
+func assetsHandler(w http.ResponseWriter, r *http.Request) {
+	kind := pat.Param(r, "kind")
+	name := pat.Param(r, "name")
 
 	asset, err := Asset(strings.Join([]string{"assets", kind, name}, "/"))
 
@@ -65,10 +65,10 @@ func assetsHandler(w http.ResponseWriter, request *http.Request) {
 }
 
 func Start(config *Config) {
-	router := mux.NewRouter()
+	router := goji.NewMux()
 
-	router.HandleFunc("/", LogHandler(homeHandler))
-	router.HandleFunc("/assets/{kind}/{name}", LogHandler(assetsHandler))
+	router.HandleFunc(pat.Get("/"), LogHandler(homeHandler))
+	router.HandleFunc(pat.Get("/assets/:kind/:name"), LogHandler(assetsHandler))
 
 	for _, ds := range config.DataSources {
 		log.WithField("ds", ds.DBName).
