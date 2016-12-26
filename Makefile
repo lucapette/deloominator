@@ -6,7 +6,7 @@ setup: ## Install all the build and test dependencies
 	go get -u github.com/golang/lint/golint
 
 test: ## Run all the tests
-	go test -v $(SOURCE_FILES) -timeout=30s
+	go test -cover -v $(SOURCE_FILES) -timeout=30s
 
 lint: ## Run all the linters
 	errcheck $(SOURCE_FILES)
