@@ -32,8 +32,8 @@ func main() {
 	}
 
 	api.Start(&api.Config{
-		Port:    c.Port,
-		Sources: sources,
+		Port:        c.Port,
+		DataSources: sources,
 	})
 
 	s := make(chan os.Signal, 1)

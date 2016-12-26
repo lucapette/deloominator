@@ -13,8 +13,8 @@ import (
 )
 
 type Config struct {
-	Port    int
-	Sources db.DataSources
+	Port        int
+	DataSources db.DataSources
 }
 
 func LogHandler(exe func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
@@ -69,6 +69,21 @@ func Start(config *Config) {
 
 	router.HandleFunc("/", LogHandler(homeHandler))
 	router.HandleFunc("/assets/{kind}/{name}", LogHandler(assetsHandler))
+
+	for _, ds := range config.DataSources {
+		log.WithField("ds", ds.DBName).
+			Info("query metadata")
+
+		tables, err := ds.Tables()
+		if err != nil {
+			log.Println("Cant start server:", err)
+			os.Exit(1)
+		}
+
+		for table := range tables {
+			log.Info(table)
+		}
+	}
 
 	go func() {
 		err := http.ListenAndServe(":"+strconv.Itoa(config.Port), router)

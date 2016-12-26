@@ -1,9 +1,15 @@
 package db
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
 	"strconv"
+
+	"database/sql"
+
+	log "github.com/Sirupsen/logrus"
+	_ "github.com/lib/pq"
 )
 
 type DataSource struct {
@@ -69,4 +75,66 @@ func NewDataSources(dataSources []string) (sources DataSources, err error) {
 	}
 
 	return sources, nil
+}
+
+func (ds DataSource) String() string {
+	buf := bytes.NewBufferString(ds.Driver)
+
+	buf.WriteString("://")
+
+	if len(ds.Username) > 0 {
+		buf.WriteString(ds.Username)
+		buf.WriteString(":")
+		buf.WriteString(ds.Pass)
+		buf.WriteString("@")
+	}
+
+	buf.WriteString(ds.Host)
+
+	if ds.Port > 0 {
+		buf.WriteString(":")
+		buf.WriteString(strconv.Itoa(ds.Port))
+	}
+
+	buf.WriteString("/")
+	buf.WriteString(ds.DBName)
+
+	if len(ds.Options) > 0 {
+		buf.WriteString("?")
+		buf.WriteString(ds.Options)
+	}
+
+	return buf.String()
+}
+
+func (ds *DataSource) Tables() (tables []string, err error) {
+	db, err := sql.Open(ds.Driver, fmt.Sprint(ds))
+	if err != nil {
+		return tables, err
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return tables, err
+	}
+
+	rows, err := db.Query(`SELECT tablename FROM pg_tables where schemaname = 'public'`)
+
+	if err != nil {
+		return tables, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var name string
+		err = rows.Scan(&name)
+		if err != nil {
+			return tables, err
+		}
+
+		log.Info(name)
+	}
+
+	return tables, err
 }
