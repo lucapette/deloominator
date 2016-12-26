@@ -18,17 +18,19 @@ type Config struct {
 	DataSources db.DataSources
 }
 
-func LogHandler(exe func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
-	f := func(w http.ResponseWriter, r *http.Request) {
+func logHandler(inner http.Handler) http.Handler {
+	mw := func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		exe(w, r)
+
+		inner.ServeHTTP(w, r)
+
 		log.WithFields(log.Fields{
 			"spent":  time.Now().Sub(start),
 			"path":   r.URL.Path,
 			"method": r.Method,
 		}).Info("request completed")
 	}
-	return f
+	return http.HandlerFunc(mw)
 }
 
 func homeHandler(w http.ResponseWriter, request *http.Request) {
@@ -67,8 +69,10 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 func Start(config *Config) {
 	router := goji.NewMux()
 
-	router.HandleFunc(pat.Get("/"), LogHandler(homeHandler))
-	router.HandleFunc(pat.Get("/assets/:kind/:name"), LogHandler(assetsHandler))
+	router.Use(logHandler)
+
+	router.HandleFunc(pat.Get("/"), homeHandler)
+	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
 
 	for _, ds := range config.DataSources {
 		log.WithField("ds", ds.DBName).
