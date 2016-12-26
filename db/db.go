@@ -13,13 +13,12 @@ import (
 )
 
 type DataSource struct {
-	Driver   string
-	Username string
-	Pass     string
-	Host     string
-	Port     int
-	DBName   string
-	Options  string
+	Driver         string
+	Username, Pass string
+	Host           string
+	Port           int
+	DBName         string
+	Options        string
 }
 
 // support for https://en.wikipedia.org/wiki/Data_source_name
