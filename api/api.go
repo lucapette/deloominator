@@ -22,12 +22,15 @@ func logHandler(inner http.Handler) http.Handler {
 	mw := func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		inner.ServeHTTP(w, r)
+		proxyWriter := wrapWriter(w)
+
+		inner.ServeHTTP(proxyWriter, r)
 
 		log.WithFields(log.Fields{
 			"spent":  time.Now().Sub(start),
 			"path":   r.URL.Path,
 			"method": r.Method,
+			"status": proxyWriter.status(),
 		}).Info("request completed")
 	}
 	return http.HandlerFunc(mw)
