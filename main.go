@@ -11,8 +11,8 @@ import (
 )
 
 type Config struct {
-	Port        int      `default:"3000"`
-	DataSources []string `split_words:"true"`
+	Port    int      `default:"3000"`
+	Loaders []string `envconfig:"data_sources",split_words:"true"`
 }
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 
 	log.WithField("port", c.Port).Info("starting deluminator")
 
-	sources, err := db.NewLoaders(c.DataSources)
+	sources, err := db.NewLoaders(c.Loaders)
 
 	if err != nil {
 		log.Fatal(err.Error())
