@@ -25,7 +25,7 @@ func main() {
 
 	log.WithField("port", c.Port).Info("starting deluminator")
 
-	sources, err := db.NewDataSources(c.DataSources)
+	sources, err := db.NewLoaders(c.DataSources)
 
 	if err != nil {
 		log.Fatal(err.Error())

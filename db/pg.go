@@ -9,7 +9,7 @@ import (
 )
 
 type PGLoader struct {
-	dsn *DataSource
+	dsn *DSN
 }
 
 func (pg *PGLoader) Tables() (tables []string, err error) {
@@ -44,10 +44,10 @@ func (pg *PGLoader) Tables() (tables []string, err error) {
 	return tables, err
 }
 
-func NewPGLoader(DSN *DataSource) (ds *PGLoader, err error) {
-	return &PGLoader{dsn: DSN}, nil
+func NewPGLoader(dsn *DSN) (pg *PGLoader, err error) {
+	return &PGLoader{dsn: dsn}, nil
 }
 
-func (pg *PGLoader) DSN() *DataSource {
+func (pg *PGLoader) DSN() *DSN {
 	return pg.dsn
 }
