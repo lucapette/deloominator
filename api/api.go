@@ -15,7 +15,7 @@ import (
 
 type Config struct {
 	Port        int
-	DataSources db.DataSources
+	DataSources db.Loaders
 }
 
 func logHandler(inner http.Handler) http.Handler {
@@ -78,7 +78,7 @@ func Start(config *Config) {
 	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
 
 	for _, ds := range config.DataSources {
-		log.WithField("ds", ds.DBName).
+		log.WithField("ds", ds.DSN().DBName).
 			Info("query metadata")
 
 		tables, err := ds.Tables()

@@ -5,11 +5,6 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-
-	"database/sql"
-
-	log "github.com/Sirupsen/logrus"
-	_ "github.com/lib/pq"
 )
 
 type DataSource struct {
@@ -21,10 +16,13 @@ type DataSource struct {
 	Options        string
 }
 
+type Loader interface {
+	Tables() ([]string, error)
+	DSN() *DataSource
+}
+
 // support for https://en.wikipedia.org/wiki/Data_source_name
 var validDSN = regexp.MustCompile(`(?P<driver>[^:]+)://(?P<cred>(?P<username>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+)(?P<opt_port>:(?P<port>[^/]+))?/(?P<db_name>[^?]+)\??(?P<options>.+)?`)
-
-type DataSources map[string]*DataSource
 
 func NewDataSource(source string) (ds *DataSource, err error) {
 	fields := validDSN.FindStringSubmatch(source)
@@ -48,7 +46,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		}
 	}
 
-	ds = &DataSource{
+	return &DataSource{
 		Driver:   groupedMatches["driver"],
 		Username: groupedMatches["username"],
 		Pass:     groupedMatches["pass"],
@@ -56,13 +54,13 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		Port:     port,
 		DBName:   groupedMatches["db_name"],
 		Options:  groupedMatches["options"],
-	}
-
-	return ds, nil
+	}, nil
 }
 
-func NewDataSources(dataSources []string) (sources DataSources, err error) {
-	sources = make(DataSources, len(dataSources))
+type Loaders map[string]Loader
+
+func NewDataSources(dataSources []string) (loaders Loaders, err error) {
+	loaders = make(Loaders, len(dataSources))
 
 	for _, source := range dataSources {
 		ds, err := NewDataSource(source)
@@ -70,10 +68,15 @@ func NewDataSources(dataSources []string) (sources DataSources, err error) {
 			return nil, err
 		}
 
-		sources[ds.DBName] = ds
+		pg, err := NewPGLoader(ds)
+		if err != nil {
+			return nil, err
+		}
+
+		loaders[pg.DSN().DBName] = pg
 	}
 
-	return sources, nil
+	return loaders, nil
 }
 
 func (ds DataSource) String() string {
@@ -104,36 +107,4 @@ func (ds DataSource) String() string {
 	}
 
 	return buf.String()
-}
-
-func (ds *DataSource) Tables() (tables []string, err error) {
-	db, err := sql.Open(ds.Driver, fmt.Sprint(ds))
-	if err != nil {
-		return tables, err
-	}
-
-	err = db.Ping()
-	if err != nil {
-		return tables, err
-	}
-
-	rows, err := db.Query(`SELECT tablename FROM pg_tables where schemaname = 'public'`)
-
-	if err != nil {
-		return tables, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var name string
-		err = rows.Scan(&name)
-		if err != nil {
-			return tables, err
-		}
-
-		log.Info(name)
-	}
-
-	return tables, err
 }
