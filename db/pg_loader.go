@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	log "github.com/Sirupsen/logrus"
 	_ "github.com/lib/pq"
 )
 
@@ -38,7 +37,7 @@ func (pg *PGLoader) Tables() (tables []string, err error) {
 			return tables, err
 		}
 
-		log.Info(name)
+		tables = append(tables, name)
 	}
 
 	return tables, err

@@ -11,18 +11,14 @@ import (
 )
 
 type Config struct {
-	Port    int      `default:"3000"`
-	Loaders []string `envconfig:"data_sources",split_words:"true"`
+	Port      int      `default:"3000"`
+	Loaders   []string `envconfig:"data_sources" required:"true"`
+	LogFormat string   `default:"JSON" split_words:"true"`
 }
 
+var c Config
+
 func main() {
-	var c Config
-	err := envconfig.Process("deluminator", &c)
-
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
 	log.WithField("port", c.Port).Info("starting deluminator")
 
 	sources, err := db.NewLoaders(c.Loaders)
@@ -42,5 +38,18 @@ func main() {
 }
 
 func init() {
-	log.SetFormatter(&log.JSONFormatter{})
+	err := envconfig.Process("deluminator", &c)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	switch c.LogFormat {
+	case "JSON":
+		log.SetFormatter(&log.JSONFormatter{})
+	case "TEXT":
+		log.SetFormatter(&log.TextFormatter{})
+	default:
+		log.Fatalf("unknow log format: %s\n", c.LogFormat)
+	}
 }

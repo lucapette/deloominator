@@ -78,8 +78,10 @@ func Start(config *Config) {
 	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
 
 	for _, loader := range config.Loaders {
-		log.WithField("ds", loader.DSN().DBName).
+		log.WithField("schema_name", loader.DSN().DBName).
 			Info("query metadata")
+
+		start := time.Now()
 
 		tables, err := loader.Tables()
 		if err != nil {
@@ -87,9 +89,11 @@ func Start(config *Config) {
 			os.Exit(1)
 		}
 
-		for table := range tables {
-			log.Info(table)
-		}
+		log.WithFields(log.Fields{
+			"schema_name": loader.DSN().DBName,
+			"n_tables":    len(tables),
+			"spent":       time.Now().Sub(start),
+		}).Info("tables loaded")
 	}
 
 	go func() {
