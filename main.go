@@ -50,6 +50,6 @@ func init() {
 	case "TEXT":
 		log.SetFormatter(&log.TextFormatter{})
 	default:
-		log.Fatalf("unknow log format: %s\n", c.LogFormat)
+		log.Fatalf("unknown log format: %s\n", c.LogFormat)
 	}
 }
