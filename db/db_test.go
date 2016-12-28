@@ -6,15 +6,19 @@ import (
 	"github.com/lucapette/deluminator/db"
 )
 
-func TestNewSources(t *testing.T) {
-	dataSources := []string{"postgresql://localhost/test"}
-	sources, err := db.NewLoaders(dataSources)
+func TestNewLoaders(t *testing.T) {
+	dataSources := []string{
+		"postgresql://localhost/test",
+		"mysql://localhost/test2",
+	}
+
+	loaders, err := db.NewLoaders(dataSources)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	actual := len(sources)
+	actual := len(loaders)
 	expected := len(dataSources)
 
 	if actual != expected {

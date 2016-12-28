@@ -60,7 +60,7 @@ func TestNewDSN(t *testing.T) {
 	}
 }
 
-func TestDataSourceStringer(t *testing.T) {
+func TestDSNStringer(t *testing.T) {
 	sourceTests := []struct {
 		source   *db.DSN
 		expected string
