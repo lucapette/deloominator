@@ -14,8 +14,8 @@ import (
 )
 
 type Config struct {
-	Port        int
-	DataSources db.Loaders
+	Port    int
+	Loaders db.Loaders
 }
 
 func logHandler(inner http.Handler) http.Handler {
@@ -77,11 +77,11 @@ func Start(config *Config) {
 	router.HandleFunc(pat.Get("/"), homeHandler)
 	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
 
-	for _, ds := range config.DataSources {
-		log.WithField("ds", ds.DSN().DBName).
+	for _, loader := range config.Loaders {
+		log.WithField("ds", loader.DSN().DBName).
 			Info("query metadata")
 
-		tables, err := ds.Tables()
+		tables, err := loader.Tables()
 		if err != nil {
 			log.Println("Cant start server:", err)
 			os.Exit(1)
