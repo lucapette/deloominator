@@ -28,8 +28,6 @@ func (pg *PGLoader) Tables() (tables []string, err error) {
 		return tables, err
 	}
 
-	defer rows.Close()
-
 	for rows.Next() {
 		var name string
 		err = rows.Scan(&name)
