@@ -45,6 +45,15 @@ func TestNewDSN(t *testing.T) {
 				Options: "foo=bar",
 			},
 		},
+		{ // no credentials
+			"postgresql://hal9000:3000/?foo=bar",
+			&db.DSN{
+				Driver:  "postgresql",
+				Host:    "hal9000",
+				Port:    3000,
+				Options: "foo=bar",
+			},
+		},
 	}
 
 	for _, test := range sourceTests {
