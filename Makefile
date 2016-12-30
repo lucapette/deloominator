@@ -1,7 +1,7 @@
 SOURCE_FILES?=$$(go list ./... | grep -v '/deluminator/vendor/')
 TEST_PATTERN?=.
 
-setup: ## Install all the build and test dependencies
+setup: ## Install all the build and lint dependencies
 	go get -u github.com/jteeuwen/go-bindata/...
 	go get -u github.com/kisielk/errcheck
 	go get -u github.com/golang/lint/golint

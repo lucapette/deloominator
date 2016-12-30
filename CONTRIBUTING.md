@@ -5,10 +5,17 @@ to abide to the deluminator [code of conduct](/CODE_OF_CONDUCT.md).
 
 ## Setup your machine
 
-Prerequisites for compilation are:
+`deluminator` is written in [Go](https://golang.org/).
 
-* `make`
-* [Go 1.8+](http://golang.org/doc/install)
+Prerequisites are:
+
+* Build:
+  * `make`
+  * [Go 1.8+](http://golang.org/doc/install) (of course! :))
+* Test:
+  * [PostgreSQL](https://www.postgresql.org/)
+  * [MySQL](https://www.mysql.com/)
+  * [PhantomJS](http://phantomjs.org/)
 
 Clone `deluminator` from source:
 
@@ -17,7 +24,7 @@ $ git clone https://github.com/lucapette/deluminator.git
 $ cd deluminator
 ```
 
-Install the build dependencies:
+Install the build and lint dependencies:
 
 ``` sh
 $ make setup
@@ -43,7 +50,7 @@ When you are satisfied with the changes, I suggest you run:
 $ make ci
 ```
 
-Which runs all the tests and other checks to ensure code quality and consistency.
+Which runs all the linters and tests.
 
 ## Submit a pull request
 
