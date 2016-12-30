@@ -3,6 +3,7 @@ package db
 type Loader interface {
 	Tables() ([]string, error)
 	DSN() *DSN
+	Close() error
 }
 
 type Loaders map[string]Loader

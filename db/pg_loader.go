@@ -9,20 +9,11 @@ import (
 
 type PGLoader struct {
 	dsn *DSN
+	db  *sql.DB
 }
 
 func (pg *PGLoader) Tables() (tables []string, err error) {
-	db, err := sql.Open(pg.DSN().Driver, fmt.Sprint(pg.DSN()))
-	if err != nil {
-		return tables, err
-	}
-
-	err = db.Ping()
-	if err != nil {
-		return tables, err
-	}
-
-	rows, err := db.Query(`SELECT tablename FROM pg_tables where schemaname = 'public'`)
+	rows, err := pg.db.Query(`SELECT tablename FROM pg_tables where schemaname = 'public' order by 1`)
 
 	if err != nil {
 		return tables, err
@@ -42,9 +33,22 @@ func (pg *PGLoader) Tables() (tables []string, err error) {
 }
 
 func NewPGLoader(dsn *DSN) (pg *PGLoader, err error) {
-	return &PGLoader{dsn: dsn}, nil
+	db, err := sql.Open(dsn.Driver, fmt.Sprint(dsn))
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	return &PGLoader{dsn: dsn, db: db}, nil
 }
 
 func (pg *PGLoader) DSN() *DSN {
 	return pg.dsn
+}
+func (pg *PGLoader) Close() error {
+	return pg.db.Close()
 }
