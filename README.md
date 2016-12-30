@@ -4,8 +4,8 @@ Shed the light on your data!
 
 # Overview
 
-deluminator helps you exploring your data with SQL. You can create charts and
-dashboard to share with your team. You can schedule reports or just play
+`deluminator` helps you exploring your data with SQL. You can create charts
+and dashboard to share with your team. You can schedule reports or just play
 around with your schema. Heavily inspired by
 [https://github.com/ankane/blazer](blazer).
 
