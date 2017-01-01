@@ -9,6 +9,12 @@
 			"revisionTime": "2016-12-02T02:35:07Z"
 		},
 		{
+			"checksumSHA1": "QD6LqgLz2JMxXqns8TaxtK9AuHs=",
+			"path": "github.com/go-sql-driver/mysql",
+			"revision": "2e00b5cd70399450106cec6431c2e2ce3cae5034",
+			"revisionTime": "2016-12-24T12:10:19Z"
+		},
+		{
 			"checksumSHA1": "ngWgR7cRhH340bOHEpLTJCY1jTs=",
 			"path": "github.com/kelseyhightower/envconfig",
 			"revision": "5c008110b20b657eb7e005b83d0a5f6aa6bb5f4b",
