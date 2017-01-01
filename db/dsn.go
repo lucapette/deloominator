@@ -8,7 +8,6 @@ import (
 )
 
 // support for https://en.wikipedia.org/wiki/Data_source_name
-
 type DSN struct {
 	Driver         string
 	Username, Pass string
@@ -17,6 +16,13 @@ type DSN struct {
 	DBName         string
 	Options        string
 }
+
+type DriverType int
+
+const (
+	Postgres DriverType = iota
+	MySQL               = iota
+)
 
 var validDSN = regexp.MustCompile(`(?P<driver>[^:]+)://(?P<cred>(?P<username>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+)(?P<opt_port>:(?P<port>[^/]+))?/(?P<db_name>[^?]+)?\??(?P<options>.+)?`)
 
@@ -53,9 +59,21 @@ func NewDSN(source string) (ds *DSN, err error) {
 	}, nil
 }
 
-func (ds DSN) String() string {
-	buf := bytes.NewBufferString(ds.Driver)
+func (ds *DSN) Format(format DriverType) string {
+	var output string
 
+	switch format {
+	case Postgres:
+		output = postgresFormat(ds)
+	case MySQL:
+		output = mysqlFormat(ds)
+	}
+
+	return output
+}
+
+func postgresFormat(ds *DSN) string {
+	buf := bytes.NewBufferString(ds.Driver)
 	buf.WriteString("://")
 
 	if len(ds.Username) > 0 {
@@ -68,6 +86,37 @@ func (ds DSN) String() string {
 	buf.WriteString(ds.Host)
 
 	if ds.Port > 0 {
+		buf.WriteString(":")
+		buf.WriteString(strconv.Itoa(ds.Port))
+	}
+
+	buf.WriteString("/")
+	buf.WriteString(ds.DBName)
+
+	if len(ds.Options) > 0 {
+		buf.WriteString("?")
+		buf.WriteString(ds.Options)
+	}
+
+	return buf.String()
+}
+
+func mysqlFormat(ds *DSN) string {
+	var buf bytes.Buffer
+
+	if len(ds.Username) > 0 {
+		buf.WriteString(ds.Username)
+
+		if len(ds.Pass) > 0 {
+			buf.WriteString(":")
+			buf.WriteString(ds.Pass)
+		}
+
+		buf.WriteString("@")
+	}
+
+	if ds.Port > 0 {
+		buf.WriteString(ds.Host)
 		buf.WriteString(":")
 		buf.WriteString(strconv.Itoa(ds.Port))
 	}

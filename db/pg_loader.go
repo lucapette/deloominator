@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 
 	_ "github.com/lib/pq"
 )
@@ -33,7 +32,7 @@ func (pg *PGLoader) Tables() (tables []string, err error) {
 }
 
 func NewPGLoader(dsn *DSN) (pg *PGLoader, err error) {
-	db, err := sql.Open(dsn.Driver, fmt.Sprint(dsn))
+	db, err := sql.Open(dsn.Driver, dsn.Format(Postgres))
 	if err != nil {
 		return nil, err
 	}

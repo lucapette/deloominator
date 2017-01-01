@@ -15,7 +15,6 @@ CREATE TABLE user_events (
     user_id integer
 );
 
-
 CREATE TABLE users (
     id integer NOT NULL,
     name character varying
@@ -23,8 +22,6 @@ CREATE TABLE users (
 
 ALTER TABLE ONLY event_types ADD CONSTRAINT event_types_pkey PRIMARY KEY (id);
 
-
 ALTER TABLE ONLY user_events ADD CONSTRAINT user_events_pkey PRIMARY KEY (id);
-
 
 ALTER TABLE ONLY users ADD CONSTRAINT users_pkey PRIMARY KEY (id);

@@ -7,9 +7,9 @@ import (
 )
 
 func TestNewLoaders(t *testing.T) {
-	pg, cleanup := setupDB("postgres", t)
+	pg, cleanup := setupDB(db.Postgres, t)
 	dataSources := []string{
-		pg.String(),
+		pg.Format(db.Postgres),
 	}
 
 	loaders, err := db.NewLoaders(dataSources)

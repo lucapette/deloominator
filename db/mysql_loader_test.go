@@ -7,15 +7,15 @@ import (
 	"github.com/lucapette/deluminator/db"
 )
 
-func TestPGTables(t *testing.T) {
-	dsn, cleanup := setupDB(db.Postgres, t)
-	pg, err := db.NewPGLoader(dsn)
+func TestMyTables(t *testing.T) {
+	dsn, cleanup := setupDB(db.MySQL, t)
+	my, err := db.NewMyLoader(dsn)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	defer func() {
-		err = pg.Close()
+		err := my.Close()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -23,7 +23,7 @@ func TestPGTables(t *testing.T) {
 	}()
 
 	expected := []string{"event_types", "user_events", "users"}
-	actual, err := pg.Tables()
+	actual, err := my.Tables()
 	if err != nil {
 		t.Fatal(err)
 	}

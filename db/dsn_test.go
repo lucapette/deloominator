@@ -9,10 +9,11 @@ import (
 
 func TestNewDSN(t *testing.T) {
 	sourceTests := []struct {
-		source   string
-		expected *db.DSN
+		name, source string
+		expected     *db.DSN
 	}{
-		{ // full
+		{
+			"postgres full",
 			"postgresql://grace:hopper@hal9000:3000/test?foo=bar",
 			&db.DSN{
 				Driver:   "postgresql",
@@ -24,7 +25,8 @@ func TestNewDSN(t *testing.T) {
 				Options:  "foo=bar",
 			},
 		},
-		{ // no port
+		{
+			"postgres no port",
 			"postgresql://grace:hopper@hal9000/test?foo=bar",
 			&db.DSN{
 				Driver:   "postgresql",
@@ -35,7 +37,8 @@ func TestNewDSN(t *testing.T) {
 				Options:  "foo=bar",
 			},
 		},
-		{ // no credentials
+		{
+			"postgres no credentials",
 			"postgresql://hal9000:3000/test?foo=bar",
 			&db.DSN{
 				Driver:  "postgresql",
@@ -45,7 +48,8 @@ func TestNewDSN(t *testing.T) {
 				Options: "foo=bar",
 			},
 		},
-		{ // no credentials
+		{
+			"postgres no credentials no database",
 			"postgresql://hal9000:3000/?foo=bar",
 			&db.DSN{
 				Driver:  "postgresql",
@@ -54,27 +58,79 @@ func TestNewDSN(t *testing.T) {
 				Options: "foo=bar",
 			},
 		},
+		{
+			"mysql full",
+			"mysql://grace:hopper@hal9000:3000/test?foo=bar",
+			&db.DSN{
+				Driver:   "mysql",
+				Username: "grace",
+				Pass:     "hopper",
+				Host:     "hal9000",
+				Port:     3000,
+				DBName:   "test",
+				Options:  "foo=bar",
+			},
+		},
+		{
+			"mysql no port",
+			"mysql://grace:hopper@hal9000/test?foo=bar",
+			&db.DSN{
+				Driver:   "mysql",
+				Username: "grace",
+				Pass:     "hopper",
+				Host:     "hal9000",
+				DBName:   "test",
+				Options:  "foo=bar",
+			},
+		},
+		{
+			"mysql no credentials",
+			"mysql://hal9000:3000/test?foo=bar",
+			&db.DSN{
+				Driver:  "mysql",
+				Host:    "hal9000",
+				Port:    3000,
+				DBName:  "test",
+				Options: "foo=bar",
+			},
+		},
+		{
+			"mysql no credentials no database",
+			"mysql://hal9000:3000/?foo=bar",
+			&db.DSN{
+				Driver:  "mysql",
+				Host:    "hal9000",
+				Port:    3000,
+				Options: "foo=bar",
+			},
+		},
 	}
 
 	for _, test := range sourceTests {
-		actual, err := db.NewDSN(test.source)
+		t.Run(test.name, func(t *testing.T) {
+			actual, err := db.NewDSN(test.source)
 
-		if err != nil {
-			t.Fatal(err)
-		}
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if !reflect.DeepEqual(actual, test.expected) {
-			t.Fatalf("Expected %v to equal %v", actual, test.expected)
-		}
+			if !reflect.DeepEqual(actual, test.expected) {
+				t.Fatalf("Expected %v to equal %v", actual, test.expected)
+			}
+		})
 	}
 }
 
-func TestDSNStringer(t *testing.T) {
+func TestDSNFormat(t *testing.T) {
 	sourceTests := []struct {
+		name     string
+		format   db.DriverType
 		source   *db.DSN
 		expected string
 	}{
-		{ // full
+		{
+			"postgres full",
+			db.Postgres,
 			&db.DSN{
 				Driver:   "postgresql",
 				Username: "grace",
@@ -86,7 +142,9 @@ func TestDSNStringer(t *testing.T) {
 			},
 			"postgresql://grace:hopper@hal9000:3000/test?foo=bar",
 		},
-		{ // no port
+		{
+			"postgres no port",
+			db.Postgres,
 			&db.DSN{
 				Driver:   "postgresql",
 				Username: "grace",
@@ -97,7 +155,9 @@ func TestDSNStringer(t *testing.T) {
 			},
 			"postgresql://grace:hopper@hal9000/test?foo=bar",
 		},
-		{ // no credentials
+		{
+			"postgres no credentials",
+			db.Postgres,
 			&db.DSN{
 				Driver:  "postgresql",
 				Host:    "hal9000",
@@ -107,7 +167,9 @@ func TestDSNStringer(t *testing.T) {
 			},
 			"postgresql://hal9000:3000/test?foo=bar",
 		},
-		{ // no options
+		{
+			"postgres no options",
+			db.Postgres,
 			&db.DSN{
 				Driver:   "postgresql",
 				Username: "grace",
@@ -118,13 +180,86 @@ func TestDSNStringer(t *testing.T) {
 			},
 			"postgresql://grace:hopper@hal9000:3000/test",
 		},
+		{
+			"mysql full",
+			db.MySQL,
+			&db.DSN{
+				Driver:   "mysql",
+				Username: "grace",
+				Pass:     "hopper",
+				Host:     "hal9000",
+				Port:     3000,
+				DBName:   "test",
+				Options:  "foo=bar",
+			},
+			"grace:hopper@hal9000:3000/test?foo=bar",
+		},
+		{
+			"mysql no pass",
+			db.MySQL,
+			&db.DSN{
+				Driver:   "mysql",
+				Username: "grace",
+				Host:     "hal9000",
+				Port:     3000,
+				DBName:   "test",
+				Options:  "foo=bar",
+			},
+			"grace@hal9000:3000/test?foo=bar",
+		},
+		{
+			"mysql no database",
+			db.MySQL,
+			&db.DSN{
+				Driver:   "mysql",
+				Username: "grace",
+				Host:     "hal9000",
+				Port:     3000,
+				Options:  "foo=bar",
+			},
+			"grace@hal9000:3000/?foo=bar",
+		},
+		{
+			"mysql no address",
+			db.MySQL,
+			&db.DSN{
+				Driver:   "mysql",
+				Username: "grace",
+				Pass:     "hopper",
+				DBName:   "test",
+				Options:  "foo=bar",
+			},
+			"grace:hopper@/test?foo=bar",
+		},
+		{
+			"mysql user pass and database name",
+			db.MySQL,
+			&db.DSN{
+				Driver:   "mysql",
+				Username: "grace",
+				Pass:     "hopper",
+				DBName:   "test_123123123",
+			},
+			"grace:hopper@/test_123123123",
+		},
+		{
+			"mysql nothing",
+			db.MySQL,
+			&db.DSN{
+				Driver:   "mysql",
+				Username: "grace",
+			},
+			"grace@/",
+		},
 	}
 
 	for _, test := range sourceTests {
-		actual := test.source.String()
+		t.Run(test.name, func(t *testing.T) {
+			actual := test.source.Format(test.format)
 
-		if !reflect.DeepEqual(actual, test.expected) {
-			t.Fatalf("Expected %v to equal %v", actual, test.expected)
-		}
+			if !reflect.DeepEqual(actual, test.expected) {
+				t.Fatalf("Expected %v to equal %v", actual, test.expected)
+			}
+		})
 	}
 }
