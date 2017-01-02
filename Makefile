@@ -4,6 +4,7 @@ TEST_OPTIONS?=
 
 setup: ## Install all the build and lint dependencies
 	go get -u github.com/jteeuwen/go-bindata/...
+	go get -u github.com/alecthomas/gometalinter
 	go get -u github.com/kisielk/errcheck
 	go get -u github.com/golang/lint/golint
 
@@ -11,9 +12,11 @@ test: ## Run all the tests
 	go test $(TEST_OPTIONS) -cover $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
 
 lint: ## Run all the linters
-	errcheck $(SOURCE_FILES)
-	go vet $(SOURCE_FILES)
-	golint ./... | grep -v vendor
+	gometalinter --vendor --disable-all \
+	--enable=errcheck \
+	--enable=vet \
+	--enable=golint \
+	./...
 
 ci: lint test ## Run all the tests and code checks
 
