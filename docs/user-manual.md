@@ -3,8 +3,8 @@ The scope of this document is to provide an overview of the usage of
 
 # Configuration
 
-To configure `deluminator`, you can use enviroment variables. You can find the
-full list of variables in [this document](/docs/variables.md).
+`deluminator` uses enviroment variables for its configuration, you can find
+the full list of variables in [this document](/docs/variables.md).
 
 # User interface
 
