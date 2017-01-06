@@ -18,6 +18,9 @@ around with your schema. Heavily inspired by
 
 # Docs
 
+Please refer to the [user manual](/docs/user-manual.md) to learn your way
+around `deluminator` features.
+
 # Installation guide
 
 ## Homebrew
