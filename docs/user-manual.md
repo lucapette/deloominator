@@ -26,7 +26,7 @@ The playground is the place where users explore their datasets. The interface
 presents a SQL editor, a data source selector and  call to action that runs
 queries. It looks like this:
 
-![playgroud mockup](/docs/img/playgroung.png)
+![playgroud mockup](/docs/img/playground.png)
 
 ## Q&A
 
