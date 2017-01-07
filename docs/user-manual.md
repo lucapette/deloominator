@@ -28,6 +28,15 @@ queries. It looks like this:
 
 ![playgroud mockup](/docs/img/playground.png)
 
+Running a query in the playground has two possible outcomes:
+
+- Raw data display
+- Chart display
+
+### Dealing with raw data
+
+### Charts
+
 ## Q&A
 
 ## Dashboards
