@@ -28,14 +28,18 @@ queries. It looks like this:
 
 ![playgroud mockup](/docs/img/playground.png)
 
-Running a query in the playground has two possible outcomes:
+Running a query in the playground has four possible outcomes:
 
-- Raw data display
+- Error
+  There is a problem with the query.
+- No data display
+  The query is fine but there are no data to return.
 - Chart display
-
-### Dealing with raw data
-
-### Charts
+  `deluminator` chose to display the data as a chart. Please refer to [this
+  document](/docs/charts.md) for further imformation.
+- Raw data display
+  `deluminator` will use this option only if there is no way to display the
+  data as a chart.
 
 ## Q&A
 
