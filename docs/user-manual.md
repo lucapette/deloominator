@@ -36,10 +36,13 @@ Running a query in the playground has four possible outcomes:
   The query is fine but there are no data to return.
 - Chart display
   `deluminator` chose to display the data as a chart. Please refer to [this
-  document](/docs/charts.md) for further imformation.
+  document](/docs/charts.md) for further information.
 - Raw data display
   `deluminator` will use this option only if there is no way to display the
   data as a chart.
+
+`deluminator` uses a simple [algorithm](/docs/charts.md#algorithm) to determine if
+to show a graph.
 
 ## Q&A
 
