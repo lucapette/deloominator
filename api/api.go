@@ -75,7 +75,7 @@ func Start(config *Config) {
 	router.Use(logHandler)
 
 	router.HandleFunc(pat.Get("/"), homeHandler)
-	router.HandleFunc(pat.New("/graphql"), graphqlHandler)
+	router.HandleFunc(pat.New("/graphql"), GraphQLHandler)
 	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
 
 	for _, loader := range config.Loaders {

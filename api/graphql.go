@@ -10,7 +10,7 @@ import (
 
 var schema graphql.Schema
 
-func graphqlHandler(w http.ResponseWriter, r *http.Request) {
+func GraphQLHandler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("query")
 
 	params := graphql.Params{Schema: schema, RequestString: query}
