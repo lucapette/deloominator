@@ -9,7 +9,7 @@ import (
 	"github.com/lucapette/deluminator/api"
 )
 
-func TestGraphQLGETQuery(t *testing.T) {
+func TestGraphQLPOSTQuery(t *testing.T) {
 	req := httptest.NewRequest("POST", "http://example.com/graphql?query={hello}", nil)
 	w := httptest.NewRecorder()
 	api.GraphQLHandler(w, req)
