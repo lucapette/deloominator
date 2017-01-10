@@ -16,6 +16,22 @@ import (
 type Config struct {
 	Port    int
 	Loaders db.Loaders
+	Debug   bool
+}
+
+func debugHandler(inner http.Handler) http.Handler {
+	mw := func(w http.ResponseWriter, r *http.Request) {
+		entry := log.WithField("method", r.Method)
+
+		for k, v := range r.Header {
+			entry = entry.WithField(k, v)
+		}
+
+		entry.Info("incoming request")
+
+		inner.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(mw)
 }
 
 func logHandler(inner http.Handler) http.Handler {
@@ -72,10 +88,14 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 func Start(config *Config) {
 	router := goji.NewMux()
 
+	if config.Debug {
+		router.Use(debugHandler)
+	}
+
 	router.Use(logHandler)
 
 	router.HandleFunc(pat.Get("/"), homeHandler)
-	router.HandleFunc(pat.New("/graphql"), GraphQLHandler)
+	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler)
 	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
 
 	for _, loader := range config.Loaders {

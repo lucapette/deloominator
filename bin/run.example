@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+export DELUMINATOR_DEBUG=true
+export DELUMINATOR_LOG_FORMAT=TEXT
+
+export DELUMINATOR_DATA_SOURCES=postgres://localhost/example?sslmode=disable
+
+exec "$@"

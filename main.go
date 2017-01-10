@@ -14,6 +14,7 @@ type Config struct {
 	Port      int      `default:"3000"`
 	Loaders   []string `envconfig:"data_sources" required:"true"`
 	LogFormat string   `default:"JSON" split_words:"true"`
+	Debug     bool     `default: "false"`
 }
 
 var c Config
@@ -30,6 +31,7 @@ func main() {
 	api.Start(&api.Config{
 		Port:    c.Port,
 		Loaders: sources,
+		Debug:   c.Debug,
 	})
 
 	s := make(chan os.Signal, 1)

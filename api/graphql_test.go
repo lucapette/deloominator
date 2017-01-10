@@ -10,7 +10,7 @@ import (
 )
 
 func TestGraphQLGETQuery(t *testing.T) {
-	req := httptest.NewRequest("GET", "http://example.com/graphql?query={hello}", nil)
+	req := httptest.NewRequest("POST", "http://example.com/graphql?query={hello}", nil)
 	w := httptest.NewRecorder()
 	api.GraphQLHandler(w, req)
 	if w.Code != 200 {
