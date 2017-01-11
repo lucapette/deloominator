@@ -24,14 +24,14 @@ func TestGraphQLPOSTQuery(t *testing.T) {
 		t.Fatalf("expected code 200, got: %v", w.Code)
 	}
 
-	body, err := ioutil.ReadAll(w.Body)
+	resp, err := ioutil.ReadAll(w.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var resp *graphql.Result
+	var actual *graphql.Result
 
-	err = json.Unmarshal(body, &resp)
+	err = json.Unmarshal(resp, &actual)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,12 +42,12 @@ func TestGraphQLPOSTQuery(t *testing.T) {
 		},
 	}
 
-	if resp.HasErrors() {
-		t.Fatalf("wrong result, unexpected errors: %v", resp.Errors)
+	if actual.HasErrors() {
+		t.Fatalf("wrong result, unexpected errors: %v", actual.Errors)
 	}
 
-	if !reflect.DeepEqual(expected, resp) {
-		t.Fatalf("Unexpected result, Diff: %v", pretty.Diff(expected, resp))
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Unexpected result, Diff: %v", pretty.Diff(expected, actual))
 	}
 }
 
@@ -60,19 +60,19 @@ func TestGraphQLPOSTWrongQuery(t *testing.T) {
 		t.Fatalf("expected code 400, got: %v", w.Code)
 	}
 
-	body, err := ioutil.ReadAll(w.Body)
+	resp, err := ioutil.ReadAll(w.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var resp *graphql.Result
+	var actual *graphql.Result
 
-	err = json.Unmarshal(body, &resp)
+	err = json.Unmarshal(resp, &actual)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if !resp.HasErrors() {
+	if !actual.HasErrors() {
 		t.Fatal("Expected error but got none")
 	}
 }
