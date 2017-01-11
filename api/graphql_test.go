@@ -4,15 +4,22 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http/httptest"
+	"reflect"
+	"strings"
 	"testing"
 
+	"github.com/graphql-go/graphql"
+	"github.com/kr/pretty"
 	"github.com/lucapette/deluminator/api"
 )
 
 func TestGraphQLPOSTQuery(t *testing.T) {
-	req := httptest.NewRequest("POST", "http://example.com/graphql?query={hello}", nil)
+	req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader("{hello}"))
+
 	w := httptest.NewRecorder()
+
 	api.GraphQLHandler(w, req)
+
 	if w.Code != 200 {
 		t.Fatalf("expected code 200, got: %v", w.Code)
 	}
@@ -22,21 +29,50 @@ func TestGraphQLPOSTQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var resp struct {
-		Data map[string]string
-	}
+	var resp *graphql.Result
+
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if len(resp.Data) == 0 {
-		t.Fatal("Expected data in response but got none")
+	expected := &graphql.Result{
+		Data: map[string]interface{}{
+			"hello": "world",
+		},
 	}
 
-	world := resp.Data["hello"]
+	if resp.HasErrors() {
+		t.Fatalf("wrong result, unexpected errors: %v", resp.Errors)
+	}
 
-	if world != "world" {
-		t.Fatalf("Expected hello to return world but got %v", world)
+	if !reflect.DeepEqual(expected, resp) {
+		t.Fatalf("Unexpected result, Diff: %v", pretty.Diff(expected, resp))
+	}
+}
+
+func TestGraphQLPOSTWrongQuery(t *testing.T) {
+	req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader("{notAQuery}"))
+	w := httptest.NewRecorder()
+	api.GraphQLHandler(w, req)
+
+	if w.Code != 400 {
+		t.Fatalf("expected code 400, got: %v", w.Code)
+	}
+
+	body, err := ioutil.ReadAll(w.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var resp *graphql.Result
+
+	err = json.Unmarshal(body, &resp)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !resp.HasErrors() {
+		t.Fatal("Expected error but got none")
 	}
 }

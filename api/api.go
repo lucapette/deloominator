@@ -1,6 +1,9 @@
 package api
 
 import (
+	"bytes"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -21,7 +24,18 @@ type Config struct {
 
 func debugHandler(inner http.Handler) http.Handler {
 	mw := func(w http.ResponseWriter, r *http.Request) {
-		entry := log.WithField("method", r.Method)
+		buf := bytes.NewBuffer(make([]byte, 0))
+		reader := io.TeeReader(r.Body, buf)
+
+		b, err := ioutil.ReadAll(reader)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		entry := log.WithFields(log.Fields{
+			"method": r.Method,
+			"body":   string(b),
+		})
 
 		for k, v := range r.Header {
 			entry = entry.WithField(k, v)
@@ -29,6 +43,7 @@ func debugHandler(inner http.Handler) http.Handler {
 
 		entry.Info("incoming request")
 
+		r.Body = ioutil.NopCloser(buf)
 		inner.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(mw)

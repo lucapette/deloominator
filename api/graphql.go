@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	log "github.com/Sirupsen/logrus"
@@ -11,18 +12,25 @@ import (
 var schema graphql.Schema
 
 func GraphQLHandler(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("query")
+	w.Header().Set("Content-Type", "text/json")
 
-	params := graphql.Params{Schema: schema, RequestString: query}
+	query, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	params := graphql.Params{
+		Schema:        schema,
+		RequestString: string(query),
+	}
 	res := graphql.Do(params)
 
 	if res.HasErrors() {
-		log.Infof("failed to execute graphql operation, errors: %+v", res.Errors)
+		w.WriteHeader(http.StatusBadRequest)
 	}
 
 	rJSON, err := json.Marshal(res)
 	if err != nil {
-		log.Info(err)
 		w.Write([]byte(err.Error()))
 	}
 
