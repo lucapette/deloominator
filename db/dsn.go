@@ -59,13 +59,11 @@ func NewDSN(source string) (ds *DSN, err error) {
 	}, nil
 }
 
-func (ds *DSN) Format(format DriverType) string {
-	var output string
-
-	switch format {
-	case Postgres:
+func (ds *DSN) Format() (output string) {
+	switch ds.Driver {
+	case "postgres":
 		output = postgresFormat(ds)
-	case MySQL:
+	case "mysql":
 		output = mysqlFormat(ds)
 	}
 

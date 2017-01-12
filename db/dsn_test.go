@@ -124,15 +124,13 @@ func TestNewDSN(t *testing.T) {
 func TestDSNFormat(t *testing.T) {
 	sourceTests := []struct {
 		name     string
-		format   db.DriverType
 		source   *db.DSN
 		expected string
 	}{
 		{
 			"postgres full",
-			db.Postgres,
 			&db.DSN{
-				Driver:   "postgresql",
+				Driver:   "postgres",
 				Username: "grace",
 				Pass:     "hopper",
 				Host:     "hal9000",
@@ -140,49 +138,45 @@ func TestDSNFormat(t *testing.T) {
 				DBName:   "test",
 				Options:  "foo=bar",
 			},
-			"postgresql://grace:hopper@hal9000:3000/test?foo=bar",
+			"postgres://grace:hopper@hal9000:3000/test?foo=bar",
 		},
 		{
 			"postgres no port",
-			db.Postgres,
 			&db.DSN{
-				Driver:   "postgresql",
+				Driver:   "postgres",
 				Username: "grace",
 				Pass:     "hopper",
 				Host:     "hal9000",
 				DBName:   "test",
 				Options:  "foo=bar",
 			},
-			"postgresql://grace:hopper@hal9000/test?foo=bar",
+			"postgres://grace:hopper@hal9000/test?foo=bar",
 		},
 		{
 			"postgres no credentials",
-			db.Postgres,
 			&db.DSN{
-				Driver:  "postgresql",
+				Driver:  "postgres",
 				Host:    "hal9000",
 				Port:    3000,
 				DBName:  "test",
 				Options: "foo=bar",
 			},
-			"postgresql://hal9000:3000/test?foo=bar",
+			"postgres://hal9000:3000/test?foo=bar",
 		},
 		{
 			"postgres no options",
-			db.Postgres,
 			&db.DSN{
-				Driver:   "postgresql",
+				Driver:   "postgres",
 				Username: "grace",
 				Pass:     "hopper",
 				Host:     "hal9000",
 				Port:     3000,
 				DBName:   "test",
 			},
-			"postgresql://grace:hopper@hal9000:3000/test",
+			"postgres://grace:hopper@hal9000:3000/test",
 		},
 		{
 			"mysql full",
-			db.MySQL,
 			&db.DSN{
 				Driver:   "mysql",
 				Username: "grace",
@@ -196,7 +190,6 @@ func TestDSNFormat(t *testing.T) {
 		},
 		{
 			"mysql no pass",
-			db.MySQL,
 			&db.DSN{
 				Driver:   "mysql",
 				Username: "grace",
@@ -209,7 +202,6 @@ func TestDSNFormat(t *testing.T) {
 		},
 		{
 			"mysql no database",
-			db.MySQL,
 			&db.DSN{
 				Driver:   "mysql",
 				Username: "grace",
@@ -221,7 +213,6 @@ func TestDSNFormat(t *testing.T) {
 		},
 		{
 			"mysql no address",
-			db.MySQL,
 			&db.DSN{
 				Driver:   "mysql",
 				Username: "grace",
@@ -233,7 +224,6 @@ func TestDSNFormat(t *testing.T) {
 		},
 		{
 			"mysql user pass and database name",
-			db.MySQL,
 			&db.DSN{
 				Driver:   "mysql",
 				Username: "grace",
@@ -244,7 +234,6 @@ func TestDSNFormat(t *testing.T) {
 		},
 		{
 			"mysql nothing",
-			db.MySQL,
 			&db.DSN{
 				Driver:   "mysql",
 				Username: "grace",
@@ -255,7 +244,7 @@ func TestDSNFormat(t *testing.T) {
 
 	for _, test := range sourceTests {
 		t.Run(test.name, func(t *testing.T) {
-			actual := test.source.Format(test.format)
+			actual := test.source.Format()
 
 			if !reflect.DeepEqual(actual, test.expected) {
 				t.Fatalf("Expected %v to equal %v", actual, test.expected)

@@ -5,10 +5,11 @@ import (
 	"testing"
 
 	"github.com/lucapette/deluminator/db"
+	"github.com/lucapette/deluminator/testutil"
 )
 
 func TestPGTables(t *testing.T) {
-	dsn, cleanup := setupDB(db.Postgres, t)
+	dsn, cleanup := testutil.SetupDB(db.Postgres, t)
 	pg, err := db.NewPGLoader(dsn)
 	if err != nil {
 		t.Fatal(err)

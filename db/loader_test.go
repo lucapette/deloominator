@@ -1,15 +1,19 @@
 package db_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/lucapette/deluminator/db"
+	"github.com/lucapette/deluminator/testutil"
 )
 
 func TestNewLoaders(t *testing.T) {
-	pg, cleanup := setupDB(db.Postgres, t)
+	pg, pgClean := testutil.SetupDB(db.Postgres, t)
+	my, myClean := testutil.SetupDB(db.MySQL, t)
 	dataSources := []string{
-		pg.Format(db.Postgres),
+		pg.Format(),
+		fmt.Sprintf("mysql://%s:%s@%s/%s", my.Username, my.Pass, my.Host, my.DBName), // Format() does not work both ways yet
 	}
 
 	loaders, err := db.NewLoaders(dataSources)
@@ -26,7 +30,8 @@ func TestNewLoaders(t *testing.T) {
 			}
 		}
 
-		cleanup()
+		pgClean()
+		myClean()
 	}()
 
 	actual := len(loaders)

@@ -11,12 +11,25 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/kr/pretty"
 	"github.com/lucapette/deluminator/api"
+	"github.com/lucapette/deluminator/app"
+	"github.com/lucapette/deluminator/db"
+	"github.com/lucapette/deluminator/testutil"
 )
 
-func TestGraphQLPOSTQuery(t *testing.T) {
-	req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader("{hello}"))
+func TestDataSources(t *testing.T) {
+	dsn, cleanup := testutil.SetupDB(db.Postgres, t)
+	defer func() {
+		app.Shutdown()
+		cleanup()
+	}()
+
+	req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader("{DataSources {name}}"))
 
 	w := httptest.NewRecorder()
+
+	testutil.InitApp(t, map[string]string{
+		"DATA_SOURCES": dsn.Format(),
+	})
 
 	api.GraphQLHandler(w, req)
 
@@ -36,9 +49,15 @@ func TestGraphQLPOSTQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	t.Logf("result %v", actual)
+
 	expected := &graphql.Result{
 		Data: map[string]interface{}{
-			"hello": "world",
+			"DataSources": []interface{}{
+				map[string]interface{}{
+					"name": dsn.DBName,
+				},
+			},
 		},
 	}
 

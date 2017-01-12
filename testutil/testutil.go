@@ -1,4 +1,4 @@
-package db_test
+package testutil
 
 import (
 	"bytes"
@@ -8,10 +8,14 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/lucapette/deluminator/app"
 	"github.com/lucapette/deluminator/db"
 )
 
@@ -19,29 +23,33 @@ type DBTemplate struct {
 	Name string
 }
 
-func setupDB(driver db.DriverType, t *testing.T) (*db.DSN, func()) {
-	var dsn *db.DSN
-	var cleanup func()
-
-	switch driver {
-	case db.Postgres:
-		dsn, cleanup = setupPostgres(t)
-	case db.MySQL:
-		dsn, cleanup = setupMysql(t)
+func loadFixture(t *testing.T, fixture string) string {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatalf("problems recovering caller information")
 	}
 
-	return dsn, cleanup
+	content, err := ioutil.ReadFile(filepath.Join(filepath.Dir(filename), "fixtures", fixture))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return string(content)
+}
+
+func randName() string {
+	return fmt.Sprintf("%s_%s", app.Name, strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid()))))
 }
 
 func setupPostgres(t *testing.T) (*db.DSN, func()) {
-	randName := "deluminator_" + strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid())))
+	randName := randName()
 
 	dsn, err := db.NewDSN(fmt.Sprintf("postgres://localhost/%s?sslmode=disable", randName))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	tmpfile, err := ioutil.TempFile("fixtures", "db_test")
+	tmpfile, err := ioutil.TempFile("", "db_test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,12 +60,7 @@ func setupPostgres(t *testing.T) (*db.DSN, func()) {
 		}
 	}()
 
-	source, err := ioutil.ReadFile("fixtures/postgres.sql")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	tmpl := template.Must(template.New("ddlPsql").Parse(string(source)))
+	tmpl := template.Must(template.New("ddlPsql").Parse(loadFixture(t, "postgres.sql")))
 
 	dbTemplate := DBTemplate{Name: randName}
 	err = tmpl.Execute(tmpfile, dbTemplate)
@@ -89,19 +92,14 @@ func setupPostgres(t *testing.T) (*db.DSN, func()) {
 }
 
 func setupMysql(t *testing.T) (*db.DSN, func()) {
-	randName := "deluminator_" + strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid())))
+	randName := randName()
 
 	dsn, err := db.NewDSN(fmt.Sprintf("mysql://root:root@localhost/%s", randName))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	source, err := ioutil.ReadFile("fixtures/mysql.sql")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	tmpl := template.Must(template.New("ddl").Parse(string(source)))
+	tmpl := template.Must(template.New("ddl").Parse(loadFixture(t, "mysql.sql")))
 
 	var query bytes.Buffer
 	dbTemplate := DBTemplate{Name: randName}
@@ -131,4 +129,23 @@ func setupMysql(t *testing.T) (*db.DSN, func()) {
 			t.Fatal(err)
 		}
 	}
+}
+
+func SetupDB(driver db.DriverType, t *testing.T) (dsn *db.DSN, cleanup func()) {
+	switch driver {
+	case db.Postgres:
+		dsn, cleanup = setupPostgres(t)
+	case db.MySQL:
+		dsn, cleanup = setupMysql(t)
+	}
+
+	return dsn, cleanup
+}
+
+func InitApp(t *testing.T, vars map[string]string) {
+	for k, v := range vars {
+		os.Setenv(fmt.Sprintf("%s_%s", strings.ToUpper(app.Name), k), v)
+	}
+
+	app.Init()
 }

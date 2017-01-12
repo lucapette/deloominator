@@ -5,10 +5,11 @@ import (
 	"testing"
 
 	"github.com/lucapette/deluminator/db"
+	"github.com/lucapette/deluminator/testutil"
 )
 
 func TestMyTables(t *testing.T) {
-	dsn, cleanup := setupDB(db.MySQL, t)
+	dsn, cleanup := testutil.SetupDB(db.MySQL, t)
 	my, err := db.NewMyLoader(dsn)
 	if err != nil {
 		t.Fatal(err)

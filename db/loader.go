@@ -17,13 +17,23 @@ func NewLoaders(dataSources []string) (loaders Loaders, err error) {
 			return nil, err
 		}
 
-		pg, err := NewPGLoader(ds)
+		loader, err := NewLoader(ds)
 		if err != nil {
 			return nil, err
 		}
 
-		loaders[pg.DSN().DBName] = pg
+		loaders[loader.DSN().DBName] = loader
 	}
 
 	return loaders, nil
+}
+
+func NewLoader(dsn *DSN) (loader Loader, err error) {
+	switch dsn.Driver {
+	case "mysql":
+		loader, err = NewMyLoader(dsn)
+	case "postgres":
+		loader, err = NewPGLoader(dsn)
+	}
+	return loader, err
 }

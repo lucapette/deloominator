@@ -6,6 +6,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/lucapette/deluminator/api"
+	"github.com/lucapette/deluminator/app"
 	"github.com/sclevine/agouti"
 )
 
@@ -20,7 +21,8 @@ func TestServerStart(t *testing.T) {
 		t.Fatal("Failed to open page:", err)
 	}
 
-	api.Start(&api.Config{Port: 3000})
+	app.Init()
+	api.Start()
 
 	if err := page.Navigate("http://localhost:3000"); err != nil {
 		t.Fatal("Failed to navigate:", err)

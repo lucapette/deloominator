@@ -11,16 +11,10 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/lucapette/deluminator/db"
+	"github.com/lucapette/deluminator/app"
 	"goji.io"
 	"goji.io/pat"
 )
-
-type Config struct {
-	Port    int
-	Loaders db.Loaders
-	Debug   bool
-}
 
 func debugHandler(inner http.Handler) http.Handler {
 	mw := func(w http.ResponseWriter, r *http.Request) {
@@ -100,10 +94,10 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Start(config *Config) {
+func Start() {
 	router := goji.NewMux()
 
-	if config.Debug {
+	if app.Opts.Debug {
 		router.Use(debugHandler)
 	}
 
@@ -113,27 +107,8 @@ func Start(config *Config) {
 	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler)
 	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
 
-	for _, loader := range config.Loaders {
-		log.WithField("schema_name", loader.DSN().DBName).
-			Info("query metadata")
-
-		start := time.Now()
-
-		tables, err := loader.Tables()
-		if err != nil {
-			log.Println("Cant start server:", err)
-			os.Exit(1)
-		}
-
-		log.WithFields(log.Fields{
-			"schema_name": loader.DSN().DBName,
-			"n_tables":    len(tables),
-			"spent":       time.Now().Sub(start),
-		}).Info("tables loaded")
-	}
-
 	go func() {
-		err := http.ListenAndServe(":"+strconv.Itoa(config.Port), router)
+		err := http.ListenAndServe(":"+strconv.Itoa(app.Opts.Port), router)
 		if err != nil {
 			log.Println("Cant start server:", err)
 			os.Exit(1)

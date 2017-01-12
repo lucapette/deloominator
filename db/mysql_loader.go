@@ -32,7 +32,7 @@ func (my *MyLoader) Tables() (tables []string, err error) {
 }
 
 func NewMyLoader(dsn *DSN) (my *MyLoader, err error) {
-	db, err := sql.Open(dsn.Driver, dsn.Format(MySQL))
+	db, err := sql.Open(dsn.Driver, dsn.Format())
 	if err != nil {
 		return nil, err
 	}

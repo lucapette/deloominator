@@ -32,7 +32,7 @@ func (pg *PGLoader) Tables() (tables []string, err error) {
 }
 
 func NewPGLoader(dsn *DSN) (pg *PGLoader, err error) {
-	db, err := sql.Open(dsn.Driver, dsn.Format(Postgres))
+	db, err := sql.Open(dsn.Driver, dsn.Format())
 	if err != nil {
 		return nil, err
 	}
