@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -18,36 +19,38 @@ type dataSource struct {
 
 var schema graphql.Schema
 
-func GraphQLHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/json")
+func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/json")
 
-	query, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		query, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+
+		res := graphql.Do(graphql.Params{
+			Schema:        schema,
+			RequestString: string(query),
+			Context:       context.WithValue(context.Background(), "app", app),
+		})
+
+		if res.HasErrors() {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+
+		rJSON, err := json.Marshal(res)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+		}
+
+		w.Write(rJSON)
 	}
-
-	params := graphql.Params{
-		Schema:        schema,
-		RequestString: string(query),
-	}
-	res := graphql.Do(params)
-
-	if res.HasErrors() {
-		w.WriteHeader(http.StatusBadRequest)
-	}
-
-	rJSON, err := json.Marshal(res)
-	if err != nil {
-		w.Write([]byte(err.Error()))
-	}
-
-	w.Write(rJSON)
 }
 
 func init() {
 	dataSourceType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "DataSource",
-		Description: fmt.Sprintf("A DataSource represents a single source of data to analyze with %s", app.Name),
+		Description: fmt.Sprintf("A DataSource represents a single source of data to analyze"),
 		Fields: graphql.Fields{
 			"name": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.String),
@@ -59,7 +62,8 @@ func init() {
 		"DataSources": &graphql.Field{
 			Type: graphql.NewList(dataSourceType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				ds, err := getLoaders()
+				app := p.Context.Value("app").(*app.App)
+				ds, err := getLoaders(app)
 				if err != nil {
 					return nil, err
 				}
@@ -79,7 +83,7 @@ func init() {
 	}
 }
 
-func getLoaders() (ds []*dataSource, err error) {
+func getLoaders(app *app.App) (ds []*dataSource, err error) {
 	for _, loader := range app.Sources() {
 		name := loader.DSN().DBName
 		log.WithField("schema_name", name).Info("query metadata")

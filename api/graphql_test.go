@@ -11,13 +11,16 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/kr/pretty"
 	"github.com/lucapette/deluminator/api"
-	"github.com/lucapette/deluminator/app"
 	"github.com/lucapette/deluminator/db"
 	"github.com/lucapette/deluminator/testutil"
 )
 
 func TestDataSources(t *testing.T) {
 	dsn, cleanup := testutil.SetupDB(db.Postgres, t)
+	app := testutil.InitApp(t, map[string]string{
+		"DATA_SOURCES": dsn.Format(),
+	})
+
 	defer func() {
 		app.Shutdown()
 		cleanup()
@@ -27,19 +30,15 @@ func TestDataSources(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	testutil.InitApp(t, map[string]string{
-		"DATA_SOURCES": dsn.Format(),
-	})
-
-	api.GraphQLHandler(w, req)
-
-	if w.Code != 200 {
-		t.Fatalf("expected code 200, got: %v", w.Code)
-	}
+	api.GraphQLHandler(app)(w, req)
 
 	resp, err := ioutil.ReadAll(w.Body)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if w.Code != 200 {
+		t.Fatalf("expected code 200, got: %v. Resp: %v", w.Code, string(resp))
 	}
 
 	var actual *graphql.Result
@@ -71,9 +70,15 @@ func TestDataSources(t *testing.T) {
 }
 
 func TestGraphQLPOSTWrongQuery(t *testing.T) {
+	app := testutil.InitApp(t, map[string]string{}) // ugly signature. Needs fixing.
+
+	defer func() {
+		app.Shutdown()
+	}()
+
 	req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader("{notAQuery}"))
 	w := httptest.NewRecorder()
-	api.GraphQLHandler(w, req)
+	api.GraphQLHandler(app)(w, req)
 
 	if w.Code != 400 {
 		t.Fatalf("expected code 400, got: %v", w.Code)

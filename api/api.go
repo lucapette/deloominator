@@ -94,7 +94,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Start() {
+func Start(app *app.App) {
 	router := goji.NewMux()
 
 	if app.Opts.Debug {
@@ -104,7 +104,7 @@ func Start() {
 	router.Use(logHandler)
 
 	router.HandleFunc(pat.Get("/"), homeHandler)
-	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler)
+	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler(app))
 	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
 
 	go func() {

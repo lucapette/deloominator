@@ -142,10 +142,10 @@ func SetupDB(driver db.DriverType, t *testing.T) (dsn *db.DSN, cleanup func()) {
 	return dsn, cleanup
 }
 
-func InitApp(t *testing.T, vars map[string]string) {
+func InitApp(t *testing.T, vars map[string]string) *app.App {
 	for k, v := range vars {
 		os.Setenv(fmt.Sprintf("%s_%s", strings.ToUpper(app.Name), k), v)
 	}
 
-	app.Init()
+	return app.NewApp()
 }

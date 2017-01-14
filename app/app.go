@@ -15,43 +15,53 @@ type Options struct {
 	Debug     bool     `default: "false"`
 }
 
-var Opts Options
-var dataSources db.Loaders
+type App struct {
+	Name        string
+	Opts        Options
+	DataSources db.Loaders
+}
 
-func Init() {
-	err := envconfig.Process(Name, &Opts)
+func NewApp() *App {
+	var opts Options
+
+	err := envconfig.Process(Name, &opts)
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	switch Opts.LogFormat {
+	switch opts.LogFormat {
 	case "JSON":
 		log.SetFormatter(&log.JSONFormatter{})
 	case "TEXT":
 		log.SetFormatter(&log.TextFormatter{})
 	default:
-		log.Fatalf("unknown log format: %s\n", Opts.LogFormat)
+		log.Fatalf("unknown log format: %s\n", opts.LogFormat)
+	}
+
+	return &App{
+		Name: Name,
+		Opts: opts,
 	}
 }
 
-func Sources() db.Loaders {
-	if len(dataSources) > 0 {
-		return dataSources
+func (app *App) Sources() db.Loaders {
+	if len(app.DataSources) > 0 {
+		return app.DataSources
 	}
 
-	ds, err := db.NewLoaders(Opts.Loaders)
+	ds, err := db.NewLoaders(app.Opts.Loaders)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	dataSources = ds
+	app.DataSources = ds
 
-	return dataSources
+	return app.DataSources
 }
 
-func Shutdown() {
-	for _, loader := range dataSources {
+func (app *App) Shutdown() {
+	for _, loader := range app.DataSources {
 		err := loader.Close()
 		if err != nil {
 			log.Fatal(err.Error())

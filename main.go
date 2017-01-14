@@ -10,10 +10,11 @@ import (
 )
 
 func main() {
+	app := app.NewApp()
 	log.WithField("port", app.Opts.Port).
 		Infof("starting %s", app.Name)
 
-	api.Start()
+	api.Start(app)
 
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, os.Interrupt, os.Kill)
@@ -23,8 +24,4 @@ func main() {
 		Infof("stopping %s", app.Name)
 
 	app.Shutdown()
-}
-
-func init() {
-	app.Init()
 }
