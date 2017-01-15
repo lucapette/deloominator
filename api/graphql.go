@@ -13,8 +13,13 @@ import (
 	"github.com/lucapette/deluminator/app"
 )
 
-type dataSource struct {
+type table struct {
 	Name string `json:"name"`
+}
+
+type dataSource struct {
+	Name   string   `json:"name"`
+	Tables []*table `json:"tables"`
 }
 
 var schema graphql.Schema
@@ -48,12 +53,25 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
+	tableType := graphql.NewObject(graphql.ObjectConfig{
+		Name:        "Table",
+		Description: fmt.Sprintf("A table of a data source"),
+		Fields: graphql.Fields{
+			"name": &graphql.Field{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+		},
+	})
+
 	dataSourceType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "DataSource",
 		Description: fmt.Sprintf("A DataSource represents a single source of data to analyze"),
 		Fields: graphql.Fields{
 			"name": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.String),
+			},
+			"tables": &graphql.Field{
+				Type: graphql.NewList(tableType),
 			},
 		},
 	})
@@ -95,13 +113,18 @@ func getLoaders(app *app.App) (ds []*dataSource, err error) {
 			return ds, err
 		}
 
+		ts := make([]*table, len(tables))
+		for i, t := range tables {
+			ts[i] = &table{Name: t}
+		}
+
 		log.WithFields(log.Fields{
 			"schema_name": name,
 			"n_tables":    len(tables),
 			"spent":       time.Now().Sub(start),
 		}).Info("tables loaded")
 
-		ds = append(ds, &dataSource{Name: name})
+		ds = append(ds, &dataSource{Name: name, Tables: ts})
 	}
 
 	return ds, nil

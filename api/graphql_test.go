@@ -48,13 +48,74 @@ func TestDataSources(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Logf("result %v", actual)
+	expected := &graphql.Result{
+		Data: map[string]interface{}{
+			"DataSources": []interface{}{
+				map[string]interface{}{
+					"name": dsn.DBName,
+				},
+			},
+		},
+	}
+
+	if actual.HasErrors() {
+		t.Fatalf("wrong result, unexpected errors: %v", actual.Errors)
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Unexpected result, Diff: %v", pretty.Diff(expected, actual))
+	}
+}
+
+func TestDataSourcesWithTables(t *testing.T) {
+	dsn, cleanup := testutil.SetupDB(db.Postgres, t)
+	app := testutil.InitApp(t, map[string]string{
+		"DATA_SOURCES": dsn.Format(),
+	})
+
+	defer func() {
+		app.Shutdown()
+		cleanup()
+	}()
+
+	req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader("{DataSources {name tables {name}}}"))
+
+	w := httptest.NewRecorder()
+
+	api.GraphQLHandler(app)(w, req)
+
+	resp, err := ioutil.ReadAll(w.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if w.Code != 200 {
+		t.Fatalf("expected code 200, got: %v. Resp: %v", w.Code, string(resp))
+	}
+
+	var actual *graphql.Result
+
+	err = json.Unmarshal(resp, &actual)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	expected := &graphql.Result{
 		Data: map[string]interface{}{
 			"DataSources": []interface{}{
 				map[string]interface{}{
 					"name": dsn.DBName,
+					"tables": []interface{}{
+						map[string]interface{}{
+							"name": "event_types",
+						},
+						map[string]interface{}{
+							"name": "user_events",
+						},
+						map[string]interface{}{
+							"name": "users",
+						},
+					},
 				},
 			},
 		},
