@@ -12,7 +12,7 @@ type Options struct {
 	Port      int      `default:"3000"`
 	Loaders   []string `envconfig:"data_sources"`
 	LogFormat string   `default:"JSON" split_words:"true"`
-	Debug     bool     `default: "false"`
+	Debug     bool     `default:"false"`
 }
 
 type App struct {
