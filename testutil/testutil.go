@@ -133,9 +133,9 @@ func setupMysql(t *testing.T) (*db.DSN, func()) {
 
 func SetupDB(driver db.DriverType, t *testing.T) (dsn *db.DSN, cleanup func()) {
 	switch driver {
-	case db.Postgres:
+	case db.PostgresDriver:
 		dsn, cleanup = setupPostgres(t)
-	case db.MySQL:
+	case db.MySQLDriver:
 		dsn, cleanup = setupMysql(t)
 	}
 

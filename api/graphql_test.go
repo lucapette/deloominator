@@ -16,7 +16,7 @@ import (
 )
 
 func TestDataSources(t *testing.T) {
-	dsn, cleanup := testutil.SetupDB(db.Postgres, t)
+	dsn, cleanup := testutil.SetupDB(db.PostgresDriver, t)
 	app := testutil.InitApp(t, map[string]string{
 		"DATA_SOURCES": dsn.Format(),
 	})
@@ -68,7 +68,7 @@ func TestDataSources(t *testing.T) {
 }
 
 func TestDataSourcesWithTables(t *testing.T) {
-	dsn, cleanup := testutil.SetupDB(db.Postgres, t)
+	dsn, cleanup := testutil.SetupDB(db.PostgresDriver, t)
 	app := testutil.InitApp(t, map[string]string{
 		"DATA_SOURCES": dsn.Format(),
 	})

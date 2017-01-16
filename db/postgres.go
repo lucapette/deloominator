@@ -6,12 +6,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type PGLoader struct {
+type Postgres struct {
 	dsn *DSN
 	db  *sql.DB
 }
 
-func (pg *PGLoader) Tables() (tables []string, err error) {
+func (pg *Postgres) Tables() (tables []string, err error) {
 	rows, err := pg.db.Query(`SELECT tablename FROM pg_tables where schemaname = 'public' order by 1`)
 
 	if err != nil {
@@ -31,7 +31,7 @@ func (pg *PGLoader) Tables() (tables []string, err error) {
 	return tables, err
 }
 
-func NewPGLoader(dsn *DSN) (pg *PGLoader, err error) {
+func NewPostgres(dsn *DSN) (pg *Postgres, err error) {
 	db, err := sql.Open(dsn.Driver, dsn.Format())
 	if err != nil {
 		return nil, err
@@ -42,12 +42,12 @@ func NewPGLoader(dsn *DSN) (pg *PGLoader, err error) {
 		return nil, err
 	}
 
-	return &PGLoader{dsn: dsn, db: db}, nil
+	return &Postgres{dsn: dsn, db: db}, nil
 }
 
-func (pg *PGLoader) DSN() *DSN {
+func (pg *Postgres) DSN() *DSN {
 	return pg.dsn
 }
-func (pg *PGLoader) Close() error {
+func (pg *Postgres) Close() error {
 	return pg.db.Close()
 }

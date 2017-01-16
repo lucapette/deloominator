@@ -10,7 +10,7 @@ const Name = "deluminator"
 
 type Options struct {
 	Port      int      `default:"3000"`
-	Loaders   []string `envconfig:"data_sources"`
+	Sources   []string `envconfig:"data_sources"`
 	LogFormat string   `default:"JSON" split_words:"true"`
 	Debug     bool     `default:"false"`
 }
@@ -18,7 +18,7 @@ type Options struct {
 type App struct {
 	Name        string
 	Opts        Options
-	DataSources db.Loaders
+	dataSources db.DataSources
 }
 
 func NewApp() *App {
@@ -45,24 +45,24 @@ func NewApp() *App {
 	}
 }
 
-func (app *App) Sources() db.Loaders {
-	if len(app.DataSources) > 0 {
-		return app.DataSources
+func (app *App) GetDataSources() db.DataSources {
+	if len(app.dataSources) > 0 {
+		return app.dataSources
 	}
 
-	ds, err := db.NewLoaders(app.Opts.Loaders)
+	ds, err := db.NewDataSources(app.Opts.Sources)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	app.DataSources = ds
+	app.dataSources = ds
 
-	return app.DataSources
+	return app.dataSources
 }
 
 func (app *App) Shutdown() {
-	for _, loader := range app.DataSources {
-		err := loader.Close()
+	for _, ds := range app.dataSources {
+		err := ds.Close()
 		if err != nil {
 			log.Fatal(err.Error())
 		}

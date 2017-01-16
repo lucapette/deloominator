@@ -9,8 +9,8 @@ import (
 )
 
 func TestMyTables(t *testing.T) {
-	dsn, cleanup := testutil.SetupDB(db.MySQL, t)
-	my, err := db.NewMyLoader(dsn)
+	dsn, cleanup := testutil.SetupDB(db.MySQLDriver, t)
+	my, err := db.NewMySQL(dsn)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -81,7 +81,7 @@ func init() {
 			Type: graphql.NewList(dataSourceType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				app := p.Context.Value("app").(*app.App)
-				ds, err := getLoaders(app)
+				ds, err := getDataSources(app)
 				if err != nil {
 					return nil, err
 				}
@@ -101,16 +101,16 @@ func init() {
 	}
 }
 
-func getLoaders(app *app.App) (ds []*dataSource, err error) {
-	for _, loader := range app.Sources() {
-		name := loader.DSN().DBName
+func getDataSources(app *app.App) (dataSources []*dataSource, err error) {
+	for _, ds := range app.GetDataSources() {
+		name := ds.DSN().DBName
 		log.WithField("schema_name", name).Info("query metadata")
 
 		start := time.Now()
 
-		tables, err := loader.Tables()
+		tables, err := ds.Tables()
 		if err != nil {
-			return ds, err
+			return dataSources, err
 		}
 
 		ts := make([]*table, len(tables))
@@ -124,8 +124,8 @@ func getLoaders(app *app.App) (ds []*dataSource, err error) {
 			"spent":       time.Now().Sub(start),
 		}).Info("tables loaded")
 
-		ds = append(ds, &dataSource{Name: name, Tables: ts})
+		dataSources = append(dataSources, &dataSource{Name: name, Tables: ts})
 	}
 
-	return ds, nil
+	return dataSources, nil
 }

@@ -8,22 +8,22 @@ import (
 	"github.com/lucapette/deluminator/testutil"
 )
 
-func TestNewLoaders(t *testing.T) {
-	pg, pgClean := testutil.SetupDB(db.Postgres, t)
-	my, myClean := testutil.SetupDB(db.MySQL, t)
-	dataSources := []string{
+func TestNewDataSources(t *testing.T) {
+	pg, pgClean := testutil.SetupDB(db.PostgresDriver, t)
+	my, myClean := testutil.SetupDB(db.MySQLDriver, t)
+	sources := []string{
 		pg.Format(),
 		fmt.Sprintf("mysql://%s:%s@%s/%s", my.Username, my.Pass, my.Host, my.DBName), // Format() does not work both ways yet
 	}
 
-	loaders, err := db.NewLoaders(dataSources)
+	dataSources, err := db.NewDataSources(sources)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	defer func() {
-		for _, loader := range loaders {
-			err = loader.Close()
+		for _, ds := range dataSources {
+			err = ds.Close()
 
 			if err != nil {
 				t.Fatal(err)
@@ -34,8 +34,8 @@ func TestNewLoaders(t *testing.T) {
 		myClean()
 	}()
 
-	actual := len(loaders)
-	expected := len(dataSources)
+	actual := len(dataSources)
+	expected := len(sources)
 
 	if actual != expected {
 		t.Fatalf("Expected %d, got %d", expected, actual)

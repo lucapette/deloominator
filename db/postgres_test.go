@@ -9,8 +9,8 @@ import (
 )
 
 func TestPGTables(t *testing.T) {
-	dsn, cleanup := testutil.SetupDB(db.Postgres, t)
-	pg, err := db.NewPGLoader(dsn)
+	dsn, cleanup := testutil.SetupDB(db.PostgresDriver, t)
+	pg, err := db.NewPostgres(dsn)
 	if err != nil {
 		t.Fatal(err)
 	}

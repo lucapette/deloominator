@@ -6,12 +6,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type MyLoader struct {
+type MySQL struct {
 	dsn *DSN
 	db  *sql.DB
 }
 
-func (my *MyLoader) Tables() (tables []string, err error) {
+func (my *MySQL) Tables() (tables []string, err error) {
 	rows, err := my.db.Query(`SHOW TABLES;`)
 
 	if err != nil {
@@ -31,7 +31,7 @@ func (my *MyLoader) Tables() (tables []string, err error) {
 	return tables, err
 }
 
-func NewMyLoader(dsn *DSN) (my *MyLoader, err error) {
+func NewMySQL(dsn *DSN) (my *MySQL, err error) {
 	db, err := sql.Open(dsn.Driver, dsn.Format())
 	if err != nil {
 		return nil, err
@@ -42,13 +42,13 @@ func NewMyLoader(dsn *DSN) (my *MyLoader, err error) {
 		return nil, err
 	}
 
-	return &MyLoader{dsn: dsn, db: db}, nil
+	return &MySQL{dsn: dsn, db: db}, nil
 }
 
-func (my *MyLoader) DSN() *DSN {
+func (my *MySQL) DSN() *DSN {
 	return my.dsn
 }
 
-func (my *MyLoader) Close() error {
+func (my *MySQL) Close() error {
 	return my.db.Close()
 }
