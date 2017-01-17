@@ -1,9 +1,28 @@
 package db
 
+type Type int
+
+const (
+	Number = iota
+	Text   = iota
+	Date   = iota
+)
+
+type Column struct {
+	Name  string
+	Value string
+	Type  Type
+}
+
+type Row []*Column
+
+type Rows []*Row
+
 type DataSource interface {
 	Tables() ([]string, error)
 	DSN() *DSN
 	Close() error
+	Query(string) (Rows, error)
 }
 
 type DataSources map[string]DataSource

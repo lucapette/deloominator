@@ -20,6 +20,8 @@ CREATE TABLE users (
     name character varying
 );
 
+INSERT INTO users (id, name) values (42, 'Grace Hopper');
+
 ALTER TABLE ONLY event_types ADD CONSTRAINT event_types_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY user_events ADD CONSTRAINT user_events_pkey PRIMARY KEY (id);

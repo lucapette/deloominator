@@ -52,3 +52,7 @@ func (my *MySQL) DSN() *DSN {
 func (my *MySQL) Close() error {
 	return my.db.Close()
 }
+
+func (my *MySQL) Query(query string) (rows Rows, err error) {
+	return rows, err
+}
