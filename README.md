@@ -51,9 +51,9 @@ Please refer to our [contributing guidelines](/CONTRIBUTING.md).
 
 ## What the heck is a deluminator?
 
-I am a huge fun of Harry Potter so I picked the
+We are fans of Harry Potter so we picked the
 [deluminator](https://en.wikipedia.org/wiki/Magical_objects_in_Harry_Potter#Deluminator_.28Put-Outer.29),
-one of my favourite magical devices from the series. It can be used as an
+one of out favourite magical devices from the series. It can be used as an
 homing device.
 
 # Code of Conduct

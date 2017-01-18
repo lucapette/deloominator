@@ -1,14 +1,13 @@
 package db
 
 import (
-	"database/sql"
-
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
 type MySQL struct {
 	dsn *DSN
-	db  *sql.DB
+	*Executor
 }
 
 func (my *MySQL) Tables() (tables []string, err error) {
@@ -31,8 +30,8 @@ func (my *MySQL) Tables() (tables []string, err error) {
 	return tables, err
 }
 
-func NewMySQL(dsn *DSN) (my *MySQL, err error) {
-	db, err := sql.Open(dsn.Driver, dsn.Format())
+func NewMySQL(dsn *DSN) (*MySQL, error) {
+	db, err := sqlx.Open(dsn.Driver, dsn.Format())
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +41,7 @@ func NewMySQL(dsn *DSN) (my *MySQL, err error) {
 		return nil, err
 	}
 
-	return &MySQL{dsn: dsn, db: db}, nil
+	return &MySQL{dsn: dsn, Executor: &Executor{db: db}}, nil
 }
 
 func (my *MySQL) DSN() *DSN {
@@ -51,8 +50,4 @@ func (my *MySQL) DSN() *DSN {
 
 func (my *MySQL) Close() error {
 	return my.db.Close()
-}
-
-func (my *MySQL) Query(query string) (rows Rows, err error) {
-	return rows, err
 }

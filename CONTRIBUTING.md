@@ -1,7 +1,7 @@
 # Contributing
 
-I love every form of contribution. By participating to this project, you agree
-to abide to the `deluminator` [code of conduct](/CODE_OF_CONDUCT.md).
+We love every form of contribution. By participating to this project, you
+agree to abide to the `deluminator` [code of conduct](/CODE_OF_CONDUCT.md).
 
 ## Setup your machine
 
@@ -38,7 +38,8 @@ $ make test
 
 ## Test your change
 
-You can create a branch for your changes and try to build from the source as you go:
+You can create a branch for your changes and try to build from the source as
+you go:
 
 ``` sh
 $ make build

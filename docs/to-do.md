@@ -16,6 +16,7 @@ they are non critical to the product.
 - testutil.InitApp has a strange signature. Look for improvements there.
 - `// Format() does not work both ways yet` this comment makes it clear we
   need to find a better way of handling the differences between databases DSNs
+- Add Stringer interface to Rows Row and Column
 
 ## Missing documents
 

@@ -1,5 +1,7 @@
 package db
 
+import "io"
+
 type Type int
 
 const (
@@ -18,11 +20,15 @@ type Row []*Column
 
 type Rows []*Row
 
-type DataSource interface {
+type Inquirer interface {
 	Tables() ([]string, error)
-	DSN() *DSN
-	Close() error
 	Query(string) (Rows, error)
+}
+
+type DataSource interface {
+	DSN() *DSN
+	io.Closer
+	Inquirer
 }
 
 type DataSources map[string]DataSource

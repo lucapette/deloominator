@@ -19,3 +19,5 @@ CREATE TABLE users (
     id int NOT NULL,
     name varchar(255)
 );
+
+INSERT INTO users (id, name) VALUES (42, 'Grace Hopper');
