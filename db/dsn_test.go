@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewDSN(t *testing.T) {
-	sourceTests := []struct {
+	tests := []struct {
 		name, source string
 		expected     *db.DSN
 	}{
@@ -106,10 +106,9 @@ func TestNewDSN(t *testing.T) {
 		},
 	}
 
-	for _, test := range sourceTests {
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			actual, err := db.NewDSN(test.source)
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -121,8 +120,31 @@ func TestNewDSN(t *testing.T) {
 	}
 }
 
+func TestNewDSNWrongInput(t *testing.T) {
+	tests := []struct {
+		dsn      string
+		expected string
+	}{
+		{dsn: "the answer is forthy two", expected: "the answer is forthy two is not a valid Data Source Name"},
+		{dsn: "postgres://localhost:fortytwo/anwswer", expected: "postgres://localhost:fortytwo/anwswer is not a valid Data Source Name. fortytwo is not a valid port"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.dsn, func(t *testing.T) {
+			_, err := db.NewDSN(test.dsn)
+			if err == nil {
+				t.Fatalf("Expected error but got none")
+			}
+
+			if !reflect.DeepEqual(test.expected, err.Error()) {
+				t.Fatalf("Expected %s, got %s", test.expected, err.Error())
+			}
+		})
+	}
+}
+
 func TestDSNFormat(t *testing.T) {
-	sourceTests := []struct {
+	tests := []struct {
 		name     string
 		source   *db.DSN
 		expected string
@@ -242,7 +264,7 @@ func TestDSNFormat(t *testing.T) {
 		},
 	}
 
-	for _, test := range sourceTests {
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			actual := test.source.Format()
 
