@@ -11,23 +11,8 @@ type Postgres struct {
 	*Executor
 }
 
-func (pg *Postgres) Tables() (tables []string, err error) {
-	rows, err := pg.db.Query(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY 1`)
-	if err != nil {
-		return tables, err
-	}
-
-	for rows.Next() {
-		var name string
-		err = rows.Scan(&name)
-		if err != nil {
-			return tables, err
-		}
-
-		tables = append(tables, name)
-	}
-
-	return tables, err
+func (pg *Postgres) Tables() (tables Rows, err error) {
+	return pg.Query(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY 1`)
 }
 
 func NewPostgres(dsn *DSN) (*Postgres, error) {

@@ -10,24 +10,8 @@ type MySQL struct {
 	*Executor
 }
 
-func (my *MySQL) Tables() (tables []string, err error) {
-	rows, err := my.db.Query(`SHOW TABLES;`)
-
-	if err != nil {
-		return tables, err
-	}
-
-	for rows.Next() {
-		var name string
-		err = rows.Scan(&name)
-		if err != nil {
-			return tables, err
-		}
-
-		tables = append(tables, name)
-	}
-
-	return tables, err
+func (my *MySQL) Tables() (Rows, error) {
+	return my.Query("SHOW TABLES")
 }
 
 func NewMySQL(dsn *DSN) (*MySQL, error) {

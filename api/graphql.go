@@ -115,7 +115,7 @@ func getDataSources(app *app.App) (dataSources []*dataSource, err error) {
 
 		ts := make([]*table, len(tables))
 		for i, t := range tables {
-			ts[i] = &table{Name: t}
+			ts[i] = &table{Name: t[0].Value}
 		}
 
 		log.WithFields(log.Fields{

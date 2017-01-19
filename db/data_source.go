@@ -16,12 +16,12 @@ type Column struct {
 	Type  Type
 }
 
-type Row []*Column
+type Row []Column
 
-type Rows []*Row
+type Rows []Row
 
 type Inquirer interface {
-	Tables() ([]string, error)
+	Tables() (Rows, error)
 	Query(string) (Rows, error)
 }
 

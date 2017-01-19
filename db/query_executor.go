@@ -36,13 +36,13 @@ func (ex *Executor) Query(query string) (rows Rows, err error) {
 			default:
 				value = fmt.Sprint(t)
 			}
-			cols[i] = &Column{
+			cols[i] = Column{
 				Name:  dbCols[i],
 				Value: value,
 			}
 		}
 
-		rows = append(rows, &cols)
+		rows = append(rows, cols)
 	}
 
 	return rows, dbRows.Close()
