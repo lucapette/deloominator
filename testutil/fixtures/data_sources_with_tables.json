@@ -1,0 +1,1 @@
+{"data":{"DataSources":[{"name":"{{.Name}}","tables":[{"name":"event_types"},{"name":"user_events"},{"name":"users"}]}]}}

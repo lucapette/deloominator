@@ -1,7 +1,9 @@
 package api_test
 
 import (
+	"bytes"
 	"encoding/json"
+	"flag"
 	"io/ioutil"
 	"net/http/httptest"
 	"reflect"
@@ -9,11 +11,12 @@ import (
 	"testing"
 
 	"github.com/graphql-go/graphql"
-	"github.com/kr/pretty"
 	"github.com/lucapette/deluminator/api"
 	"github.com/lucapette/deluminator/db"
 	"github.com/lucapette/deluminator/testutil"
 )
+
+var update = flag.Bool("update", false, "update golden files")
 
 func TestDataSources(t *testing.T) {
 	dsn, cleanup := testutil.SetupDB(db.PostgresDriver, t)
@@ -36,34 +39,20 @@ func TestDataSources(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	actual := string(resp)
 
 	if w.Code != 200 {
-		t.Fatalf("expected code 200, got: %v. Resp: %v", w.Code, string(resp))
+		t.Fatalf("expected code 200, got: %v. Resp: %v", w.Code, actual)
 	}
 
-	var actual *graphql.Result
-
-	err = json.Unmarshal(resp, &actual)
-	if err != nil {
-		t.Fatal(err)
+	var expected bytes.Buffer
+	testutil.ParseFixture(t, &expected, "data_sources.json", testutil.DBTemplate{Name: dsn.DBName})
+	if *update {
+		testutil.WriteFixture(t, "data_sources.json", actual)
 	}
 
-	expected := &graphql.Result{
-		Data: map[string]interface{}{
-			"DataSources": []interface{}{
-				map[string]interface{}{
-					"name": dsn.DBName,
-				},
-			},
-		},
-	}
-
-	if actual.HasErrors() {
-		t.Fatalf("wrong result, unexpected errors: %v", actual.Errors)
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Unexpected result, Diff: %v", pretty.Diff(expected, actual))
+	if !reflect.DeepEqual(expected.String(), actual) {
+		t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected.String(), actual))
 	}
 }
 
@@ -88,45 +77,20 @@ func TestDataSourcesWithTables(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	actual := string(resp)
 
 	if w.Code != 200 {
-		t.Fatalf("expected code 200, got: %v. Resp: %v", w.Code, string(resp))
+		t.Fatalf("expected code 200, got: %v. Resp: %v", w.Code, actual)
 	}
 
-	var actual *graphql.Result
-
-	err = json.Unmarshal(resp, &actual)
-	if err != nil {
-		t.Fatal(err)
+	var expected bytes.Buffer
+	testutil.ParseFixture(t, &expected, "data_sources_with_tables.json", testutil.DBTemplate{Name: dsn.DBName})
+	if *update {
+		testutil.WriteFixture(t, "data_sources_with_tables.json", actual)
 	}
 
-	expected := &graphql.Result{
-		Data: map[string]interface{}{
-			"DataSources": []interface{}{
-				map[string]interface{}{
-					"name": dsn.DBName,
-					"tables": []interface{}{
-						map[string]interface{}{
-							"name": "event_types",
-						},
-						map[string]interface{}{
-							"name": "user_events",
-						},
-						map[string]interface{}{
-							"name": "users",
-						},
-					},
-				},
-			},
-		},
-	}
-
-	if actual.HasErrors() {
-		t.Fatalf("wrong result, unexpected errors: %v", actual.Errors)
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Fatalf("Unexpected result, Diff: %v", pretty.Diff(expected, actual))
+	if !reflect.DeepEqual(expected.String(), actual) {
+		t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected.String(), actual))
 	}
 }
 

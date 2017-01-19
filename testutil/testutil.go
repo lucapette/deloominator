@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -15,6 +16,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kr/pretty"
 	"github.com/lucapette/deluminator/app"
 	"github.com/lucapette/deluminator/db"
 )
@@ -23,18 +25,38 @@ type DBTemplate struct {
 	Name string
 }
 
-func loadFixture(t *testing.T, fixture string) string {
+func fixturePath(t *testing.T, fixture string) string {
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatalf("problems recovering caller information")
 	}
 
-	content, err := ioutil.ReadFile(filepath.Join(filepath.Dir(filename), "fixtures", fixture))
+	return filepath.Join(filepath.Dir(filename), "fixtures", fixture)
+}
+
+func WriteFixture(t *testing.T, fixture, content string) {
+	err := ioutil.WriteFile(fixturePath(t, fixture), []byte(content), 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func LoadFixture(t *testing.T, fixture string) string {
+	content, err := ioutil.ReadFile(fixturePath(t, fixture))
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	return string(content)
+}
+
+func ParseFixture(t *testing.T, w io.Writer, fixture string, data interface{}) {
+	tmpl := template.Must(template.New(fixture).Parse(LoadFixture(t, fixture)))
+
+	err := tmpl.Execute(w, data)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func randName() string {
@@ -60,13 +82,7 @@ func setupPostgres(t *testing.T) (*db.DSN, func()) {
 		}
 	}()
 
-	tmpl := template.Must(template.New("ddlPsql").Parse(loadFixture(t, "postgres.sql")))
-
-	dbTemplate := DBTemplate{Name: randName}
-	err = tmpl.Execute(tmpfile, dbTemplate)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ParseFixture(t, tmpfile, "postgres.sql", DBTemplate{Name: randName})
 
 	err = exec.Command("psql", "-f", tmpfile.Name()).Run()
 	if err != nil {
@@ -99,14 +115,8 @@ func setupMysql(t *testing.T) (*db.DSN, func()) {
 		t.Fatal(err)
 	}
 
-	tmpl := template.Must(template.New("ddl").Parse(loadFixture(t, "mysql.sql")))
-
 	var query bytes.Buffer
-	dbTemplate := DBTemplate{Name: randName}
-	err = tmpl.Execute(&query, dbTemplate)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ParseFixture(t, &query, "mysql.sql", DBTemplate{Name: randName})
 
 	db, err := sql.Open("mysql", "root:root@/?multiStatements=true")
 	if err != nil {
@@ -148,4 +158,8 @@ func InitApp(t *testing.T, vars map[string]string) *app.App {
 	}
 
 	return app.NewApp()
+}
+
+func Diff(expected, actual interface{}) []string {
+	return pretty.Diff(expected, actual)
 }
