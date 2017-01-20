@@ -19,7 +19,9 @@ around with your schema. Heavily inspired by
 # Docs
 
 Please refer to the [user manual](/docs/user-manual.md) to learn your way
-around `deluminator` features.
+around `deluminator` features. If you are interested in learning more about
+how to develop new features, we have a [developer
+manual](/docs/developer-manual.md).
 
 # Installation guide
 
@@ -45,7 +47,8 @@ install `deluminator` from the source.
 
 # How to contribute
 
-Please refer to our [contributing guidelines](/CONTRIBUTING.md).
+Please refer to our [contributing guidelines](/CONTRIBUTING.md) and to our
+[developer manual](/docs/developer-manual.md).
 
 # FAQ
 
