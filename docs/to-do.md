@@ -21,3 +21,9 @@ they are non critical to the product.
 ## Missing documents
 
 - Explain how to use `/bin/run` script in `docs/developer-manual.md`
+
+## Investigate and change
+
+- Having the app in the context for the graphql handler feels wrong
+- Not sure why we need a type switch in the Query method and why mysql and
+  postgres get different structures from the database
