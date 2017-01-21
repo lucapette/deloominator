@@ -32,7 +32,7 @@ func (ex *Executor) Query(input string) (qr QueryResult, err error) {
 			return qr, err
 		}
 
-		cols := make([]Cell, len(results))
+		cells := make([]Cell, len(results))
 		for i, res := range results {
 			var value string
 			switch t := res.(type) {
@@ -41,10 +41,10 @@ func (ex *Executor) Query(input string) (qr QueryResult, err error) {
 			default:
 				value = fmt.Sprint(t)
 			}
-			cols[i] = Cell{Value: value}
+			cells[i] = Cell{Value: value}
 		}
 
-		qr.Rows = append(qr.Rows, cols)
+		qr.Rows = append(qr.Rows, cells)
 	}
 
 	return qr, dbRows.Close()
