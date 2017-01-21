@@ -10,7 +10,7 @@ type MySQL struct {
 	*Executor
 }
 
-func (my *MySQL) Tables() (Rows, error) {
+func (my *MySQL) Tables() (QueryResult, error) {
 	return my.Query("SHOW TABLES")
 }
 

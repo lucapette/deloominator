@@ -11,7 +11,7 @@ type Postgres struct {
 	*Executor
 }
 
-func (pg *Postgres) Tables() (tables Rows, err error) {
+func (pg *Postgres) Tables() (QueryResult, error) {
 	return pg.Query(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY 1`)
 }
 

@@ -2,27 +2,9 @@ package db
 
 import "io"
 
-type Type int
-
-const (
-	Number = iota
-	Text   = iota
-	Date   = iota
-)
-
-type Column struct {
-	Name  string
-	Value string
-	Type  Type
-}
-
-type Row []Column
-
-type Rows []Row
-
 type Inquirer interface {
-	Tables() (Rows, error)
-	Query(string) (Rows, error)
+	Tables() (QueryResult, error)
+	Query(string) (QueryResult, error)
 }
 
 type DataSource interface {

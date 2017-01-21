@@ -35,14 +35,14 @@ func TestDriversTables(t *testing.T) {
 			}()
 
 			expected := []string{"event_types", "user_events", "users"}
-			tables, err := driver.Tables()
+			qr, err := driver.Tables()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			actual := make([]string, len(tables))
+			actual := make([]string, len(qr.Rows))
 
-			for i, row := range tables {
+			for i, row := range qr.Rows {
 				actual[i] = row[0].Value
 			}
 
@@ -70,7 +70,9 @@ func TestDriversQuery(t *testing.T) {
 				cleanup()
 			}()
 
-			expected := db.Rows{db.Row{db.Column{Name: "id", Value: "42"}, db.Column{Name: "name", Value: "Grace Hopper"}}}
+			expected := db.QueryResult{Rows: []db.Row{
+				db.Row{db.Column{Name: "id", Value: "42"}, db.Column{Name: "name", Value: "Grace Hopper"}}},
+			}
 			actual, err := driver.Query("select id, name from users")
 			if err != nil {
 				t.Fatal(err)

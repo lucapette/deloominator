@@ -10,21 +10,21 @@ type Executor struct {
 	db *sqlx.DB
 }
 
-func (ex *Executor) Query(query string) (rows Rows, err error) {
-	dbRows, err := ex.db.Queryx(query)
+func (ex *Executor) Query(input string) (qr QueryResult, err error) {
+	dbRows, err := ex.db.Queryx(input)
 	if err != nil {
-		return rows, err
+		return qr, err
 	}
 
 	dbCols, err := dbRows.Columns()
 	if err != nil {
-		return rows, err
+		return qr, err
 	}
 
 	for dbRows.Next() {
 		results, err := dbRows.SliceScan()
 		if err != nil {
-			return rows, err
+			return qr, err
 		}
 
 		cols := make(Row, len(results))
@@ -42,8 +42,8 @@ func (ex *Executor) Query(query string) (rows Rows, err error) {
 			}
 		}
 
-		rows = append(rows, cols)
+		qr.Rows = append(qr.Rows, cols)
 	}
 
-	return rows, dbRows.Close()
+	return qr, dbRows.Close()
 }

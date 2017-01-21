@@ -131,10 +131,10 @@ func init() {
 				input := p.Args["input"].(string)
 				app := p.Context.Value("app").(*app.App)
 
-				results, err := app.GetDataSources()[source].Query(input)
+				qr, err := app.GetDataSources()[source].Query(input)
 
 				return rawResults{
-					Total: len(results),
+					Total: len(qr.Rows),
 				}, err
 			},
 		},
@@ -158,19 +158,19 @@ func getDataSources(app *app.App) (dataSources []*dataSource, err error) {
 
 		start := time.Now()
 
-		tables, err := ds.Tables()
+		qr, err := ds.Tables()
 		if err != nil {
 			return dataSources, err
 		}
 
-		ts := make([]*table, len(tables))
-		for i, t := range tables {
+		ts := make([]*table, len(qr.Rows))
+		for i, t := range qr.Rows {
 			ts[i] = &table{Name: t[0].Value}
 		}
 
 		log.WithFields(log.Fields{
 			"schema_name": name,
-			"n_tables":    len(tables),
+			"n_tables":    len(qr.Rows),
 			"spent":       time.Now().Sub(start),
 		}).Info("tables loaded")
 
