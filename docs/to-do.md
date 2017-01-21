@@ -20,7 +20,4 @@ they are non critical to the product.
 
 ## Missing documents
 
-- We need to add a `docs/development.md` linked from the contrubuting
-  guidelines. The doc will explain how to make use of `bin/run` and how to use
-  the Makefile available options. The document needs a section about testing,
-  we need to explain how to leverage testutil
+- Explain how to use `/bin/run` script in `docs/developer-manual.md`
