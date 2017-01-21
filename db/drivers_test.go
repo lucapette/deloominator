@@ -70,9 +70,11 @@ func TestDriversQuery(t *testing.T) {
 				cleanup()
 			}()
 
-			expected := db.QueryResult{Rows: []db.Row{
-				db.Row{db.Column{Name: "id", Value: "42"}, db.Column{Name: "name", Value: "Grace Hopper"}}},
+			expected := db.QueryResult{
+				Rows:    []db.Row{db.Row{db.Cell{Value: "42"}, db.Cell{Value: "Grace Hopper"}}},
+				Columns: []db.Column{db.Column{Name: "id"}, db.Column{Name: "name"}},
 			}
+
 			actual, err := driver.Query("select id, name from users")
 			if err != nil {
 				t.Fatal(err)

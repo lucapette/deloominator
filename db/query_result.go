@@ -8,14 +8,18 @@ const (
 	Date   = iota
 )
 
-type Column struct {
-	Name  string
+type Cell struct {
 	Value string
-	Type  Type
 }
 
-type Row []Column
+type Column struct {
+	Name string
+	Type Type
+}
+
+type Row []Cell
 
 type QueryResult struct {
-	Rows []Row
+	Rows    []Row
+	Columns []Column
 }

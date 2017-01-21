@@ -21,13 +21,18 @@ func (ex *Executor) Query(input string) (qr QueryResult, err error) {
 		return qr, err
 	}
 
+	qr.Columns = make([]Column, len(dbCols))
+	for i, dbCol := range dbCols {
+		qr.Columns[i].Name = dbCol
+	}
+
 	for dbRows.Next() {
 		results, err := dbRows.SliceScan()
 		if err != nil {
 			return qr, err
 		}
 
-		cols := make(Row, len(results))
+		cols := make([]Cell, len(results))
 		for i, res := range results {
 			var value string
 			switch t := res.(type) {
@@ -36,10 +41,7 @@ func (ex *Executor) Query(input string) (qr QueryResult, err error) {
 			default:
 				value = fmt.Sprint(t)
 			}
-			cols[i] = Column{
-				Name:  dbCols[i],
-				Value: value,
-			}
+			cols[i] = Cell{Value: value}
 		}
 
 		qr.Rows = append(qr.Rows, cols)
