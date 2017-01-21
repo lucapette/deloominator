@@ -56,6 +56,37 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func ResolveDataSources(p graphql.ResolveParams) (interface{}, error) {
+	var dataSources []*dataSource
+	app := p.Context.Value("app").(*app.App)
+	for _, ds := range app.GetDataSources() {
+		name := ds.DSN().DBName
+		log.WithField("schema_name", name).Info("query metadata")
+
+		start := time.Now()
+
+		qr, err := ds.Tables()
+		if err != nil {
+			return dataSources, err
+		}
+
+		ts := make([]*table, len(qr.Rows))
+		for i, t := range qr.Rows {
+			ts[i] = &table{Name: t[0].Value}
+		}
+
+		log.WithFields(log.Fields{
+			"schema_name": name,
+			"n_tables":    len(qr.Rows),
+			"spent":       time.Now().Sub(start),
+		}).Info("tables loaded")
+
+		dataSources = append(dataSources, &dataSource{Name: name, Tables: ts})
+	}
+
+	return dataSources, nil
+}
+
 func init() {
 	rawResultsType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "RawResults",
@@ -106,15 +137,8 @@ func init() {
 
 	fields := graphql.Fields{
 		"DataSources": &graphql.Field{
-			Type: graphql.NewList(dataSourceType),
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				app := p.Context.Value("app").(*app.App)
-				ds, err := getDataSources(app)
-				if err != nil {
-					return nil, err
-				}
-				return ds, nil
-			},
+			Type:    graphql.NewList(dataSourceType),
+			Resolve: ResolveDataSources,
 		},
 		"Query": &graphql.Field{
 			Type: queryResultType,
@@ -149,33 +173,4 @@ func init() {
 	if err != nil {
 		log.Fatalf("failed to create new schema, error: %v", err)
 	}
-}
-
-func getDataSources(app *app.App) (dataSources []*dataSource, err error) {
-	for _, ds := range app.GetDataSources() {
-		name := ds.DSN().DBName
-		log.WithField("schema_name", name).Info("query metadata")
-
-		start := time.Now()
-
-		qr, err := ds.Tables()
-		if err != nil {
-			return dataSources, err
-		}
-
-		ts := make([]*table, len(qr.Rows))
-		for i, t := range qr.Rows {
-			ts[i] = &table{Name: t[0].Value}
-		}
-
-		log.WithFields(log.Fields{
-			"schema_name": name,
-			"n_tables":    len(qr.Rows),
-			"spent":       time.Now().Sub(start),
-		}).Info("tables loaded")
-
-		dataSources = append(dataSources, &dataSource{Name: name, Tables: ts})
-	}
-
-	return dataSources, nil
 }
