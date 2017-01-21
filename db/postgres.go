@@ -36,3 +36,7 @@ func (pg *Postgres) DSN() *DSN {
 func (pg *Postgres) Close() error {
 	return pg.db.Close()
 }
+
+func (pg *Postgres) String() string {
+	return pg.dsn.String()
+}

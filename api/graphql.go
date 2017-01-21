@@ -13,13 +13,17 @@ import (
 	"github.com/lucapette/deluminator/app"
 )
 
+type rawResults struct {
+	Total int `json:"total"`
+}
+
 type table struct {
 	Name string `json:"name"`
 }
 
 type dataSource struct {
 	Name   string   `json:"name"`
-	Tables []*table `json:"tables"`
+	Tables []*table `json:"tables"` //better if it's a rawResults.
 }
 
 var schema graphql.Schema
@@ -53,6 +57,30 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
+	rawResultsType := graphql.NewObject(graphql.ObjectConfig{
+		Name:        "RawResults",
+		Description: "RawResults represents a collection of raw data returned by a data source",
+		Fields: graphql.Fields{
+			"total": &graphql.Field{
+				Description: "Total count of returned results",
+				Type:        graphql.Int,
+			},
+			"columnNames": &graphql.Field{
+				Description: "Name of the columns of the returned results",
+				Type:        graphql.NewList(graphql.String),
+			},
+		},
+		IsTypeOf: func(p graphql.IsTypeOfParams) bool {
+			return true
+		},
+	})
+
+	queryResultType := graphql.NewUnion(graphql.UnionConfig{
+		Name:        "QueryResult",
+		Description: "QueryResult represents all the possible outcomes of a Query",
+		Types:       []*graphql.Object{rawResultsType},
+	})
+
 	tableType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "Table",
 		Description: fmt.Sprintf("A table of a data source"),
@@ -86,6 +114,28 @@ func init() {
 					return nil, err
 				}
 				return ds, nil
+			},
+		},
+		"Query": &graphql.Field{
+			Type: queryResultType,
+			Args: graphql.FieldConfigArgument{
+				"source": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
+				"input": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				source := p.Args["source"].(string)
+				input := p.Args["input"].(string)
+				app := p.Context.Value("app").(*app.App)
+
+				results, err := app.GetDataSources()[source].Query(input)
+
+				return rawResults{
+					Total: len(results),
+				}, err
 			},
 		},
 	}

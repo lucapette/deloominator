@@ -59,6 +59,10 @@ func NewDSN(source string) (ds *DSN, err error) {
 	}, nil
 }
 
+func (ds *DSN) String() string {
+	return ds.Format()
+}
+
 func (ds *DSN) Format() (output string) {
 	switch ds.Driver {
 	case "postgres":

@@ -1,7 +1,6 @@
 package api_test
 
 import (
-	"io/ioutil"
 	"testing"
 
 	log "github.com/Sirupsen/logrus"
@@ -45,5 +44,5 @@ func TestServerStart(t *testing.T) {
 }
 
 func init() {
-	log.SetOutput(ioutil.Discard)
+	log.SetLevel(log.WarnLevel)
 }

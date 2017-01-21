@@ -35,3 +35,7 @@ func (my *MySQL) DSN() *DSN {
 func (my *MySQL) Close() error {
 	return my.db.Close()
 }
+
+func (my *MySQL) String() string {
+	return my.dsn.String()
+}
