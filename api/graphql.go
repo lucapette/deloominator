@@ -13,8 +13,14 @@ import (
 	"github.com/lucapette/deluminator/app"
 )
 
+type column struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
 type rawResults struct {
-	Total int `json:"total"`
+	Total   int      `json:"total"`
+	Columns []column `json:"columns"`
 }
 
 type table struct {
@@ -97,12 +103,34 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 
 	qr, err := app.GetDataSources()[source].Query(input)
 
+	columns := make([]column, len(qr.Columns))
+
+	for i, col := range qr.Columns {
+		columns[i].Name = col.Name
+	}
+
 	return rawResults{
-		Total: len(qr.Rows),
+		Total:   len(qr.Rows),
+		Columns: columns,
 	}, err
 }
 
 func init() {
+	columnType := graphql.NewObject(graphql.ObjectConfig{
+		Name:        "Column",
+		Description: "A column holds the representation of one columnd of the raw data returned by a data source",
+		Fields: graphql.Fields{
+			"name": &graphql.Field{
+				Description: "Name of the column",
+				Type:        graphql.String,
+			},
+			"type": &graphql.Field{
+				Description: "Type of the column",
+				Type:        graphql.String,
+			},
+		},
+	})
+
 	rawResultsType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "RawResults",
 		Description: "RawResults represents a collection of raw data returned by a data source",
@@ -111,9 +139,9 @@ func init() {
 				Description: "Total count of returned results",
 				Type:        graphql.Int,
 			},
-			"columnNames": &graphql.Field{
-				Description: "Name of the columns of the returned results",
-				Type:        graphql.NewList(graphql.String),
+			"columns": &graphql.Field{
+				Description: "Columns of the returned results",
+				Type:        graphql.NewList(columnType),
 			},
 		},
 		IsTypeOf: func(p graphql.IsTypeOfParams) bool {

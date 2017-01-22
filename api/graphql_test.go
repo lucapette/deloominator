@@ -42,6 +42,7 @@ func TestGraphQLQueries(t *testing.T) {
 				                  Query(source: "%s", input: "select * from users") {
 			                        ... on RawResults {
 									  total
+									  columns { name type }
 								    }
 		                          }
 	                            }`, dsn.DBName),
