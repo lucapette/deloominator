@@ -35,6 +35,8 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 		query, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
 		}
 
 		res := graphql.Do(graphql.Params{
@@ -50,6 +52,7 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 		rJSON, err := json.Marshal(res)
 		if err != nil {
 			w.Write([]byte(err.Error()))
+			return
 		}
 
 		w.Write(rJSON)
