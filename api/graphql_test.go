@@ -43,6 +43,7 @@ func TestGraphQLQueries(t *testing.T) {
 			                        ... on RawResults {
 									  total
 									  columns { name type }
+									  rows { cells { value } }
 								    }
 		                          }
 	                            }`, dsn.DBName),

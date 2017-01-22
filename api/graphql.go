@@ -13,6 +13,14 @@ import (
 	"github.com/lucapette/deluminator/app"
 )
 
+type cell struct {
+	Value string `json:"value"`
+}
+
+type row struct {
+	Cells []cell `json:"cells"`
+}
+
 type column struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
@@ -21,6 +29,7 @@ type column struct {
 type rawResults struct {
 	Total   int      `json:"total"`
 	Columns []column `json:"columns"`
+	Rows    []row    `json:"rows"`
 }
 
 type table struct {
@@ -109,13 +118,45 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 		columns[i].Name = col.Name
 	}
 
+	rows := make([]row, len(qr.Rows))
+
+	for i, r := range qr.Rows {
+		rows[i].Cells = make([]cell, len(qr.Columns))
+
+		for j, c := range r {
+			rows[i].Cells[j].Value = c.Value
+		}
+	}
+
 	return rawResults{
 		Total:   len(qr.Rows),
 		Columns: columns,
+		Rows:    rows,
 	}, err
 }
 
 func init() {
+	cellType := graphql.NewObject(graphql.ObjectConfig{
+		Name:        "Cell",
+		Description: "A cell represents a single piece of returnted data",
+		Fields: graphql.Fields{
+			"value": &graphql.Field{
+				Description: "Value of the cell",
+				Type:        graphql.NewNonNull(graphql.String),
+			},
+		},
+	})
+	rowType := graphql.NewObject(graphql.ObjectConfig{
+		Name:        "Row",
+		Description: "A row holds the representation of a set of cells of the raw data returned by the data source",
+		Fields: graphql.Fields{
+			"cells": &graphql.Field{
+				Description: "Name of the column",
+				Type:        graphql.NewList(cellType),
+			},
+		},
+	})
+
 	columnType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "Column",
 		Description: "A column holds the representation of one columnd of the raw data returned by a data source",
@@ -142,6 +183,10 @@ func init() {
 			"columns": &graphql.Field{
 				Description: "Columns of the returned results",
 				Type:        graphql.NewList(columnType),
+			},
+			"rows": &graphql.Field{
+				Description: "Rows of the returned results",
+				Type:        graphql.NewList(rowType),
 			},
 		},
 		IsTypeOf: func(p graphql.IsTypeOfParams) bool {
