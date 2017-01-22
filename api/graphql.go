@@ -87,6 +87,18 @@ func ResolveDataSources(p graphql.ResolveParams) (interface{}, error) {
 	return dataSources, nil
 }
 
+func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
+	source := p.Args["source"].(string)
+	input := p.Args["input"].(string)
+	app := p.Context.Value("app").(*app.App)
+
+	qr, err := app.GetDataSources()[source].Query(input)
+
+	return rawResults{
+		Total: len(qr.Rows),
+	}, err
+}
+
 func init() {
 	rawResultsType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "RawResults",
@@ -150,17 +162,7 @@ func init() {
 					Type: graphql.NewNonNull(graphql.String),
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				source := p.Args["source"].(string)
-				input := p.Args["input"].(string)
-				app := p.Context.Value("app").(*app.App)
-
-				qr, err := app.GetDataSources()[source].Query(input)
-
-				return rawResults{
-					Total: len(qr.Rows),
-				}, err
-			},
+			Resolve: ResolveQuery,
 		},
 	}
 
