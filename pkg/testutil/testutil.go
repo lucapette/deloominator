@@ -17,8 +17,8 @@ import (
 	"time"
 
 	"github.com/kr/pretty"
-	"github.com/lucapette/deluminator/app"
-	"github.com/lucapette/deluminator/db"
+	"github.com/lucapette/deluminator/pkg/app"
+	"github.com/lucapette/deluminator/pkg/db"
 )
 
 type DBTemplate struct {

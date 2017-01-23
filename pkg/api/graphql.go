@@ -10,7 +10,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/graphql-go/graphql"
-	"github.com/lucapette/deluminator/app"
+	"github.com/lucapette/deluminator/pkg/app"
 )
 
 type cell struct {

@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lucapette/deluminator/api"
-	"github.com/lucapette/deluminator/db"
-	"github.com/lucapette/deluminator/testutil"
+	"github.com/lucapette/deluminator/pkg/api"
+	"github.com/lucapette/deluminator/pkg/db"
+	"github.com/lucapette/deluminator/pkg/testutil"
 )
 
 var update = flag.Bool("update", false, "update golden files")

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lucapette/deluminator/db"
+	"github.com/lucapette/deluminator/pkg/db"
 )
 
 func TestNewDSN(t *testing.T) {

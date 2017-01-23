@@ -3,7 +3,7 @@ package app
 import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/lucapette/deluminator/db"
+	"github.com/lucapette/deluminator/pkg/db"
 )
 
 const Name = "deluminator"

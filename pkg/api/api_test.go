@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/lucapette/deluminator/api"
-	"github.com/lucapette/deluminator/app"
+	"github.com/lucapette/deluminator/pkg/api"
+	"github.com/lucapette/deluminator/pkg/app"
 	"github.com/sclevine/agouti"
 )
 

@@ -16,11 +16,11 @@ lint: ## Run all the linters
 ci: lint test ## Run all the tests and code checks
 
 assets: ## Embed static assets
-	go-bindata -o api/static.go -pkg api assets/...
+	go-bindata -o pkg/api/static.go -pkg api assets/...
 
 build: assets ## Build a beta version of deluminator
 	go build
-	gofmt -w api/static.go
+	gofmt -w pkg/api/static.go
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:

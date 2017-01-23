@@ -84,7 +84,7 @@ func assetsCssBootstrapMinCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/css/bootstrap.min.css", size: 121200, mode: os.FileMode(420), modTime: time.Unix(1482433306, 0)}
+	info := bindataFileInfo{name: "assets/css/bootstrap.min.css", size: 121200, mode: os.FileMode(420), modTime: time.Unix(1469454808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -104,7 +104,7 @@ func assetsIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/index.html", size: 168, mode: os.FileMode(420), modTime: time.Unix(1482433306, 0)}
+	info := bindataFileInfo{name: "assets/index.html", size: 168, mode: os.FileMode(420), modTime: time.Unix(1482424695, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

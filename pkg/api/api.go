@@ -11,7 +11,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/lucapette/deluminator/app"
+	"github.com/lucapette/deluminator/pkg/app"
 	"goji.io"
 	"goji.io/pat"
 )
