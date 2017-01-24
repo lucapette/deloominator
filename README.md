@@ -7,7 +7,7 @@ Shed the light on your data!
 `deluminator` helps you exploring your data with SQL. You can create charts
 and dashboard to share with your team. You can schedule reports or just play
 around with your schema. Heavily inspired by
-[https://github.com/ankane/blazer](blazer).
+[blazer](https://github.com/ankane/blazer).
 
 # Features
 
@@ -16,7 +16,7 @@ around with your schema. Heavily inspired by
 - Realtime dashboards
 - Easy chart sharing
 
-# Docs
+# Documentation
 
 Please refer to the [user manual](/docs/user-manual.md) to learn your way
 around `deluminator` features. If you are interested in learning more about
@@ -68,4 +68,4 @@ covenant](http://contributor-covenant.org/) initiative!
 
 # License
 
-[MIT License](/LICENSE) Copyright (c) [2016] [Luca Pette](http://lucapette.me)
+[MIT License](/LICENSE) Copyright (c) [2017] [Luca Pette](http://lucapette.me)
