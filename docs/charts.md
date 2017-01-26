@@ -1,6 +1,6 @@
 # Charts
 
-This scope of this document is to present the core functionality of
+The scope of this document is to present the core functionality of
 `deluminator`: the automatic chart display.
 
 ## Algorithm
