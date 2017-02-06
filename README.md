@@ -36,7 +36,7 @@ $ brew install deluminator
 
 ## Standalone
 
-`deluminator` can be easily installed as an executable. Download the latest
+`deluminator` can be installed as an executable. Download the latest
 [compiled binaries](https://github.com/lucapette/deluminator/releases) and put it
 anywhere in your executable path.
 
