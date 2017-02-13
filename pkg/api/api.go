@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -110,8 +109,7 @@ func Start(app *app.App) {
 	go func() {
 		err := http.ListenAndServe(":"+strconv.Itoa(app.Opts.Port), router)
 		if err != nil {
-			log.Println("Cant start server:", err)
-			os.Exit(1)
+			log.Fatal("Cant start server:", err)
 		}
 	}()
 }
