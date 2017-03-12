@@ -1,8 +1,10 @@
+# Developer Manual
+
 This is a _living_ document, its purpose is to describe the tooling available
 to `deluminator` contributors regarding testing, building and releasing new
 versions.
 
-# Makefile
+## Makefile
 
 Our [Makefile](/Makefile) is the entry point for most of the activities you
 will run into as a contributor. To get a basic understanding of what you can
@@ -15,12 +17,12 @@ make
 As our default build is the help target, you should be seeing all the
 documented targets the Makefile offers.
 
-# Testing
+## Testing
 
 We try to cover as much as we can with testing. The goal is having each single
 feature covered by one or more tests.
 
-## Running the tests
+### Running the tests
 
 Once you are [setup](/CONTRIBUTING.md#setup-your-machine), you can run the test
 suite with one command:
@@ -48,7 +50,7 @@ specific feature and want immediate feedback. Like so:
 make test TEST_OPTIONS=-v TEST_PATTERN=TheAnswerIsFortyTwo
 ```
 
-## Golden files
+### Golden files
 
 Our test suite has fixtures files that facilitates both test setup, as in the
 case of the SQL scripts to create databases, and test assertion. Golden files
@@ -62,4 +64,4 @@ this way:
 
 You can find an example of it [here](/api/graphql_test.go).
 
-## Use testutil
+### Use testutil
