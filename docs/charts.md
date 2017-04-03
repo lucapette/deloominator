@@ -1,7 +1,7 @@
 # Charts
 
 The scope of this document is to present the core functionality of
-`deluminator`: the automatic chart display.
+`deloominator`: the automatic chart display.
 
 ## Algorithm
 
@@ -20,11 +20,11 @@ For example, let's say a data set returns the following:
 | 24    | C       |
 
 The data set has _2_ columns and they have the types _number_ and _string_, in
-this order. `deluminator` would render a [pie chart](#pie-chart) in this case.
+this order. `deloominator` would render a [pie chart](#pie-chart) in this case.
 
 ## Supported charts
 
-This is a list of all the charts `deluminator` supports.
+This is a list of all the charts `deloominator` supports.
 
 ### Pie chart
 

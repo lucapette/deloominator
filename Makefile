@@ -1,4 +1,4 @@
-SOURCE_FILES?=$$(go list ./... | grep -v '/deluminator/vendor/')
+SOURCE_FILES?=$$(go list ./... | grep -v '/deloominator/vendor/')
 TEST_PATTERN?=.
 TEST_OPTIONS?=
 
@@ -18,8 +18,8 @@ ci: lint test ## Run all the tests and code checks
 assets: ## Embed static assets
 	go-bindata -o pkg/api/static.go -pkg api assets/...
 
-build: assets ## Build a dev version of deluminator
-	go build cmd/deluminator.go
+build: assets ## Build a dev version of deloominator
+	go build cmd/deloominator.go
 	gofmt -w pkg/api/static.go
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html

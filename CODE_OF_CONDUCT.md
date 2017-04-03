@@ -1,4 +1,4 @@
-# Deluminator Code of Conduct
+# Deloominator Code of Conduct
 
 ## Our Pledge
 

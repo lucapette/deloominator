@@ -3,10 +3,10 @@ package app
 import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/lucapette/deluminator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db"
 )
 
-const Name = "deluminator"
+const Name = "deloominator"
 
 type Options struct {
 	Port      int      `default:"3000"`
