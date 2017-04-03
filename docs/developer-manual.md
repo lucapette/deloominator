@@ -1,7 +1,7 @@
 # Developer Manual
 
 This is a _living_ document, its purpose is to describe the tooling available
-to `deluminator` contributors regarding testing, building and releasing new
+to `deloominator` contributors regarding testing, building and releasing new
 versions.
 
 ## Makefile

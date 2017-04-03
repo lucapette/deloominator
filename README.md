@@ -1,10 +1,10 @@
-# deluminator
+# Deloominator
 
 Shed the light on your data!
 
 # Overview
 
-`deluminator` helps you exploring your data with SQL. You can create charts
+`deloominator` helps you exploring your data with SQL. You can create charts
 and dashboard to share with your team. You can schedule reports or just play
 around with your schema. Heavily inspired by
 [blazer](https://github.com/ankane/blazer).
@@ -19,7 +19,7 @@ around with your schema. Heavily inspired by
 # Documentation
 
 Please refer to the [user manual](/docs/user-manual.md) to learn your way
-around `deluminator` features. If you are interested in learning more about
+around `deloominator` features. If you are interested in learning more about
 how to develop new features, we have a [developer
 manual](/docs/developer-manual.md).
 
@@ -27,37 +27,28 @@ manual](/docs/developer-manual.md).
 
 ## Homebrew
 
-`deluminator` can be installed through Homebrew:
+`deloominator` can be installed through Homebrew:
 
 ``` sh
 $ brew tap lucapette/tap
-$ brew install deluminator
+$ brew install deloominator
 ```
 
 ## Standalone
 
-`deluminator` can be installed as an executable. Download the latest
-[compiled binaries](https://github.com/lucapette/deluminator/releases) and put it
+`deloominator` can be installed as an executable. Download the latest
+[compiled binaries](https://github.com/lucapette/deloominator/releases) and put it
 anywhere in your executable path.
 
 ## Source
 
 Please refer to our [contributing guidelines](/CONTRIBUTING.md) to build and
-install `deluminator` from the source.
+install `deloominator` from the source.
 
 # How to contribute
 
 Please refer to our [contributing guidelines](/CONTRIBUTING.md) and to our
 [developer manual](/docs/developer-manual.md).
-
-# FAQ
-
-## What the heck is a deluminator?
-
-We are fans of Harry Potter so we picked the
-[deluminator](https://en.wikipedia.org/wiki/Magical_objects_in_Harry_Potter#Deluminator_.28Put-Outer.29),
-one of out favourite magical devices from the series. It can be used as an
-homing device.
 
 # Code of Conduct
 

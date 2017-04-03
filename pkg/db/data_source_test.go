@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/lucapette/deluminator/pkg/db"
-	"github.com/lucapette/deluminator/pkg/testutil"
+	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/testutil"
 )
 
 func TestNewDataSources(t *testing.T) {

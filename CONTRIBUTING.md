@@ -1,11 +1,11 @@
 # Contributing
 
 We love every form of contribution. By participating to this project, you
-agree to abide to the `deluminator` [code of conduct](/CODE_OF_CONDUCT.md).
+agree to abide to the `deloominator` [code of conduct](/CODE_OF_CONDUCT.md).
 
 ## Setup your machine
 
-`deluminator` is written in [Go](https://golang.org/).
+`deloominator` is written in [Go](https://golang.org/).
 
 Prerequisites are:
 
@@ -17,11 +17,11 @@ Prerequisites are:
   * [MySQL](https://www.mysql.com/)
   * [PhantomJS](http://phantomjs.org/)
 
-Clone `deluminator` from source:
+Clone `deloominator` from source:
 
 ```sh
-$ git clone https://github.com/lucapette/deluminator.git
-$ cd deluminator
+$ git clone https://github.com/lucapette/deloominator.git
+$ cd deloominator
 ```
 
 Install the build and lint dependencies:
@@ -55,5 +55,5 @@ Which runs all the linters and tests.
 
 ## Submit a pull request
 
-Push your branch to your `deluminator` fork and open a pull request against
+Push your branch to your `deloominator` fork and open a pull request against
 the master branch.

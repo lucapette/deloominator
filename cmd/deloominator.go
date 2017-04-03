@@ -5,8 +5,8 @@ import (
 	"os/signal"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/lucapette/deluminator/pkg/api"
-	"github.com/lucapette/deluminator/pkg/app"
+	"github.com/lucapette/deloominator/pkg/api"
+	"github.com/lucapette/deloominator/pkg/app"
 )
 
 func main() {

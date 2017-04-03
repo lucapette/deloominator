@@ -2,9 +2,9 @@
 
 set -e
 
-export DELUMINATOR_DEBUG=true
-export DELUMINATOR_LOG_FORMAT=TEXT
+export DELOOMINATOR_DEBUG=true
+export DELOOMINATOR_LOG_FORMAT=TEXT
 
-export DELUMINATOR_DATA_SOURCES=postgres://localhost/example?sslmode=disable
+export DELOOMINATOR_DATA_SOURCES=postgres://localhost/example?sslmode=disable
 
 exec "$@"

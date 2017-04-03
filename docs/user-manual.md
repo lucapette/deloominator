@@ -1,9 +1,9 @@
 The scope of this document is to provide an overview of the usage of
-`deluminator`.
+`deloominator`.
 
 # Configuration
 
-`deluminator` uses enviroment variables for its configuration, you can find
+`deloominator` uses enviroment variables for its configuration, you can find
 the full list of variables in [this document](/docs/variables.md).
 
 # User interface
@@ -35,13 +35,13 @@ Running a query in the playground has four possible outcomes:
 - No data display
   The query is fine but there are no data to return.
 - Chart display
-  `deluminator` chose to display the data as a chart. Please refer to [this
+  `deloominator` chose to display the data as a chart. Please refer to [this
   document](/docs/charts.md) for further information.
 - Raw data display
-  `deluminator` will use this option only if there is no way to display the
+  `deloominator` will use this option only if there is no way to display the
   data as a chart.
 
-`deluminator` uses a simple [algorithm](/docs/charts.md#algorithm) to determine if
+`deloominator` uses a simple [algorithm](/docs/charts.md#algorithm) to determine if
 to show a graph.
 
 ## Q&A
