@@ -50,6 +50,17 @@ func TestGraphQLQueries(t *testing.T) {
 			code:    200,
 			fixture: "query_raw_results.json",
 		},
+		{
+			query: fmt.Sprintf(`{
+				                  Query(source: "%s", input: "select * from table_that_does_not_exist") {
+			                        ... on QueryError {
+								      message
+								    }
+		                          }
+	                            }`, dsn.DBName),
+			code:    200,
+			fixture: "query_error.json",
+		},
 	}
 
 	for _, test := range tests {
