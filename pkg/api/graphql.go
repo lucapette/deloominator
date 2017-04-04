@@ -13,6 +13,10 @@ import (
 	"github.com/lucapette/deloominator/pkg/app"
 )
 
+type queryError struct {
+	Message string `json:"message"`
+}
+
 type cell struct {
 	Value string `json:"value"`
 }
@@ -112,6 +116,10 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 
 	qr, err := app.GetDataSources()[source].Query(input)
 
+	if err != nil {
+		return queryError{Message: err.Error()}, nil
+	}
+
 	columns := make([]column, len(qr.Columns))
 
 	for i, col := range qr.Columns {
@@ -132,10 +140,25 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 		Total:   len(qr.Rows),
 		Columns: columns,
 		Rows:    rows,
-	}, err
+	}, nil
 }
 
 func init() {
+	queryErrorType := graphql.NewObject(graphql.ObjectConfig{
+		Name:        "QueryError",
+		Description: "An error represents an error message from the data source",
+		Fields: graphql.Fields{
+			"message": &graphql.Field{
+				Description: "Error message from the server",
+				Type:        graphql.NewNonNull(graphql.String),
+			},
+		},
+		IsTypeOf: func(p graphql.IsTypeOfParams) bool {
+			_, ok := p.Value.(queryError)
+			return ok
+		},
+	})
+
 	cellType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "Cell",
 		Description: "A cell represents a single piece of returnted data",
@@ -190,14 +213,24 @@ func init() {
 			},
 		},
 		IsTypeOf: func(p graphql.IsTypeOfParams) bool {
-			return true
+			_, ok := p.Value.(rawResults)
+			return ok
 		},
 	})
 
 	queryResultType := graphql.NewUnion(graphql.UnionConfig{
 		Name:        "QueryResult",
 		Description: "QueryResult represents all the possible outcomes of a Query",
-		Types:       []*graphql.Object{rawResultsType},
+		Types:       []*graphql.Object{rawResultsType, queryErrorType},
+		ResolveType: func(p graphql.ResolveTypeParams) *graphql.Object {
+			if _, ok := p.Value.(rawResults); ok {
+				return rawResultsType
+			}
+			if _, ok := p.Value.(queryError); ok {
+				return queryErrorType
+			}
+			return nil
+		},
 	})
 
 	tableType := graphql.NewObject(graphql.ObjectConfig{

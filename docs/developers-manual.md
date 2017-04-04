@@ -61,6 +61,6 @@ are a technique to handle fixtures files used in assertion. It works this way:
 - You add a command line flag that updates your golden file so that it is easy
   to get a test passing when behaviour changes
 
-You can find an example of it [here](/api/graphql_test.go).
+You can find an example of it [here](/pkg/api/graphql_test.go).
 
 ### Use testutil
