@@ -6,22 +6,25 @@ Shed the light on your data!
 
 `deloominator` helps you exploring your data with SQL. You can create charts
 and dashboard to share with your team. You can schedule reports or just play
-around with your schema. Heavily inspired by
-[blazer](https://github.com/ankane/blazer).
+around with your schema.
 
-# Features
+# Project goals
 
 - No dependencies
 - Lots of charts
-- Realtime dashboards
+- Auto-updating dashboards
 - Easy chart sharing
+
+You can have a look at [product
+roadmap](https://github.com/lucapette/deloominator/projects/1) to better
+understand the current status of the project and the upcoming developments.
 
 # Documentation
 
 Please refer to the [user manual](/docs/user-manual.md) to learn your way
 around `deloominator` features. If you are interested in learning more about
-how to develop new features, we have a [developer
-manual](/docs/developer-manual.md).
+how to develop new features or build the project on your own, we have a
+[developers' manual](/docs/developers-manual.md).
 
 # Installation guide
 

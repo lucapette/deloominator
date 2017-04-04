@@ -36,6 +36,12 @@ A good way of making sure everything is all right is running the test suite:
 $ make test
 ```
 
+Please open an [issue](https://github.com/lucapette/deloominator/issues/new)
+if you run into any problem.
+
+A good starting point to learn more about `deloominator` code is our
+[developers' manual](/docs/developers-manual.md).
+
 ## Test your change
 
 You can create a branch for your changes and try to build from the source as
@@ -45,13 +51,13 @@ you go:
 $ make build
 ```
 
-When you are satisfied with the changes, I suggest you run:
+When you are satisfied with the changes, we suggest running:
 
 ``` sh
 $ make ci
 ```
 
-Which runs all the linters and tests.
+This command runs all the linters and runs all the tests.
 
 ## Submit a pull request
 
