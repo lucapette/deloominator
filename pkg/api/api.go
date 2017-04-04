@@ -78,7 +78,7 @@ func homeHandler(w http.ResponseWriter, request *http.Request) {
 func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	name := pat.Param(r, "name")
 
-	asset, err := Asset(strings.Join([]string{"dist", name}, "/"))
+	asset, err := Asset(strings.Join([]string{"ui", "dist", name}, "/"))
 
 	if err != nil {
 		log.Println(err)
@@ -102,7 +102,7 @@ func Start(app *app.App) {
 
 	router.HandleFunc(pat.Get("/"), homeHandler)
 	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler(app))
-	router.HandleFunc(pat.Get("/dist/:name"), assetsHandler)
+	router.HandleFunc(pat.Get("/:name"), assetsHandler)
 
 	go func() {
 		err := http.ListenAndServe(":"+strconv.Itoa(app.Opts.Port), router)

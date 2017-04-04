@@ -1,10 +1,10 @@
-# Developer Manual
+# Developers' Manual
 
 This is a _living_ document, its purpose is to describe the tooling available
 to `deloominator` contributors regarding testing, building and releasing new
 versions.
 
-## Makefile
+## Setup your machine
 
 Our [Makefile](/Makefile) is the entry point for most of the activities you
 will run into as a contributor. To get a basic understanding of what you can
@@ -14,7 +14,60 @@ do with it, you can run:
 make help
 ```
 
-Which shows all the documented targets.
+Which shows all the documented targets. `deloominator` is written in
+[Go](https://golang.org/) and JavaScript. Here is a list of prerequisites to
+build and test the code:
+
+* Build:
+  * `make`
+  * [Go 1.8+](http://golang.org/doc/install)
+  * [Yarn](https://yarnpkg.com/en/)
+  * [Node.js](https://nodejs.org/en/)
+* Test:
+  * [PostgreSQL](https://www.postgresql.org/)
+  * [MySQL](https://www.mysql.com/)
+  * [PhantomJS](http://phantomjs.org/)
+
+Clone `deloominator` from source:
+
+```sh
+$ git clone https://github.com/lucapette/deloominator.git
+$ cd deloominator
+```
+
+Install the build and lint dependencies:
+
+```sh
+$ make setup
+```
+
+A good way of making sure everything is all right is running the test suite:
+
+```sh
+$ make test
+```
+
+Please open an [issue](https://github.com/lucapette/deloominator/issues/new)
+if you run into any problem.
+
+## Running deloominator
+
+`deloominator` has two main components:
+
+- An API server written in [Go](https::/golang.org)
+- A UI written in JavaScript that uses [React](https://facebook.github.io/react/)
+
+To run the API server:
+
+```sh
+$ make run-api
+```
+
+To run the UI application:
+
+```sh
+$ make run-ui
+```
 
 ## Testing
 

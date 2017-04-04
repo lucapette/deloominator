@@ -3,44 +3,8 @@
 We love every form of contribution. By participating to this project, you
 agree to abide to the `deloominator` [code of conduct](/CODE_OF_CONDUCT.md).
 
-## Setup your machine
-
-`deloominator` is written in [Go](https://golang.org/).
-
-Prerequisites are:
-
-* Build:
-  * `make`
-  * [Go 1.8+](http://golang.org/doc/install) (of course! :))
-* Test:
-  * [PostgreSQL](https://www.postgresql.org/)
-  * [MySQL](https://www.mysql.com/)
-  * [PhantomJS](http://phantomjs.org/)
-
-Clone `deloominator` from source:
-
-```sh
-$ git clone https://github.com/lucapette/deloominator.git
-$ cd deloominator
-```
-
-Install the build and lint dependencies:
-
-``` sh
-$ make setup
-```
-
-A good way of making sure everything is all right is running the test suite:
-
-``` sh
-$ make test
-```
-
-Please open an [issue](https://github.com/lucapette/deloominator/issues/new)
-if you run into any problem.
-
-A good starting point to learn more about `deloominator` code is our
-[developers' manual](/docs/developers-manual.md).
+Please refer to our [developers' manual](/docs/developers-manual.md) to learn
+how to install, build and run `deloominator`.
 
 ## Test your change
 

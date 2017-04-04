@@ -15,12 +15,19 @@ lint: ## Run all the linters
 
 ci: lint test ## Run all the tests and code checks
 
-assets: ## Embed static assets
-	go-bindata -o pkg/api/static.go -pkg api ui/...
+build-ui: ## Build the UI
+	cd ui && yarn build
+	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
 
-build: assets ## Build a dev version of deloominator
+build: build-ui ## Build a dev version of deloominator
 	go build cmd/deloominator.go
 	gofmt -w pkg/api/static.go
+
+run-api: ## Run the API server
+	go build cmd/deloominator.go && deloominator
+
+run-ui: ## Run the UI application
+	cd ui && yarn start
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
@@ -28,4 +35,4 @@ help:
 
 .DEFAULT_GOAL := build
 
-.PHONY: assets
+.PHONY: ui
