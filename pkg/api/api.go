@@ -61,7 +61,7 @@ func logHandler(inner http.Handler) http.Handler {
 }
 
 func homeHandler(w http.ResponseWriter, request *http.Request) {
-	asset, err := Asset("assets/index.html")
+	asset, err := Asset("ui/index.html")
 
 	if err != nil {
 		log.Println(err)
@@ -79,7 +79,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	kind := pat.Param(r, "kind")
 	name := pat.Param(r, "name")
 
-	asset, err := Asset(strings.Join([]string{"assets", kind, name}, "/"))
+	asset, err := Asset(strings.Join([]string{"ui", kind, name}, "/"))
 
 	if err != nil {
 		log.Println(err)

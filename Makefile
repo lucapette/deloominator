@@ -16,7 +16,7 @@ lint: ## Run all the linters
 ci: lint test ## Run all the tests and code checks
 
 assets: ## Embed static assets
-	go-bindata -o pkg/api/static.go -pkg api assets/...
+	go-bindata -o pkg/api/static.go -pkg api ui/...
 
 build: assets ## Build a dev version of deloominator
 	go build cmd/deloominator.go
