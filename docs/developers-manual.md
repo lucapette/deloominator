@@ -11,16 +11,16 @@ will run into as a contributor. To get a basic understanding of what you can
 do with it, you can run:
 
 ```sh
-make
+make help
 ```
 
-As our default build is the help target, you should be seeing all the
-documented targets the Makefile offers.
+Which shows all the documented targets.
 
 ## Testing
 
 We try to cover as much as we can with testing. The goal is having each single
-feature covered by one or more tests.
+feature covered by one or more tests. Adding more tests is a great way of
+contributing to the project!
 
 ### Running the tests
 
@@ -37,7 +37,7 @@ You can run only a subset of the tests using the `TEST_PATTERN` variable:
 make test TEST_PATTERN=TheAnswerIsFortyTwo
 ```
 
-You can use `go test` through the `TEST_OPTIONS` variable:
+You can use pass options to `go test` through the `TEST_OPTIONS` variable:
 
 ```sh
 make test TEST_OPTIONS=-v
@@ -52,10 +52,9 @@ make test TEST_OPTIONS=-v TEST_PATTERN=TheAnswerIsFortyTwo
 
 ### Golden files
 
-Our test suite has fixtures files that facilitates both test setup, as in the
+Our test suite has fixtures files that facilitate both test setup, as in the
 case of the SQL scripts to create databases, and test assertion. Golden files
-are a technique to handle fixtures files that are used in assertion. It works
-this way:
+are a technique to handle fixtures files used in assertion. It works this way:
 
 - You store complex output you expect (like a JSON response for example) in a
   file and use it to compare it to the actual outcome of a test

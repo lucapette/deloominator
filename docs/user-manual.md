@@ -41,8 +41,8 @@ Running a query in the playground has four possible outcomes:
   `deloominator` will use this option only if there is no way to display the
   data as a chart.
 
-`deloominator` uses a simple [algorithm](/docs/charts.md#algorithm) to determine if
-to show a graph.
+`deloominator` uses a simple [algorithm](/docs/charts.md#algorithm) to
+determine which graph to show.
 
 ## Q&A
 
