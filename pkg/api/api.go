@@ -61,7 +61,7 @@ func logHandler(inner http.Handler) http.Handler {
 }
 
 func homeHandler(w http.ResponseWriter, request *http.Request) {
-	asset, err := Asset("ui/index.html")
+	asset, err := Asset("ui/dist/index.html")
 
 	if err != nil {
 		log.Println(err)
@@ -76,16 +76,14 @@ func homeHandler(w http.ResponseWriter, request *http.Request) {
 }
 
 func assetsHandler(w http.ResponseWriter, r *http.Request) {
-	kind := pat.Param(r, "kind")
 	name := pat.Param(r, "name")
 
-	asset, err := Asset(strings.Join([]string{"ui", kind, name}, "/"))
+	asset, err := Asset(strings.Join([]string{"dist", name}, "/"))
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	w.Header().Set("Content-Type", "text/"+kind)
 	_, err = w.Write(asset)
 
 	if err != nil {
@@ -104,7 +102,7 @@ func Start(app *app.App) {
 
 	router.HandleFunc(pat.Get("/"), homeHandler)
 	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler(app))
-	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
+	router.HandleFunc(pat.Get("/dist/:name"), assetsHandler)
 
 	go func() {
 		err := http.ListenAndServe(":"+strconv.Itoa(app.Opts.Port), router)
