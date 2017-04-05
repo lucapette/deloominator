@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -60,8 +61,8 @@ func logHandler(inner http.Handler) http.Handler {
 	return http.HandlerFunc(mw)
 }
 
-func homeHandler(w http.ResponseWriter, request *http.Request) {
-	asset, err := Asset("assets/index.html")
+func uiHandler(w http.ResponseWriter, request *http.Request) {
+	asset, err := Asset("ui/dist/index.html")
 
 	if err != nil {
 		log.Println(err)
@@ -76,16 +77,22 @@ func homeHandler(w http.ResponseWriter, request *http.Request) {
 }
 
 func assetsHandler(w http.ResponseWriter, r *http.Request) {
-	kind := pat.Param(r, "kind")
 	name := pat.Param(r, "name")
+	ext := pat.Param(r, "ext")
 
-	asset, err := Asset(strings.Join([]string{"assets", kind, name}, "/"))
+	asset, err := Asset(strings.Join([]string{"ui", "dist", fmt.Sprintf("%s.%s", name, ext)}, "/"))
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	w.Header().Set("Content-Type", "text/"+kind)
+	switch ext {
+	case "js":
+		w.Header().Set("Content-Type", "text/javascript")
+	case "js.map":
+		w.Header().Set("Content-Type", "application/json")
+	}
+
 	_, err = w.Write(asset)
 
 	if err != nil {
@@ -102,9 +109,9 @@ func Start(app *app.App) {
 
 	router.Use(logHandler)
 
-	router.HandleFunc(pat.Get("/"), homeHandler)
 	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler(app))
-	router.HandleFunc(pat.Get("/assets/:kind/:name"), assetsHandler)
+	router.HandleFunc(pat.Get("/:name.:ext"), assetsHandler)
+	router.HandleFunc(pat.Get("/*"), uiHandler)
 
 	go func() {
 		err := http.ListenAndServe(":"+strconv.Itoa(app.Opts.Port), router)

@@ -27,7 +27,7 @@ func TestServerStart(t *testing.T) {
 		t.Fatal("Failed to navigate:", err)
 	}
 
-	expected := "It works!"
+	expected := "Welcome to deloominator!"
 
 	actual, err := page.Find("#welcome").Text()
 	if err != nil {

@@ -15,6 +15,7 @@ they are non critical to the product.
 - `// Format() does not work both ways yet` this comment makes it clear we
   need to find a better way of handling the differences between databases DSNs
 - Add Stringer interface to Rows Row and Column
+- flow is not correctly setup yet
 
 ## Missing documents
 
@@ -25,3 +26,4 @@ they are non critical to the product.
 - Having the app in the context for the graphql handler feels wrong
 - Not sure why we need a type switch in the Query method and why mysql and
   postgres get different structures from the database
+- phantomjs doesn't quit when the UI tests fail
