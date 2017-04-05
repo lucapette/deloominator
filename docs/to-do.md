@@ -15,6 +15,7 @@ they are non critical to the product.
 - `// Format() does not work both ways yet` this comment makes it clear we
   need to find a better way of handling the differences between databases DSNs
 - Add Stringer interface to Rows Row and Column
+- flow is not correctly setup yet
 
 ## Missing documents
 
