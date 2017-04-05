@@ -50,23 +50,41 @@ $ make test
 Please open an [issue](https://github.com/lucapette/deloominator/issues/new)
 if you run into any problem.
 
-## Running deloominator
+## Building and running deloominator
 
 `deloominator` has two main components:
 
 - An API server written in [Go](https::/golang.org)
 - A UI written in JavaScript that uses [React](https://facebook.github.io/react/)
 
-To run the API server:
+You can build the entire application by running `make` without arguments:
 
 ```sh
-$ make run-api
+make
 ```
 
-To run the UI application:
+As `build`, it's the our default target. Both components have their own
+building target:
 
 ```sh
-$ make run-ui
+$ make build-api # builds the API server
+# make build-ui # builds the UI application
+```
+
+You can run `deloominator` following the steps:
+
+```sh
+$ make
+$ ./deloominator
+```
+
+These steps will do a full build of the application so it's a slower process.
+If you're working only with one of the components, you can use a more
+specialised command:
+
+```sh
+$ make run-api # runs the API server
+$ make run-ui # runs the UI application
 ```
 
 ## Testing
@@ -77,8 +95,8 @@ contributing to the project!
 
 ### Running the tests
 
-Once you are [setup](/CONTRIBUTING.md#setup-your-machine), you can run the test
-suite with one command:
+Once you are [setup](#setup-your-machine), you can run the test suite with one
+command:
 
 ```sh
 make test
