@@ -33,7 +33,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --open",
-    "build": "webpack --config webpack.config.js",
+    "build": "webpack -p --config webpack.config.js",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "flow && jest",
     "test:watch": "jest --watch"

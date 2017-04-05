@@ -9,8 +9,8 @@ import {
   NavLink
 } from 'react-router-dom'
 
-import 'semantic-ui-css/semantic.css';
-import 'semantic-ui-css/semantic.js';
+import 'semantic-ui-css/components/site.min.css';
+import 'semantic-ui-css/components/menu.min.css';
 import './app.css'
 
 import HomePage from './HomePage'
