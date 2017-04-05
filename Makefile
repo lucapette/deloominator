@@ -6,24 +6,26 @@ setup: ## Install all the build and lint dependencies
 	go get -u github.com/jteeuwen/go-bindata/...
 	go get -u github.com/kisielk/errcheck
 
-test: ## Run all the tests
+test: build-api ## Run all the tests
 	go test $(TEST_OPTIONS) -cover $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
 
 lint: ## Run all the linters
 	go vet $(SOURCE_FILES)
 	errcheck $(SOURCE_FILES)
 
-ci: lint test ## Run all the tests and code checks
+ci: build-ui build-api lint test ## Run all the tests and code checks
+
+build-api:
+	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
 
 build-ui: ## Build the UI
 	cd ui && yarn build
-	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
 
-build: build-ui ## Build a dev version of deloominator
+build: build-ui build-api ## Build a dev version of deloominator
 	go build cmd/deloominator.go
 	gofmt -w pkg/api/static.go
 
-run-api: ## Run the API server
+run-api: build-api ## Run the API server
 	go build cmd/deloominator.go && deloominator
 
 run-ui: ## Run the UI application

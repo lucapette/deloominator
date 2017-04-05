@@ -6,7 +6,7 @@ export default class HomePage extends Component {
   render() {
     return (
       <DocumentTitle title='Home'>
-        <div>
+        <div id='welcome'>
           Welcome to deloominator!
         </div>
       </DocumentTitle>
