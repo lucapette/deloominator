@@ -17,16 +17,16 @@ ci: build-ui build-api lint test ## Run all the tests and code checks
 
 build-api:
 	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
+	go build cmd/deloominator.go
 
 build-ui: ## Build the UI
 	cd ui && yarn build
 
 build: build-ui build-api ## Build a dev version of deloominator
-	go build cmd/deloominator.go
 	gofmt -w pkg/api/static.go
 
 run-api: build-api ## Run the API server
-	go build cmd/deloominator.go && deloominator
+	deloominator
 
 run-ui: ## Run the UI application
 	cd ui && yarn start
