@@ -2,12 +2,12 @@
 import React, { Component } from 'react'
 import DocumentTitle from 'react-document-title'
 
-export default class Layout extends Component {
+export default class HomePage extends Component {
   render() {
     return (
-      <DocumentTitle title="deloominator">
-        <div id="container">
-          It works!
+      <DocumentTitle title='Home'>
+        <div>
+          Welcome to deloominator!
         </div>
       </DocumentTitle>
     )
