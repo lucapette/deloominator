@@ -11,7 +11,7 @@ will run into as a contributor. To get a basic understanding of what you can
 do with it, you can run:
 
 ```sh
-make help
+$ make help
 ```
 
 Which shows all the documented targets. `deloominator` is written in
@@ -68,7 +68,7 @@ building target:
 
 ```sh
 $ make build-api # builds the API server
-# make build-ui # builds the UI application
+$ make build-ui # builds the UI application
 ```
 
 You can run `deloominator` following the steps:
@@ -99,26 +99,26 @@ Once you are [setup](#setup-your-machine), you can run the test suite with one
 command:
 
 ```sh
-make test
+$ make test
 ```
 
 You can run only a subset of the tests using the `TEST_PATTERN` variable:
 
 ```sh
-make test TEST_PATTERN=TheAnswerIsFortyTwo
+$ make test TEST_PATTERN=TheAnswerIsFortyTwo
 ```
 
 You can use pass options to `go test` through the `TEST_OPTIONS` variable:
 
 ```sh
-make test TEST_OPTIONS=-v
+$ make test TEST_OPTIONS=-v
 ```
 
 You can combine the two options which is very helpful if you are working on a
 specific feature and want immediate feedback. Like so:
 
 ```sh
-make test TEST_OPTIONS=-v TEST_PATTERN=TheAnswerIsFortyTwo
+$ make test TEST_OPTIONS=-v TEST_PATTERN=TheAnswerIsFortyTwo
 ```
 
 ### Golden files
