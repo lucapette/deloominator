@@ -2,13 +2,15 @@
 import React, { Component } from 'react'
 import DocumentTitle from 'react-document-title'
 
+import { Container } from 'semantic-ui-react'
+
 export default class HomePage extends Component {
   render() {
     return (
       <DocumentTitle title='Home'>
-        <div id='welcome'>
+        <Container id='welcome'>
           Welcome to deloominator!
-        </div>
+        </Container>
       </DocumentTitle>
     )
   }

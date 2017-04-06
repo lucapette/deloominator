@@ -1,7 +1,7 @@
 //@flow
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Menu } from 'semantic-ui-react'
+import { Container, Menu, Grid } from 'semantic-ui-react'
 
 import {
   BrowserRouter as Router,
@@ -9,8 +9,9 @@ import {
   NavLink
 } from 'react-router-dom'
 
-import 'semantic-ui-css/components/site.min.css';
-import 'semantic-ui-css/components/menu.min.css';
+import 'semantic-ui-css/semantic.min.css';
+import 'semantic-ui-css/semantic.min.js';
+
 import './app.css'
 
 import HomePage from './HomePage'
@@ -21,9 +22,11 @@ class App extends Component {
     return (
       <Router>
         <div>
-          <Menu>
-            <NavLink exact to='/' className='item' activeClassName='active'>Home</NavLink>
-            <NavLink to='/playground' className='item' activeClassName='active'>Playground</NavLink>
+          <Menu >
+            <Container>
+              <NavLink exact to='/' className='item' activeClassName='active'>Home</NavLink>
+              <NavLink to='/playground' className='item' activeClassName='active'>Playground</NavLink>
+            </Container>
           </Menu>
 
           <Route exact path='/' component={HomePage}/>
