@@ -45,6 +45,10 @@ type dataSource struct {
 	Tables []*table `json:"tables"` //better if it's a rawResults.
 }
 
+type graphqlPayload struct {
+	Query string `json:"query"`
+}
+
 var schema graphql.Schema
 
 func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
@@ -58,9 +62,18 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		var payload graphqlPayload
+
+		err = json.Unmarshal(query, &payload)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
 		res := graphql.Do(graphql.Params{
 			Schema:        schema,
-			RequestString: string(query),
+			RequestString: payload.Query,
 			Context:       context.WithValue(context.Background(), "app", app),
 		})
 
@@ -257,11 +270,11 @@ func init() {
 	})
 
 	fields := graphql.Fields{
-		"DataSources": &graphql.Field{
+		"dataSources": &graphql.Field{
 			Type:    graphql.NewList(dataSourceType),
 			Resolve: ResolveDataSources,
 		},
-		"Query": &graphql.Field{
+		"query": &graphql.Field{
 			Type: queryResultType,
 			Args: graphql.FieldConfigArgument{
 				"source": &graphql.ArgumentConfig{
@@ -275,7 +288,7 @@ func init() {
 		},
 	}
 
-	rootQuery := graphql.ObjectConfig{Name: "Query", Fields: fields}
+	rootQuery := graphql.ObjectConfig{Name: "query", Fields: fields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
 
 	var err error

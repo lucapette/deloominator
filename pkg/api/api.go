@@ -12,6 +12,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/lucapette/deloominator/pkg/app"
+	"github.com/rs/cors"
 	"goji.io"
 	"goji.io/pat"
 )
@@ -107,7 +108,12 @@ func Start(app *app.App) {
 		router.Use(debugHandler)
 	}
 
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:8080"},
+	})
+
 	router.Use(logHandler)
+	router.Use(c.Handler)
 
 	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler(app))
 	router.HandleFunc(pat.Get("/:name.:ext"), assetsHandler)

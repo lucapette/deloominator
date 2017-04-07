@@ -1,1 +1,1 @@
-{"data":{"Query":{"message":"pq: relation \"table_that_does_not_exist\" does not exist"}}}
+{"data":{"query":{"message":"pq: relation \"table_that_does_not_exist\" does not exist"}}}

@@ -4,10 +4,11 @@ import DocumentTitle from 'react-document-title'
 
 import { Button, Container, Form, Grid } from 'semantic-ui-react'
 
-export default class PlaygroundPage extends Component {
-  constructor() {
-    super();
-    this.dataSources = [{text: 'stuff', value: 'stuff'}]
+import { gql, graphql } from 'react-apollo';
+
+class Playground extends Component {
+  dataSourcesOptions = (data) => {
+    return data.dataSources ? data.dataSources.map((s) => ({text: s.name, value: s.name})) : [];
   }
 
   render() {
@@ -18,7 +19,7 @@ export default class PlaygroundPage extends Component {
             <Grid.Column>
               <Form>
                 <Form.Group>
-                  <Form.Dropdown placeholder='Data Source' search selection options={this.dataSources} />
+                  <Form.Dropdown placeholder='Data Source' search selection options={this.dataSourcesOptions(this.props.data)} />
                   <Button icon='play' primary content='Run'/>
                 </Form.Group>
                 <Form.TextArea placeholder='Write your query here' />
@@ -35,3 +36,9 @@ export default class PlaygroundPage extends Component {
     )
   }
 }
+
+const Query = gql`{dataSources { name }}`;
+
+const PlaygroundPage = graphql(Query)(Playground);
+
+export default PlaygroundPage;

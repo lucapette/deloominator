@@ -1,1 +1,1 @@
-{"data":{"DataSources":[{"name":"{{.Name}}"}]}}
+{"data":{"dataSources":[{"name":"{{.Name}}"}]}}
