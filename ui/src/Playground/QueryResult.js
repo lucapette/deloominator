@@ -1,7 +1,7 @@
 //@flow
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import { Container, Table } from 'semantic-ui-react'
+import { Container, Table, Message, Loader } from 'semantic-ui-react';
 
 import { gql, graphql } from 'react-apollo';
 
@@ -10,7 +10,11 @@ class QueryResultContainer extends Component {
     const { data: { loading, error, query } } = this.props;
 
     if (loading) {
-      return <p>Loading...</p>;
+      return (
+        <Container>
+          <Loader active inline='centered'>Loading</Loader>
+        </Container>
+      );
     }
 
     if (error) {
@@ -18,7 +22,12 @@ class QueryResultContainer extends Component {
     }
 
     if (query.__typename == 'queryError') {
-      return <p>{query.message}</p>;
+      return (
+        <Message negative>
+          <Message.Header>There is a problem with your query.</Message.Header>
+          <p>{query.message}</p>
+        </Message>
+      );
     }
 
     return (
