@@ -16,6 +16,7 @@ they are non critical to the product.
   need to find a better way of handling the differences between databases DSNs
 - Add Stringer interface to Rows Row and Column
 - flow is not correctly setup yet
+- If a DSN name isn't valid the app doesn't exist
 
 ## Missing documents
 

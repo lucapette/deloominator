@@ -26,7 +26,7 @@ build: build-ui build-api ## Build a dev version of deloominator
 	gofmt -w pkg/api/static.go
 
 run-api: build-api ## Run the API server
-	deloominator
+	bin/run deloominator
 
 run-ui: ## Run the UI application
 	cd ui && yarn start

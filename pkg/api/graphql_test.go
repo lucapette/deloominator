@@ -53,7 +53,7 @@ func TestGraphQLQueries(t *testing.T) {
 		{query: graphqlPayload(t, "{ dataSources {name tables {name}}}"), code: 200, fixture: "data_sources_with_tables.json"},
 		{
 			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select * from users") {
-			                                          ... on RawResults {
+			                                          ... on rawResults {
 									                    total
 									                    columns { name type }
 									                    rows { cells { value } }
@@ -65,7 +65,7 @@ func TestGraphQLQueries(t *testing.T) {
 		},
 		{
 			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select * from table_that_does_not_exist") {
-			                                          ... on QueryError {
+			                                          ... on queryError {
 								                        message
 								                      }
 		                                            }

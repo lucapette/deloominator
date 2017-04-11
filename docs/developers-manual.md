@@ -87,6 +87,16 @@ $ make run-api # runs the API server
 $ make run-ui # runs the UI application
 ```
 
+Please *note* that `make run-api` relies on a small bash script called
+`bin/run`. There is an example file [here](bin/run.example). You can create
+your own script with the following command:
+
+```sh
+cp bin/run{.example,}
+```
+
+And then edit it accordingly to your local configuration.
+
 ## Testing
 
 We try to cover as much as we can with testing. The goal is having each single
