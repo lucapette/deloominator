@@ -7,7 +7,7 @@ import { gql, graphql } from 'react-apollo';
 
 import QueryResult from './QueryResult'
 
-class Playground extends Component {
+class PlaygroundPage extends Component {
   state: {
     selectedDataSource: string;
   }
@@ -74,6 +74,6 @@ class Playground extends Component {
 
 const Query = gql`{dataSources { name }}`;
 
-const PlaygroundPage = graphql(Query)(Playground);
+const Playground = graphql(Query)(PlaygroundPage);
 
-export default PlaygroundPage;
+export default Playground;

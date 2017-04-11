@@ -15,8 +15,8 @@ import 'semantic-ui-css/semantic.min.js';
 
 import './app.css';
 
-import HomePage from './HomePage';
-import PlaygroundPage from './PlaygroundPage';
+import Home from './Home';
+import Playground from './Playground';
 
 const networkInterface = createNetworkInterface({
   uri: 'http://localhost:3000/graphql'
@@ -38,8 +38,8 @@ class App extends Component {
             </Container>
           </Menu>
 
-          <Route exact path='/' component={HomePage}/>
-          <Route path='/playground' component={PlaygroundPage}/>
+          <Route exact path='/' component={Home}/>
+          <Route path='/playground' component={Playground}/>
         </div>
       </Router>
     )
