@@ -5,6 +5,8 @@ import { Container, Table, Message, Loader } from 'semantic-ui-react';
 
 import { gql, graphql } from 'react-apollo';
 
+import RawResults from './RawResults';
+
 class QueryResultContainer extends Component {
   render() {
     const { data: { loading, error, query } } = this.props;
@@ -32,16 +34,7 @@ class QueryResultContainer extends Component {
 
     return (
       <Container>
-        <Table striped>
-          <Table.Header>
-            <Table.Row>
-              {query.columns.map((c) => (<Table.HeaderCell key={c.name}>{c.name}</Table.HeaderCell>) )}
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {query.rows.map((r, i) =>(<Table.Row key={i}>{r.cells.map((c, j) => (<Table.Cell key={j}>{c.value}</Table.Cell>))}</Table.Row>))}
-          </Table.Body>
-        </Table>
+        <RawResults columns={query.columns} rows={query.rows} />
       </Container>
     );
   }
