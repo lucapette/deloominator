@@ -63,7 +63,7 @@ You can build the entire application by running `make` without arguments:
 make
 ```
 
-As `build`, it's the our default target. Both components have their own
+since `build` is the our default target. Both components have their own
 building target:
 
 ```sh
