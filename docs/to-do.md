@@ -14,13 +14,6 @@ they are non critical to the product.
 - testutil.InitApp has a strange signature. Look for improvements there.
 - `// Format() does not work both ways yet` this comment makes it clear we
   need to find a better way of handling the differences between databases DSNs
-- Add Stringer interface to Rows Row and Column
-- flow is not correctly setup yet
-- If a DSN name isn't valid the app doesn't exist
-
-## Missing documents
-
-- Explain how to use `/bin/run` script in `docs/developer-manual.md`
 
 ## Investigate and change
 
