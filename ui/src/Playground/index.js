@@ -1,8 +1,8 @@
 //@flow
-import React, { Component } from 'react'
-import DocumentTitle from 'react-document-title'
+import React, { Component } from 'react';
+import DocumentTitle from 'react-document-title';
 
-import { Button, Container, Form, Grid } from 'semantic-ui-react'
+import { Button, Container, Form, Grid } from 'semantic-ui-react';
 import { gql, graphql } from 'react-apollo';
 
 import _ from 'lodash';
@@ -38,11 +38,11 @@ class PlaygroundPage extends Component {
       showResult: true,
       query: this.state.currentQuery,
       dataSource: this.state.selectedDataSource,
-    })
+    });
   }
 
   handleQueryChange = (e, { value }) => {
-    this.setState({currentQuery: value})
+    this.setState({currentQuery: value});
   }
 
   render() {
