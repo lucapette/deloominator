@@ -1,20 +1,30 @@
 //@flow
 import React, { Component } from 'react';
 
-import { Table } from 'semantic-ui-react';
+import {Table, Column, Cell} from 'fixed-data-table';
+
+import 'fixed-data-table/dist/fixed-data-table.min.css';
 
 export default class RawResults extends Component {
   render() {
+    const {rows, columns} = this.props;
+
+    const columnWidth = 100;
+
+    const tableWidth = columns.length > 11 ? 1127 : columns.length * 100;
+
     return (
-      <Table striped>
-        <Table.Header>
-          <Table.Row>
-            {this.props.columns.map((c) => (<Table.HeaderCell key={c.name}>{c.name}</Table.HeaderCell>) )}
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {this.props.rows.map((r, i) =>(<Table.Row key={i}>{r.cells.map((c, j) => (<Table.Cell key={j}>{c.value}</Table.Cell>))}</Table.Row>))}
-        </Table.Body>
+      <Table rowHeight={50} rowsCount={rows.length} maxHeight={600} width={tableWidth} headerHeight={50}>
+        {
+          columns.map((column, i) => (
+            <Column
+              key={i}
+              header={<Cell>{column.name}</Cell>}
+              cell={(props) => (<Cell {...props}>{rows[props.rowIndex].cells[i].value}</Cell>)}
+              width={100}
+            />
+          ))
+        }
       </Table>
     );
   }
