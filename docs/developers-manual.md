@@ -63,7 +63,7 @@ You can build the entire application by running `make` without arguments:
 make
 ```
 
-As `build`, it's the our default target. Both components have their own
+since `build` is the default target. Both components have their own
 building target:
 
 ```sh
@@ -86,6 +86,16 @@ specialised command:
 $ make run-api # runs the API server
 $ make run-ui # runs the UI application
 ```
+
+Please *note* that `make run-api` relies on a small bash script called
+`bin/run`. There is an example file [here](bin/run.example). You can create
+your own script with the following command:
+
+```sh
+cp bin/run{.example,}
+```
+
+And then edit it accordingly to your local configuration.
 
 ## Testing
 

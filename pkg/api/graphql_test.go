@@ -2,6 +2,7 @@ package api_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -23,6 +24,19 @@ type test struct {
 	fixture string
 }
 
+func graphqlPayload(t *testing.T, query string) string {
+	payload := struct {
+		Query string `json:"query"`
+	}{Query: query}
+
+	json, err := json.Marshal(payload)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	return string(json)
+}
+
 func TestGraphQLQueries(t *testing.T) {
 	dsn, cleanup := testutil.SetupDB(db.PostgresDriver, t)
 	app := testutil.InitApp(t, map[string]string{
@@ -34,30 +48,28 @@ func TestGraphQLQueries(t *testing.T) {
 	}()
 
 	tests := []test{
-		{query: "{notAQuery}", code: 400, fixture: "wrong_query.json"},
-		{query: "{DataSources {name}}", code: 200, fixture: "data_sources.json"},
-		{query: "{DataSources {name tables {name}}}", code: 200, fixture: "data_sources_with_tables.json"},
+		{query: graphqlPayload(t, "{ notAQuery }"), code: 400, fixture: "wrong_query.json"},
+		{query: graphqlPayload(t, "{ dataSources {name} }"), code: 200, fixture: "data_sources.json"},
+		{query: graphqlPayload(t, "{ dataSources {name tables {name}}}"), code: 200, fixture: "data_sources_with_tables.json"},
 		{
-			query: fmt.Sprintf(`{
-				                  Query(source: "%s", input: "select * from users") {
-			                        ... on RawResults {
-									  total
-									  columns { name type }
-									  rows { cells { value } }
-								    }
-		                          }
-	                            }`, dsn.DBName),
+			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select * from users") {
+			                                          ... on rawResults {
+									                    total
+									                    columns { name type }
+									                    rows { cells { value } }
+								                      }
+		                                            }
+	                                              }`, dsn.DBName)),
 			code:    200,
 			fixture: "query_raw_results.json",
 		},
 		{
-			query: fmt.Sprintf(`{
-				                  Query(source: "%s", input: "select * from table_that_does_not_exist") {
-			                        ... on QueryError {
-								      message
-								    }
-		                          }
-	                            }`, dsn.DBName),
+			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select * from table_that_does_not_exist") {
+			                                          ... on queryError {
+								                        message
+								                      }
+		                                            }
+												  }`, dsn.DBName)),
 			code:    200,
 			fixture: "query_error.json",
 		},
@@ -87,7 +99,7 @@ func TestGraphQLQueries(t *testing.T) {
 				testutil.WriteFixture(t, test.fixture, actual)
 			}
 
-			if !reflect.DeepEqual(expected.String(), actual) {
+			if !reflect.DeepEqual(strings.TrimSuffix(expected.String(), "\n"), actual) {
 				t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected.String(), actual))
 			}
 		})

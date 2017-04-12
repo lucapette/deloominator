@@ -45,6 +45,12 @@ type dataSource struct {
 	Tables []*table `json:"tables"` //better if it's a rawResults.
 }
 
+type graphqlPayload struct {
+	Query         string                 `json:"query"`
+	OperationName string                 `json:"operationName,omitempty"`
+	Variables     map[string]interface{} `json:"variables,omitempty""`
+}
+
 var schema graphql.Schema
 
 func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
@@ -55,13 +61,31 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
+			log.WithFields(log.Fields{
+				"body": r.Body,
+			})
+			return
+		}
+
+		var payload graphqlPayload
+
+		err = json.Unmarshal(query, &payload)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			log.WithFields(log.Fields{
+				"originalPayload": string(query),
+			})
+
 			return
 		}
 
 		res := graphql.Do(graphql.Params{
-			Schema:        schema,
-			RequestString: string(query),
-			Context:       context.WithValue(context.Background(), "app", app),
+			Schema:         schema,
+			RequestString:  payload.Query,
+			OperationName:  payload.OperationName,
+			VariableValues: payload.Variables,
+			Context:        context.WithValue(context.Background(), "app", app),
 		})
 
 		if res.HasErrors() {
@@ -114,6 +138,11 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 	input := p.Args["input"].(string)
 	app := p.Context.Value("app").(*app.App)
 
+	log.WithFields(log.Fields{
+		"source": source,
+		"input":  input,
+	}).Infof("Query requested")
+
 	qr, err := app.GetDataSources()[source].Query(input)
 
 	if err != nil {
@@ -145,7 +174,7 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 
 func init() {
 	queryErrorType := graphql.NewObject(graphql.ObjectConfig{
-		Name:        "QueryError",
+		Name:        "queryError",
 		Description: "An error represents an error message from the data source",
 		Fields: graphql.Fields{
 			"message": &graphql.Field{
@@ -165,7 +194,7 @@ func init() {
 		Fields: graphql.Fields{
 			"value": &graphql.Field{
 				Description: "Value of the cell",
-				Type:        graphql.NewNonNull(graphql.String),
+				Type:        graphql.String,
 			},
 		},
 	})
@@ -196,8 +225,8 @@ func init() {
 	})
 
 	rawResultsType := graphql.NewObject(graphql.ObjectConfig{
-		Name:        "RawResults",
-		Description: "RawResults represents a collection of raw data returned by a data source",
+		Name:        "rawResults",
+		Description: "rawResults represents a collection of raw data returned by a data source",
 		Fields: graphql.Fields{
 			"total": &graphql.Field{
 				Description: "Total count of returned results",
@@ -257,11 +286,11 @@ func init() {
 	})
 
 	fields := graphql.Fields{
-		"DataSources": &graphql.Field{
+		"dataSources": &graphql.Field{
 			Type:    graphql.NewList(dataSourceType),
 			Resolve: ResolveDataSources,
 		},
-		"Query": &graphql.Field{
+		"query": &graphql.Field{
 			Type: queryResultType,
 			Args: graphql.FieldConfigArgument{
 				"source": &graphql.ArgumentConfig{
@@ -275,7 +304,7 @@ func init() {
 		},
 	}
 
-	rootQuery := graphql.ObjectConfig{Name: "Query", Fields: fields}
+	rootQuery := graphql.ObjectConfig{Name: "query", Fields: fields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
 
 	var err error

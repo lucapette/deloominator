@@ -1,20 +1,30 @@
 //@flow
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Menu } from 'semantic-ui-react'
+import { Container, Menu, Grid } from 'semantic-ui-react';
+import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
 
 import {
   BrowserRouter as Router,
   Route,
   NavLink
-} from 'react-router-dom'
+} from 'react-router-dom';
 
-import 'semantic-ui-css/components/site.min.css';
-import 'semantic-ui-css/components/menu.min.css';
-import './app.css'
+import 'semantic-ui-css/semantic.min.css';
+import 'semantic-ui-css/semantic.min.js';
 
-import HomePage from './HomePage'
-import PlaygroundPage from './PlaygroundPage'
+import './app.css';
+
+import Home from './Home';
+import Playground from './Playground';
+
+const networkInterface = createNetworkInterface({
+  uri: 'http://localhost:3000/graphql'
+});
+
+const client = new ApolloClient({
+  networkInterface: networkInterface
+});
 
 class App extends Component {
   render() {
@@ -22,12 +32,14 @@ class App extends Component {
       <Router>
         <div>
           <Menu>
-            <NavLink exact to='/' className='item' activeClassName='active'>Home</NavLink>
-            <NavLink to='/playground' className='item' activeClassName='active'>Playground</NavLink>
+            <Container>
+              <NavLink exact to='/' className='item' activeClassName='active'>Home</NavLink>
+              <NavLink to='/playground' className='item' activeClassName='active'>Playground</NavLink>
+            </Container>
           </Menu>
 
-          <Route exact path='/' component={HomePage}/>
-          <Route path='/playground' component={PlaygroundPage}/>
+          <Route exact path='/' component={Home}/>
+          <Route path='/playground' component={Playground}/>
         </div>
       </Router>
     )
@@ -36,4 +48,9 @@ class App extends Component {
 
 const mountNode = document.getElementById('root');
 
-ReactDOM.render(<App />, mountNode);
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
+  mountNode
+);
