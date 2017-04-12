@@ -5,7 +5,9 @@ import DocumentTitle from 'react-document-title'
 import { Button, Container, Form, Grid } from 'semantic-ui-react'
 import { gql, graphql } from 'react-apollo';
 
-import QueryResult from './QueryResult'
+import _ from 'lodash';
+
+import QueryResult from './QueryResult';
 
 class PlaygroundPage extends Component {
   state: {
@@ -22,7 +24,8 @@ class PlaygroundPage extends Component {
   }
 
   dataSourcesOptions = (data) => {
-    return data.dataSources ? data.dataSources.map((s) => ({name: s.name, text: s.name, value: s.name})) : [];
+    let dataSources = (data.dataSources || []);
+    return _.sortBy(dataSources, ['name'], ['asc']).map((s) => ({name: s.name, text: s.name, value: s.name}));
   }
 
   handleDataSourcesChange = (e, { value }) => {
