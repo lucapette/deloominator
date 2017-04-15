@@ -105,9 +105,9 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 func ResolveDataSources(p graphql.ResolveParams) (interface{}, error) {
 	var dataSources []*dataSource
 	app := p.Context.Value("app").(*app.App)
+
 	for _, ds := range app.GetDataSources() {
-		name := ds.DSN().DBName
-		log.WithField("schema_name", name).Info("query metadata")
+		log.WithField("schema_name", ds.Name()).Info("query metadata")
 
 		start := time.Now()
 
@@ -122,12 +122,12 @@ func ResolveDataSources(p graphql.ResolveParams) (interface{}, error) {
 		}
 
 		log.WithFields(log.Fields{
-			"schema_name": name,
+			"schema_name": ds.Name(),
 			"n_tables":    len(qr.Rows),
 			"spent":       time.Now().Sub(start),
 		}).Info("tables loaded")
 
-		dataSources = append(dataSources, &dataSource{Name: name, Tables: ts})
+		dataSources = append(dataSources, &dataSource{Name: ds.Name(), Tables: ts})
 	}
 
 	return dataSources, nil
