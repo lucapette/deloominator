@@ -48,7 +48,7 @@ type dataSource struct {
 type graphqlPayload struct {
 	Query         string                 `json:"query"`
 	OperationName string                 `json:"operationName,omitempty"`
-	Variables     map[string]interface{} `json:"variables,omitempty""`
+	Variables     map[string]interface{} `json:"variables,omitempty"`
 }
 
 var schema graphql.Schema
@@ -59,11 +59,7 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 
 		query, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(err.Error()))
-			log.WithFields(log.Fields{
-				"body": r.Body,
-			})
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -71,12 +67,7 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 
 		err = json.Unmarshal(query, &payload)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(err.Error()))
-			log.WithFields(log.Fields{
-				"originalPayload": string(query),
-			})
-
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -94,11 +85,16 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 
 		rJSON, err := json.Marshal(res)
 		if err != nil {
-			w.Write([]byte(err.Error()))
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		w.Write(rJSON)
+		_, err = w.Write(rJSON)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 }
 

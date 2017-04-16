@@ -154,7 +154,11 @@ func SetupDB(driver db.DriverType, t *testing.T) (dsn *db.DSN, cleanup func()) {
 
 func InitApp(t *testing.T, vars map[string]string) *app.App {
 	for k, v := range vars {
-		os.Setenv(fmt.Sprintf("%s_%s", strings.ToUpper(app.Name), k), v)
+		err := os.Setenv(fmt.Sprintf("%s_%s", strings.ToUpper(app.Name), k), v)
+
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	return app.NewApp()
