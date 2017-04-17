@@ -81,18 +81,6 @@
 			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
-			"checksumSHA1": "hmjY4MUlyj/kx/zw+R1iSu3FTlo=",
-			"path": "github.com/jmoiron/sqlx",
-			"revision": "cac998c4f0959c19c638c523e374fa8e4e0bcfe3",
-			"revisionTime": "2016-12-09T02:45:31Z"
-		},
-		{
-			"checksumSHA1": "NrhkMPKlj0N6LaD2JMb2KKnR03w=",
-			"path": "github.com/jmoiron/sqlx/reflectx",
-			"revision": "cac998c4f0959c19c638c523e374fa8e4e0bcfe3",
-			"revisionTime": "2016-12-09T02:45:31Z"
-		},
-		{
 			"checksumSHA1": "pNria08/hqW7nnWb0erRBMdJU3M=",
 			"path": "github.com/kelseyhightower/envconfig",
 			"revision": "4069f29f08928c54bcb1fdf632b31b1bb54b4fdb",

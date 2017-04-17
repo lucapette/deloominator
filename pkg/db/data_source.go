@@ -1,20 +1,20 @@
 package db
 
 import (
-	"fmt"
+	"database/sql"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
 type Dialect interface {
 	TablesQuery() string
+	ExtractCellInfo(interface{}) Cell
 }
 
 type DataSource struct {
 	dialect Dialect
-	db      *sqlx.DB
+	db      *sql.DB
 	dsn     *DSN
 }
 
@@ -41,7 +41,7 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 }
 
 func NewDataSource(dsn *DSN) (ds *DataSource, err error) {
-	db, err := sqlx.Open(dsn.Driver, dsn.Format())
+	db, err := sql.Open(dsn.Driver, dsn.Format())
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,14 @@ func (ds *DataSource) String() string {
 }
 
 func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
-	dbRows, err := ds.db.Queryx(input)
+	// We use a prepare statement here so we can force MySQL binary protocol and
+	// get real types back. See: https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
+	statement, err := ds.db.Prepare(input)
+	if err != nil {
+		return qr, err
+	}
+
+	dbRows, err := statement.Query()
 	if err != nil {
 		return qr, err
 	}
@@ -95,21 +102,20 @@ func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
 	}
 
 	for dbRows.Next() {
-		results, err := dbRows.SliceScan()
-		if err != nil {
+		columns := make([]interface{}, len(dbCols))
+		columnPointers := make([]interface{}, len(dbCols))
+
+		for i := 0; i < len(dbCols); i++ {
+			columnPointers[i] = &columns[i]
+		}
+
+		if err := dbRows.Scan(columnPointers...); err != nil {
 			return qr, err
 		}
 
-		cells := make([]Cell, len(results))
-		for i, res := range results {
-			var value string
-			switch t := res.(type) {
-			case []uint8: // this happens with MySQL result and we don't know why yet. To investigate.
-				value = string(res.([]uint8))
-			default:
-				value = fmt.Sprint(t)
-			}
-			cells[i] = Cell{Value: value}
+		cells := make([]Cell, len(columns))
+		for i, res := range columns {
+			cells[i] = ds.dialect.ExtractCellInfo(res)
 		}
 
 		qr.Rows = append(qr.Rows, cells)
