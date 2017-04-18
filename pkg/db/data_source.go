@@ -74,10 +74,6 @@ func (ds *DataSource) Close() error {
 	return ds.db.Close()
 }
 
-func (ds *DataSource) String() string {
-	return ds.dsn.String()
-}
-
 func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
 	// We use a prepare statement here so we can force MySQL binary protocol and
 	// get real types back. See: https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
