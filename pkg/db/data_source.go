@@ -2,20 +2,29 @@ package db
 
 import (
 	"database/sql"
+	"net/url"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 )
 
+type DriverType int
+
+const (
+	PostgresDriver DriverType = iota
+	MySQLDriver
+)
+
 type Dialect interface {
 	TablesQuery() string
 	ExtractCellInfo(interface{}) Cell
+	ConnectionString() string
+	DBName() string
 }
 
 type DataSource struct {
 	dialect Dialect
 	db      *sql.DB
-	dsn     *DSN
 }
 
 type DataSources map[string]*DataSource
@@ -24,12 +33,7 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 	dataSources = make(DataSources, len(sources))
 
 	for _, source := range sources {
-		dsn, err := NewDSN(source)
-		if err != nil {
-			return nil, err
-		}
-
-		ds, err := NewDataSource(dsn)
+		ds, err := NewDataSource(source)
 		if err != nil {
 			return nil, err
 		}
@@ -40,8 +44,33 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 	return dataSources, nil
 }
 
-func NewDataSource(dsn *DSN) (ds *DataSource, err error) {
-	db, err := sql.Open(dsn.Driver, dsn.Format())
+func parseDriver(source string) (string, error) {
+	url, err := url.Parse(source)
+	if err != nil {
+		return "", err
+	}
+
+	return url.Scheme, nil
+}
+
+func NewDataSource(source string) (ds *DataSource, err error) {
+	driver, err := parseDriver(source)
+	if err != nil {
+		return nil, err
+	}
+
+	var dialect Dialect
+	switch driver {
+	case "postgres":
+		dialect, err = NewPostgresDialect(source)
+	case "mysql":
+		dialect, err = NewMySQLDialect(source)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	db, err := sql.Open(driver, dialect.ConnectionString())
 	if err != nil {
 		return nil, err
 	}
@@ -51,15 +80,7 @@ func NewDataSource(dsn *DSN) (ds *DataSource, err error) {
 		return nil, err
 	}
 
-	var dialect Dialect
-	switch dsn.Driver {
-	case "postgres":
-		dialect = NewPostgresDialect()
-	case "mysql":
-		dialect = NewMySQLDialect()
-	}
-
-	return &DataSource{dsn: dsn, dialect: dialect, db: db}, nil
+	return &DataSource{dialect: dialect, db: db}, nil
 }
 
 func (ds *DataSource) Tables() (QueryResult, error) {
@@ -67,7 +88,7 @@ func (ds *DataSource) Tables() (QueryResult, error) {
 }
 
 func (ds *DataSource) Name() string {
-	return ds.dsn.DBName
+	return ds.dialect.DBName()
 }
 
 func (ds *DataSource) Close() error {

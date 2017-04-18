@@ -1,8 +1,12 @@
 package db
 
-import "fmt"
+import (
+	"fmt"
+	"net/url"
+)
 
 type Postgres struct {
+	u *url.URL
 }
 
 func (pg *Postgres) TablesQuery() string {
@@ -20,6 +24,19 @@ func (pg *Postgres) ExtractCellInfo(data interface{}) Cell {
 	return Cell{Value: value}
 }
 
-func NewPostgresDialect() *Postgres {
-	return &Postgres{}
+func (pg *Postgres) ConnectionString() string {
+	return pg.u.String()
+}
+
+func (pg *Postgres) DBName() string {
+	return pg.u.Path[1:]
+}
+
+func NewPostgresDialect(source string) (*Postgres, error) {
+	u, err := url.Parse(source)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Postgres{u: u}, nil
 }

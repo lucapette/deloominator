@@ -63,13 +63,10 @@ func randName() string {
 	return fmt.Sprintf("%s_%s", app.Name, strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid()))))
 }
 
-func setupPostgres(t *testing.T) (*db.DSN, func()) {
+func setupPostgres(t *testing.T) (string, func()) {
 	randName := randName()
 
-	dsn, err := db.NewDSN(fmt.Sprintf("postgres://localhost/%s?sslmode=disable", randName))
-	if err != nil {
-		t.Fatal(err)
-	}
+	dsn := fmt.Sprintf("postgres://localhost/%s?sslmode=disable", randName)
 
 	tmpfile, err := ioutil.TempFile("", "db_test")
 	if err != nil {
@@ -107,13 +104,10 @@ func setupPostgres(t *testing.T) (*db.DSN, func()) {
 	}
 }
 
-func setupMysql(t *testing.T) (*db.DSN, func()) {
+func setupMysql(t *testing.T) (string, func()) {
 	randName := randName()
 
-	dsn, err := db.NewDSN(fmt.Sprintf("mysql://root:root@localhost/%s", randName))
-	if err != nil {
-		t.Fatal(err)
-	}
+	dsn := fmt.Sprintf("mysql://root:root@/%s", randName)
 
 	var query bytes.Buffer
 	ParseFixture(t, &query, "mysql.sql", DBTemplate{Name: randName})
@@ -141,7 +135,7 @@ func setupMysql(t *testing.T) (*db.DSN, func()) {
 	}
 }
 
-func SetupDB(t *testing.T, driver db.DriverType) (dsn *db.DSN, cleanup func()) {
+func SetupDB(t *testing.T, driver db.DriverType) (dsn string, cleanup func()) {
 	switch driver {
 	case db.PostgresDriver:
 		dsn, cleanup = setupPostgres(t)

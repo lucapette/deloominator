@@ -1,8 +1,14 @@
 package db
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+
+	mysql "github.com/go-sql-driver/mysql"
+)
 
 type MySQL struct {
+	cfg *mysql.Config
 }
 
 func (my *MySQL) TablesQuery() string {
@@ -20,6 +26,19 @@ func (my *MySQL) ExtractCellInfo(data interface{}) Cell {
 	return Cell{Value: value}
 }
 
-func NewMySQLDialect() *MySQL {
-	return &MySQL{}
+func (my *MySQL) ConnectionString() string {
+	return my.cfg.FormatDSN()
+}
+
+func (my *MySQL) DBName() string {
+	return my.cfg.DBName
+}
+
+func NewMySQLDialect(source string) (*MySQL, error) {
+	config, err := mysql.ParseDSN(strings.Replace(source, "mysql://", "", 1))
+	if err != nil {
+		return nil, err
+	}
+
+	return &MySQL{cfg: config}, nil
 }

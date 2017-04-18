@@ -40,7 +40,7 @@ func graphqlPayload(t *testing.T, query string) string {
 func TestGraphQLQueries(t *testing.T) {
 	dsn, cleanup := testutil.SetupDB(t, db.PostgresDriver)
 	app := testutil.InitApp(t, map[string]string{
-		"DATA_SOURCES": dsn.Format(),
+		"DATA_SOURCES": dsn,
 	})
 	driver, err := db.NewDataSource(dsn)
 	if err != nil {
@@ -75,7 +75,7 @@ func TestGraphQLQueries(t *testing.T) {
 									                    rows { cells { value } }
 								                      }
 		                                            }
-	                                              }`, dsn.DBName)),
+	                                              }`, driver.Name())),
 			code:    200,
 			fixture: "query_raw_results.json",
 		},
@@ -85,7 +85,7 @@ func TestGraphQLQueries(t *testing.T) {
 								                        message
 								                      }
 		                                            }
-												  }`, dsn.DBName)),
+												  }`, driver.Name())),
 			code:    200,
 			fixture: "query_error.json",
 		},
@@ -110,7 +110,7 @@ func TestGraphQLQueries(t *testing.T) {
 			}
 
 			var expected bytes.Buffer
-			testutil.ParseFixture(t, &expected, test.fixture, testutil.DBTemplate{Name: dsn.DBName})
+			testutil.ParseFixture(t, &expected, test.fixture, testutil.DBTemplate{Name: driver.Name()})
 			if *update {
 				testutil.WriteFixture(t, test.fixture, actual)
 			}
