@@ -34,7 +34,7 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 			return nil, err
 		}
 
-		dataSources[ds.dsn.DBName] = ds
+		dataSources[ds.Name()] = ds
 	}
 
 	return dataSources, nil
