@@ -141,7 +141,7 @@ func setupMysql(t *testing.T) (*db.DSN, func()) {
 	}
 }
 
-func SetupDB(driver db.DriverType, t *testing.T) (dsn *db.DSN, cleanup func()) {
+func SetupDB(t *testing.T, driver db.DriverType) (dsn *db.DSN, cleanup func()) {
 	switch driver {
 	case db.PostgresDriver:
 		dsn, cleanup = setupPostgres(t)
@@ -150,6 +150,41 @@ func SetupDB(driver db.DriverType, t *testing.T) (dsn *db.DSN, cleanup func()) {
 	}
 
 	return dsn, cleanup
+}
+
+func LoadData(t *testing.T, ds *db.DataSource, table string, result db.QueryResult) {
+	query := bytes.NewBufferString(fmt.Sprintf("insert into %s (", table))
+
+	columns := make([]string, len(result.Columns))
+	for i, col := range result.Columns {
+		columns[i] = col.Name
+	}
+	query.WriteString(strings.Join(columns, ","))
+
+	query.WriteString(") values ")
+
+	rows := make([]string, len(result.Rows))
+	for i, r := range result.Rows {
+		row := bytes.NewBufferString("(")
+
+		cells := make([]string, len(r))
+		for i, c := range r {
+			cells[i] = fmt.Sprintf("'%s'", c.Value)
+		}
+
+		row.WriteString(strings.Join(cells, ","))
+
+		row.WriteString(")")
+
+		rows[i] = row.String()
+	}
+	query.WriteString(strings.Join(rows, ","))
+
+	t.Log(query.String())
+	_, err := ds.Query(query.String())
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func InitApp(t *testing.T, vars map[string]string) *app.App {

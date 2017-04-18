@@ -19,7 +19,7 @@ var drivers = []struct {
 func TestDriversTables(t *testing.T) {
 	for _, test := range drivers {
 		t.Run(test.name, func(t *testing.T) {
-			dsn, cleanup := testutil.SetupDB(test.driver, t)
+			dsn, cleanup := testutil.SetupDB(t, test.driver)
 			driver, err := db.NewDataSource(dsn)
 			if err != nil {
 				t.Fatal(err)
@@ -33,7 +33,7 @@ func TestDriversTables(t *testing.T) {
 				cleanup()
 			}()
 
-			expected := []string{"event_types", "user_events", "users"}
+			expected := []string{"actor", "address", "category", "city", "country", "customer", "film", "film_actor", "film_category", "inventory", "language", "payment", "rental", "staff", "store"}
 			qr, err := driver.Tables()
 			if err != nil {
 				t.Fatal(err)
@@ -55,7 +55,7 @@ func TestDriversTables(t *testing.T) {
 func TestDriversQuery(t *testing.T) {
 	for _, test := range drivers {
 		t.Run(test.name, func(t *testing.T) {
-			dsn, cleanup := testutil.SetupDB(test.driver, t)
+			dsn, cleanup := testutil.SetupDB(t, test.driver)
 			driver, err := db.NewDataSource(dsn)
 			if err != nil {
 				t.Fatal(err)
@@ -70,11 +70,12 @@ func TestDriversQuery(t *testing.T) {
 			}()
 
 			expected := db.QueryResult{
-				Rows:    []db.Row{db.Row{db.Cell{Value: "42"}, db.Cell{Value: "Grace Hopper"}}},
-				Columns: []db.Column{db.Column{Name: "id"}, db.Column{Name: "name"}},
+				Rows:    []db.Row{db.Row{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
+				Columns: []db.Column{db.Column{Name: "actor_id"}, db.Column{Name: "first_name"}, db.Column{Name: "last_name"}},
 			}
+			testutil.LoadData(t, driver, "actor", expected)
 
-			actual, err := driver.Query("select id, name from users")
+			actual, err := driver.Query("select actor_id, first_name, last_name from actor")
 			if err != nil {
 				t.Fatal(err)
 			}

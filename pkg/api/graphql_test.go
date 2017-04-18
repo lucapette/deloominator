@@ -38,11 +38,27 @@ func graphqlPayload(t *testing.T, query string) string {
 }
 
 func TestGraphQLQueries(t *testing.T) {
-	dsn, cleanup := testutil.SetupDB(db.PostgresDriver, t)
+	dsn, cleanup := testutil.SetupDB(t, db.PostgresDriver)
 	app := testutil.InitApp(t, map[string]string{
 		"DATA_SOURCES": dsn.Format(),
 	})
+	driver, err := db.NewDataSource(dsn)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rows := db.QueryResult{
+		Rows:    []db.Row{db.Row{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
+		Columns: []db.Column{db.Column{Name: "actor_id"}, db.Column{Name: "first_name"}, db.Column{Name: "last_name"}},
+	}
+	testutil.LoadData(t, driver, "actor", rows)
+
 	defer func() {
+		err = driver.Close()
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		app.Shutdown()
 		cleanup()
 	}()
