@@ -68,8 +68,9 @@ func TestGraphQLQueries(t *testing.T) {
 		{query: graphqlPayload(t, "{ dataSources {name} }"), code: 200, fixture: "data_sources.json"},
 		{query: graphqlPayload(t, "{ dataSources {name tables {name}}}"), code: 200, fixture: "data_sources_with_tables.json"},
 		{
-			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select * from users") {
-			                                          ... on rawResults {
+			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select actor_id, first_name, last_name from actor") {
+			                                          ... on results {
+														chartName
 									                    total
 									                    columns { name type }
 									                    rows { cells { value } }
@@ -78,6 +79,19 @@ func TestGraphQLQueries(t *testing.T) {
 	                                              }`, driver.Name())),
 			code:    200,
 			fixture: "query_raw_results.json",
+		},
+		{
+			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select count(*), substr(first_name, 1, 1) initial  from actor group by 2") {
+			                                          ... on results {
+														chartName
+									                    total
+									                    columns { name type }
+									                    rows { cells { value } }
+								                      }
+		                                            }
+	                                              }`, driver.Name())),
+			code:    200,
+			fixture: "query_chart_detected.json",
 		},
 		{
 			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select * from table_that_does_not_exist") {

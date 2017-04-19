@@ -11,6 +11,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/graphql-go/graphql"
 	"github.com/lucapette/deloominator/pkg/app"
+	"github.com/lucapette/deloominator/pkg/charts"
+	"github.com/lucapette/deloominator/pkg/db"
 )
 
 type queryError struct {
@@ -30,10 +32,11 @@ type column struct {
 	Type string `json:"type"`
 }
 
-type rawResults struct {
-	Total   int      `json:"total"`
-	Columns []column `json:"columns"`
-	Rows    []row    `json:"rows"`
+type results struct {
+	Total     int      `json:"total"`
+	Columns   []column `json:"columns"`
+	Rows      []row    `json:"rows"`
+	ChartName string   `json:"chartName"`
 }
 
 type table struct {
@@ -42,7 +45,7 @@ type table struct {
 
 type dataSource struct {
 	Name   string   `json:"name"`
-	Tables []*table `json:"tables"` //better if it's a rawResults.
+	Tables []*table `json:"tables"`
 }
 
 type graphqlPayload struct {
@@ -52,6 +55,23 @@ type graphqlPayload struct {
 }
 
 var schema graphql.Schema
+
+func convertToChartTypes(columns []db.Column) (types charts.DataTypes) {
+	types = make(charts.DataTypes, len(columns))
+
+	for i, col := range columns {
+		switch col.Type {
+		case db.Number:
+			types[i] = charts.Number
+		case db.Text:
+			types[i] = charts.Text
+		case db.Time:
+			types[i] = charts.Time
+		}
+	}
+
+	return types
+}
 
 func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -149,6 +169,7 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 
 	for i, col := range qr.Columns {
 		columns[i].Name = col.Name
+		columns[i].Type = col.Type.String()
 	}
 
 	rows := make([]row, len(qr.Rows))
@@ -161,10 +182,13 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 		}
 	}
 
-	return rawResults{
-		Total:   len(qr.Rows),
-		Columns: columns,
-		Rows:    rows,
+	detectedChart := charts.Detect(convertToChartTypes(qr.Columns))
+
+	return results{
+		ChartName: detectedChart.String(),
+		Total:     len(qr.Rows),
+		Columns:   columns,
+		Rows:      rows,
 	}, nil
 }
 
@@ -220,10 +244,14 @@ func init() {
 		},
 	})
 
-	rawResultsType := graphql.NewObject(graphql.ObjectConfig{
-		Name:        "rawResults",
-		Description: "rawResults represents a collection of raw data returned by a data source",
+	resultsType := graphql.NewObject(graphql.ObjectConfig{
+		Name:        "results",
+		Description: "results represents a collection of raw data returned by a data source",
 		Fields: graphql.Fields{
+			"chartName": &graphql.Field{
+				Description: "Detected chart name",
+				Type:        graphql.String,
+			},
 			"total": &graphql.Field{
 				Description: "Total count of returned results",
 				Type:        graphql.Int,
@@ -238,7 +266,7 @@ func init() {
 			},
 		},
 		IsTypeOf: func(p graphql.IsTypeOfParams) bool {
-			_, ok := p.Value.(rawResults)
+			_, ok := p.Value.(results)
 			return ok
 		},
 	})
@@ -246,10 +274,10 @@ func init() {
 	queryResultType := graphql.NewUnion(graphql.UnionConfig{
 		Name:        "QueryResult",
 		Description: "QueryResult represents all the possible outcomes of a Query",
-		Types:       []*graphql.Object{rawResultsType, queryErrorType},
+		Types:       []*graphql.Object{resultsType, queryErrorType},
 		ResolveType: func(p graphql.ResolveTypeParams) *graphql.Object {
-			if _, ok := p.Value.(rawResults); ok {
-				return rawResultsType
+			if _, ok := p.Value.(results); ok {
+				return resultsType
 			}
 			if _, ok := p.Value.(queryError); ok {
 				return queryErrorType

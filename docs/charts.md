@@ -31,4 +31,4 @@ This is a list of all the charts `deloominator` supports.
 - *2* Columns
 - Columns types:
   - `number`
-  - `string`
+  - `text`

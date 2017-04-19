@@ -43,7 +43,8 @@ class QueryResultContainer extends Component {
 const Query = gql`
 query Query($source: String!, $input: String!) {
   query(source: $source, input: $input) {
-    ... on rawResults {
+    ... on results {
+        chartName
         total
         columns {
           name
