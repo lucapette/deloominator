@@ -9,19 +9,18 @@ import (
 )
 
 var drivers = []struct {
-	name    string
-	driver  db.DriverType
-	factory func(*db.DSN) (db.DataSource, error)
+	name   string
+	driver db.DriverType
 }{
-	{"postgres", db.PostgresDriver, func(dsn *db.DSN) (db.DataSource, error) { return db.NewPostgres(dsn) }},
-	{"mysql", db.MySQLDriver, func(dsn *db.DSN) (db.DataSource, error) { return db.NewMySQL(dsn) }},
+	{"postgres", db.PostgresDriver},
+	{"mysql", db.MySQLDriver},
 }
 
 func TestDriversTables(t *testing.T) {
 	for _, test := range drivers {
 		t.Run(test.name, func(t *testing.T) {
-			dsn, cleanup := testutil.SetupDB(test.driver, t)
-			driver, err := test.factory(dsn)
+			dsn, cleanup := testutil.SetupDB(t, test.driver)
+			driver, err := db.NewDataSource(dsn)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -34,7 +33,7 @@ func TestDriversTables(t *testing.T) {
 				cleanup()
 			}()
 
-			expected := []string{"event_types", "user_events", "users"}
+			expected := []string{"actor", "address", "category", "city", "country", "customer", "film", "film_actor", "film_category", "inventory", "language", "payment", "rental", "staff", "store"}
 			qr, err := driver.Tables()
 			if err != nil {
 				t.Fatal(err)
@@ -56,8 +55,8 @@ func TestDriversTables(t *testing.T) {
 func TestDriversQuery(t *testing.T) {
 	for _, test := range drivers {
 		t.Run(test.name, func(t *testing.T) {
-			dsn, cleanup := testutil.SetupDB(test.driver, t)
-			driver, err := test.factory(dsn)
+			dsn, cleanup := testutil.SetupDB(t, test.driver)
+			driver, err := db.NewDataSource(dsn)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -71,11 +70,25 @@ func TestDriversQuery(t *testing.T) {
 			}()
 
 			expected := db.QueryResult{
-				Rows:    []db.Row{db.Row{db.Cell{Value: "42"}, db.Cell{Value: "Grace Hopper"}}},
-				Columns: []db.Column{db.Column{Name: "id"}, db.Column{Name: "name"}},
+				Columns: []db.Column{
+					db.Column{Name: "film_id", Type: db.Number},
+					db.Column{Name: "title", Type: db.Text},
+					db.Column{Name: "rental_rate", Type: db.Number},
+					db.Column{Name: "last_update", Type: db.Time},
+				},
+				Rows: []db.Row{
+					db.Row{
+						db.Cell{Value: "42"},
+						db.Cell{Value: "Back to the future"},
+						db.Cell{Value: "4.99"},
+						db.Cell{Value: "1985-10-21 07:28:00"},
+					},
+				},
 			}
 
-			actual, err := driver.Query("select id, name from users")
+			testutil.LoadData(t, driver, "film", expected)
+
+			actual, err := driver.Query("select film_id, title, rental_rate, last_update from film")
 			if err != nil {
 				t.Fatal(err)
 			}

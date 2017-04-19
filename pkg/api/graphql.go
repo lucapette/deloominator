@@ -48,7 +48,7 @@ type dataSource struct {
 type graphqlPayload struct {
 	Query         string                 `json:"query"`
 	OperationName string                 `json:"operationName,omitempty"`
-	Variables     map[string]interface{} `json:"variables,omitempty""`
+	Variables     map[string]interface{} `json:"variables,omitempty"`
 }
 
 var schema graphql.Schema
@@ -59,11 +59,7 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 
 		query, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(err.Error()))
-			log.WithFields(log.Fields{
-				"body": r.Body,
-			})
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -71,12 +67,7 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 
 		err = json.Unmarshal(query, &payload)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(err.Error()))
-			log.WithFields(log.Fields{
-				"originalPayload": string(query),
-			})
-
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -94,20 +85,25 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 
 		rJSON, err := json.Marshal(res)
 		if err != nil {
-			w.Write([]byte(err.Error()))
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		w.Write(rJSON)
+		_, err = w.Write(rJSON)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 }
 
 func ResolveDataSources(p graphql.ResolveParams) (interface{}, error) {
 	var dataSources []*dataSource
 	app := p.Context.Value("app").(*app.App)
+
 	for _, ds := range app.GetDataSources() {
-		name := ds.DSN().DBName
-		log.WithField("schema_name", name).Info("query metadata")
+		log.WithField("schema_name", ds.Name()).Info("query metadata")
 
 		start := time.Now()
 
@@ -122,12 +118,12 @@ func ResolveDataSources(p graphql.ResolveParams) (interface{}, error) {
 		}
 
 		log.WithFields(log.Fields{
-			"schema_name": name,
+			"schema_name": ds.Name(),
 			"n_tables":    len(qr.Rows),
 			"spent":       time.Now().Sub(start),
 		}).Info("tables loaded")
 
-		dataSources = append(dataSources, &dataSource{Name: name, Tables: ts})
+		dataSources = append(dataSources, &dataSource{Name: ds.Name(), Tables: ts})
 	}
 
 	return dataSources, nil
