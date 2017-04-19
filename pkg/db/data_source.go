@@ -15,13 +15,6 @@ const (
 	MySQLDriver
 )
 
-type Dialect interface {
-	TablesQuery() string
-	ExtractCellInfo(interface{}) Cell
-	ConnectionString() string
-	DBName() string
-}
-
 type DataSource struct {
 	dialect Dialect
 	db      *sql.DB
@@ -132,7 +125,13 @@ func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
 
 		cells := make([]Cell, len(columns))
 		for i, res := range columns {
-			cells[i] = ds.dialect.ExtractCellInfo(res)
+			value, colType := ds.dialect.ExtractCellInfo(res)
+
+			cells[i] = value
+
+			if qr.Columns[i].Type.isUnknown() {
+				qr.Columns[i].Type = colType
+			}
 		}
 
 		qr.Rows = append(qr.Rows, cells)

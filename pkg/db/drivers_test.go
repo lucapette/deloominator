@@ -71,7 +71,7 @@ func TestDriversQuery(t *testing.T) {
 
 			expected := db.QueryResult{
 				Rows:    []db.Row{db.Row{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
-				Columns: []db.Column{db.Column{Name: "actor_id"}, db.Column{Name: "first_name"}, db.Column{Name: "last_name"}},
+				Columns: []db.Column{db.Column{Name: "actor_id", Type: db.Number}, db.Column{Name: "first_name", Type: db.Text}, db.Column{Name: "last_name", Type: db.Text}},
 			}
 			testutil.LoadData(t, driver, "actor", expected)
 

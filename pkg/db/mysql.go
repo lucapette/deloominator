@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	mysql "github.com/go-sql-driver/mysql"
+	"github.com/go-sql-driver/mysql"
 )
 
 type MySQL struct {
@@ -15,15 +15,20 @@ func (my *MySQL) TablesQuery() string {
 	return `SHOW TABLES`
 }
 
-func (my *MySQL) ExtractCellInfo(data interface{}) Cell {
-	var value string
+func (my *MySQL) ExtractCellInfo(data interface{}) (cell Cell, colType Type) {
 	switch t := data.(type) {
+	case int64:
+		cell = Cell{Value: fmt.Sprint(data)}
+		colType = Number
 	case []uint8:
-		value = string(data.([]uint8))
+		value := string(data.([]uint8))
+		cell = Cell{Value: value}
+		colType = inferType(value)
 	default:
-		value = fmt.Sprint(t)
+		cell = Cell{Value: fmt.Sprint(t)}
+		colType = UnknownType
 	}
-	return Cell{Value: value}
+	return cell, colType
 }
 
 func (my *MySQL) ConnectionString() string {

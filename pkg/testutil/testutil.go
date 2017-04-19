@@ -174,7 +174,6 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, result db.QueryResu
 	}
 	query.WriteString(strings.Join(rows, ","))
 
-	t.Log(query.String())
 	_, err := ds.Query(query.String())
 	if err != nil {
 		t.Fatal(err)

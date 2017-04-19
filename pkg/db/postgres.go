@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"net/url"
+	"time"
 )
 
 type Postgres struct {
@@ -13,15 +14,26 @@ func (pg *Postgres) TablesQuery() string {
 	return `SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY 1`
 }
 
-func (pg *Postgres) ExtractCellInfo(data interface{}) Cell {
-	var value string
-	switch t := data.(type) {
+func (pg *Postgres) ExtractCellInfo(data interface{}) (cell Cell, colType Type) {
+	switch data.(type) {
+	case int64:
+		cell = Cell{Value: fmt.Sprint(data)}
+		colType = Number
+	case string:
+		cell = Cell{Value: data.(string)}
+		colType = Text
 	case []uint8:
-		value = string(data.([]uint8))
+		value := string(data.([]uint8))
+		cell = Cell{Value: value}
+		colType = inferType(value)
+	case time.Time:
+		cell = Cell{Value: fmt.Sprint(data)}
+		colType = Time
 	default:
-		value = fmt.Sprint(t)
+		cell = Cell{Value: fmt.Sprint(data)}
+		colType = UnknownType
 	}
-	return Cell{Value: value}
+	return cell, colType
 }
 
 func (pg *Postgres) ConnectionString() string {
