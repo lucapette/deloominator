@@ -85,7 +85,7 @@ CREATE TABLE film (
   title VARCHAR(255) NOT NULL,
   description TEXT DEFAULT NULL,
   release_year YEAR DEFAULT NULL,
-  language_id TINYINT UNSIGNED NOT NULL,
+  language_id TINYINT UNSIGNED DEFAULT NULL,
   original_language_id TINYINT UNSIGNED DEFAULT NULL,
   rental_duration TINYINT UNSIGNED NOT NULL DEFAULT 3,
   rental_rate DECIMAL(4,2) NOT NULL DEFAULT 4.99,
@@ -97,9 +97,7 @@ CREATE TABLE film (
   PRIMARY KEY  (film_id),
   KEY idx_title (title),
   KEY idx_fk_language_id (language_id),
-  KEY idx_fk_original_language_id (original_language_id),
-  CONSTRAINT fk_film_language FOREIGN KEY (language_id) REFERENCES language (language_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_film_language_original FOREIGN KEY (original_language_id) REFERENCES language (language_id) ON DELETE RESTRICT ON UPDATE CASCADE
+  KEY idx_fk_original_language_id (original_language_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE film_actor (

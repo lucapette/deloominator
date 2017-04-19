@@ -70,12 +70,25 @@ func TestDriversQuery(t *testing.T) {
 			}()
 
 			expected := db.QueryResult{
-				Rows:    []db.Row{db.Row{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
-				Columns: []db.Column{db.Column{Name: "actor_id", Type: db.Number}, db.Column{Name: "first_name", Type: db.Text}, db.Column{Name: "last_name", Type: db.Text}},
+				Columns: []db.Column{
+					db.Column{Name: "film_id", Type: db.Number},
+					db.Column{Name: "title", Type: db.Text},
+					db.Column{Name: "rental_rate", Type: db.Number},
+					db.Column{Name: "last_update", Type: db.Time},
+				},
+				Rows: []db.Row{
+					db.Row{
+						db.Cell{Value: "42"},
+						db.Cell{Value: "Back to the future"},
+						db.Cell{Value: "4.99"},
+						db.Cell{Value: "1985-10-21 07:28:00"},
+					},
+				},
 			}
-			testutil.LoadData(t, driver, "actor", expected)
 
-			actual, err := driver.Query("select actor_id, first_name, last_name from actor")
+			testutil.LoadData(t, driver, "film", expected)
+
+			actual, err := driver.Query("select film_id, title, rental_rate, last_update from film")
 			if err != nil {
 				t.Fatal(err)
 			}

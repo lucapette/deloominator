@@ -79,15 +79,14 @@ CREATE TABLE film (
     title character varying(255) NOT NULL,
     description text,
     release_year smallint,
-    language_id smallint NOT NULL,
+    language_id smallint DEFAULT NULL,
     rental_duration smallint DEFAULT 3 NOT NULL,
     rental_rate numeric(4,2) DEFAULT 4.99 NOT NULL,
     length smallint,
     replacement_cost numeric(5,2) DEFAULT 19.99 NOT NULL,
     rating mpaa_rating DEFAULT 'G'::mpaa_rating,
     last_update timestamp without time zone DEFAULT now() NOT NULL,
-    special_features text[],
-    fulltext tsvector NOT NULL
+    special_features text[]
 );
 
 CREATE TABLE film_actor (
