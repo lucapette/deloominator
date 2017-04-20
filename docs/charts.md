@@ -19,14 +19,14 @@ For example, let's say a data set returns the following:
 | 42    | B       |
 | 24    | C       |
 
-The data set has _2_ columns and they have the types _number_ and _string_, in
-this order. `deloominator` would render a [pie chart](#pie-chart) in this case.
+The data set has _2_ columns and they have the types _number_ and _text_, in
+this order. `deloominator` would render a [Simple Bar](#simple-bar) in this case.
 
 ## Supported charts
 
 This is a list of all the charts `deloominator` supports.
 
-### Pie chart
+### Simple Bar
 
 - *2* Columns
 - Columns types:

@@ -6,7 +6,7 @@ type ChartType int
 
 const (
 	UnknownChart ChartType = iota
-	PieChart
+	SimpleBar
 )
 
 type DataType int
@@ -42,8 +42,8 @@ func Detect(types DataTypes) ChartType {
 
 func (ct ChartType) String() string {
 	switch ct {
-	case PieChart:
-		return "PieChart"
+	case SimpleBar:
+		return "SimpleBar"
 	}
 
 	return "UnknownChart"
@@ -65,5 +65,5 @@ func (t DataType) String() string {
 func init() {
 	charts = make(map[string]ChartType)
 
-	charts[sequence(DataTypes{Number, Text})] = PieChart
+	charts[sequence(DataTypes{Number, Text})] = SimpleBar
 }

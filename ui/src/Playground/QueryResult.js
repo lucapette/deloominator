@@ -7,6 +7,8 @@ import { gql, graphql } from 'react-apollo';
 
 import RawResults from './RawResults';
 
+import Chart from './Chart';
+
 class QueryResultContainer extends Component {
   render() {
     const { data: { loading, error, query } } = this.props;
@@ -34,6 +36,7 @@ class QueryResultContainer extends Component {
 
     return (
       <Container>
+        {query.chartName !== 'UnknownChart' && <Chart data={query} />}
         <RawResults columns={query.columns} rows={query.rows} />
       </Container>
     );
