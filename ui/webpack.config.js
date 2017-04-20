@@ -4,7 +4,7 @@ const webpack = require("webpack");
 const FlowtypePlugin = require('flowtype-loader/plugin');
 
 const config = {
-  devtool: "#source-maps",
+  devtool: "cheap-module-source-map",
   entry: "./src/App.js",
   output: {
     path: path.resolve(__dirname, "dist"),
