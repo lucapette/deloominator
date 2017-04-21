@@ -1,9 +1,9 @@
 //@flow
 import React, { Component } from 'react';
 
-import {Table, Column, Cell} from 'fixed-data-table';
+import {Table, Column, Cell} from 'fixed-data-table-2';
 
-import 'fixed-data-table/dist/fixed-data-table.min.css';
+import 'fixed-data-table-2/dist/fixed-data-table.min.css';
 
 export default class RawResults extends Component {
   render() {

@@ -1910,9 +1910,9 @@ find-up@^2.1.0:
   dependencies:
     locate-path "^2.0.0"
 
-fixed-data-table@^0.6.3:
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/fixed-data-table/-/fixed-data-table-0.6.3.tgz#e0bba85bc84a065dea71f0fb3a46d61441ad81e8"
+fixed-data-table-2@^0.7.15:
+  version "0.7.15"
+  resolved "https://registry.yarnpkg.com/fixed-data-table-2/-/fixed-data-table-2-0.7.15.tgz#48ef610d29a634c8dc99da7f8cb965dcaee459e3"
 
 flatten@^1.0.2:
   version "1.0.2"
