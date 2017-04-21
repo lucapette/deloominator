@@ -44,27 +44,3 @@ func NewApp() *App {
 		Opts: opts,
 	}
 }
-
-func (app *App) GetDataSources() db.DataSources {
-	if len(app.dataSources) > 0 {
-		return app.dataSources
-	}
-
-	ds, err := db.NewDataSources(app.Opts.Sources)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	app.dataSources = ds
-
-	return app.dataSources
-}
-
-func (app *App) Shutdown() {
-	for _, ds := range app.dataSources {
-		err := ds.Close()
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-	}
-}

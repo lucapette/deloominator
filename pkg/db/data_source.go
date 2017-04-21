@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/url"
 
+	log "github.com/Sirupsen/logrus"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 )
@@ -35,6 +36,15 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 	}
 
 	return dataSources, nil
+}
+
+func (dataSources DataSources) Shutdown() {
+	for _, ds := range dataSources {
+		err := ds.Close()
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+	}
 }
 
 func parseDriver(source string) (string, error) {

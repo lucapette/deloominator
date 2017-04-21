@@ -9,7 +9,6 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/graphql-go/graphql"
-	"github.com/lucapette/deloominator/pkg/app"
 	"github.com/lucapette/deloominator/pkg/charts"
 	"github.com/lucapette/deloominator/pkg/db"
 )
@@ -71,7 +70,7 @@ func convertToChartTypes(columns []db.Column) (types charts.DataTypes) {
 	return types
 }
 
-func graphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
+func graphQLHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/json")
 
@@ -115,11 +114,11 @@ func graphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ResolveDataSources(app *app.App) func(p graphql.ResolveParams) (interface{}, error) {
+func ResolveDataSources(dbDataSources db.DataSources) func(p graphql.ResolveParams) (interface{}, error) {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		var dataSources []*dataSource
 
-		for _, ds := range app.GetDataSources() {
+		for _, ds := range dbDataSources {
 			log.WithField("schema_name", ds.Name()).Info("query metadata")
 
 			start := time.Now()
@@ -147,7 +146,7 @@ func ResolveDataSources(app *app.App) func(p graphql.ResolveParams) (interface{}
 	}
 }
 
-func ResolveQuery(app *app.App) func(p graphql.ResolveParams) (interface{}, error) {
+func ResolveQuery(dataSources db.DataSources) func(p graphql.ResolveParams) (interface{}, error) {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		source := p.Args["source"].(string)
 		input := p.Args["input"].(string)
@@ -157,7 +156,7 @@ func ResolveQuery(app *app.App) func(p graphql.ResolveParams) (interface{}, erro
 			"input":  input,
 		}).Infof("Query requested")
 
-		qr, err := app.GetDataSources()[source].Query(input)
+		qr, err := dataSources[source].Query(input)
 
 		if err != nil {
 			return queryError{Message: err.Error()}, nil
@@ -190,7 +189,7 @@ func ResolveQuery(app *app.App) func(p graphql.ResolveParams) (interface{}, erro
 	}
 }
 
-func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
+func GraphQLHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *http.Request) {
 	queryErrorType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "queryError",
 		Description: "An error represents an error message from the data source",
@@ -306,7 +305,7 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 	fields := graphql.Fields{
 		"dataSources": &graphql.Field{
 			Type:    graphql.NewList(dataSourceType),
-			Resolve: ResolveDataSources(app),
+			Resolve: ResolveDataSources(dataSources),
 		},
 		"query": &graphql.Field{
 			Type: queryResultType,
@@ -318,7 +317,7 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 					Type: graphql.NewNonNull(graphql.String),
 				},
 			},
-			Resolve: ResolveQuery(app),
+			Resolve: ResolveQuery(dataSources),
 		},
 	}
 
@@ -332,5 +331,5 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("failed to create new schema, error: %v", err)
 	}
 
-	return graphQLHandler(app)
+	return graphQLHandler(dataSources)
 }
