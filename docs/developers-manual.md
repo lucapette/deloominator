@@ -145,3 +145,16 @@ are a technique to handle fixtures files used in assertion. It works this way:
 You can find an example of it [here](/pkg/api/graphql_test.go).
 
 ### Use testutil
+
+The [testutil](pkg/testutil) package contains a number of utitilies for
+testing our Go code. In the spirit of [Advanced testing with
+Go](https://speakerdeck.com/mitchellh/advanced-testing-with-go), we follow
+these guidelines:
+
+- Each public function takes `t *testing.T` as a first parameter
+- Functions that use temporary resources (like databases, files, and so on)
+  return a callback function so that the caller can decide when and how to
+  clean up test execution
+- For more complex tests, we use fixtures. Add new fixtures in
+  [testutil/fixtures](pkg/testutil/fixtures) so that existing helpers can load
+  them.
