@@ -71,13 +71,13 @@ func TestDriversQuery(t *testing.T) {
 
 			expected := db.QueryResult{
 				Columns: []db.Column{
-					db.Column{Name: "film_id", Type: db.Number},
-					db.Column{Name: "title", Type: db.Text},
-					db.Column{Name: "rental_rate", Type: db.Number},
-					db.Column{Name: "last_update", Type: db.Time},
+					{Name: "film_id", Type: db.Number},
+					{Name: "title", Type: db.Text},
+					{Name: "rental_rate", Type: db.Number},
+					{Name: "last_update", Type: db.Time},
 				},
 				Rows: []db.Row{
-					db.Row{
+					{
 						db.Cell{Value: "42"},
 						db.Cell{Value: "Back to the future"},
 						db.Cell{Value: "4.99"},

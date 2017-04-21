@@ -54,8 +54,8 @@ func TestGraphQLQueries(t *testing.T) {
 
 	for _, driver := range dataSources {
 		rows := db.QueryResult{
-			Rows:    []db.Row{db.Row{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
-			Columns: []db.Column{db.Column{Name: "actor_id"}, db.Column{Name: "first_name"}, db.Column{Name: "last_name"}},
+			Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
+			Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}},
 		}
 		testutil.LoadData(t, driver, "actor", rows)
 
