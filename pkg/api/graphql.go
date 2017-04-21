@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -72,7 +71,7 @@ func convertToChartTypes(columns []db.Column) (types charts.DataTypes) {
 	return types
 }
 
-func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
+func graphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/json")
 
@@ -95,7 +94,6 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 			RequestString:  payload.Query,
 			OperationName:  payload.OperationName,
 			VariableValues: payload.Variables,
-			Context:        context.WithValue(context.Background(), "app", app),
 		})
 
 		if res.HasErrors() {
@@ -117,80 +115,82 @@ func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ResolveDataSources(p graphql.ResolveParams) (interface{}, error) {
-	var dataSources []*dataSource
-	app := p.Context.Value("app").(*app.App)
+func ResolveDataSources(app *app.App) func(p graphql.ResolveParams) (interface{}, error) {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		var dataSources []*dataSource
 
-	for _, ds := range app.GetDataSources() {
-		log.WithField("schema_name", ds.Name()).Info("query metadata")
+		for _, ds := range app.GetDataSources() {
+			log.WithField("schema_name", ds.Name()).Info("query metadata")
 
-		start := time.Now()
+			start := time.Now()
 
-		qr, err := ds.Tables()
-		if err != nil {
-			return dataSources, err
+			qr, err := ds.Tables()
+			if err != nil {
+				return dataSources, err
+			}
+
+			ts := make([]*table, len(qr.Rows))
+			for i, t := range qr.Rows {
+				ts[i] = &table{Name: t[0].Value}
+			}
+
+			log.WithFields(log.Fields{
+				"schema_name": ds.Name(),
+				"n_tables":    len(qr.Rows),
+				"spent":       time.Now().Sub(start),
+			}).Info("tables loaded")
+
+			dataSources = append(dataSources, &dataSource{Name: ds.Name(), Tables: ts})
 		}
 
-		ts := make([]*table, len(qr.Rows))
-		for i, t := range qr.Rows {
-			ts[i] = &table{Name: t[0].Value}
-		}
+		return dataSources, nil
+	}
+}
+
+func ResolveQuery(app *app.App) func(p graphql.ResolveParams) (interface{}, error) {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		source := p.Args["source"].(string)
+		input := p.Args["input"].(string)
 
 		log.WithFields(log.Fields{
-			"schema_name": ds.Name(),
-			"n_tables":    len(qr.Rows),
-			"spent":       time.Now().Sub(start),
-		}).Info("tables loaded")
+			"source": source,
+			"input":  input,
+		}).Infof("Query requested")
 
-		dataSources = append(dataSources, &dataSource{Name: ds.Name(), Tables: ts})
-	}
+		qr, err := app.GetDataSources()[source].Query(input)
 
-	return dataSources, nil
-}
-
-func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
-	source := p.Args["source"].(string)
-	input := p.Args["input"].(string)
-	app := p.Context.Value("app").(*app.App)
-
-	log.WithFields(log.Fields{
-		"source": source,
-		"input":  input,
-	}).Infof("Query requested")
-
-	qr, err := app.GetDataSources()[source].Query(input)
-
-	if err != nil {
-		return queryError{Message: err.Error()}, nil
-	}
-
-	columns := make([]column, len(qr.Columns))
-
-	for i, col := range qr.Columns {
-		columns[i].Name = col.Name
-		columns[i].Type = col.Type.String()
-	}
-
-	rows := make([]row, len(qr.Rows))
-
-	for i, r := range qr.Rows {
-		rows[i].Cells = make([]cell, len(qr.Columns))
-
-		for j, c := range r {
-			rows[i].Cells[j].Value = c.Value
+		if err != nil {
+			return queryError{Message: err.Error()}, nil
 		}
+
+		columns := make([]column, len(qr.Columns))
+
+		for i, col := range qr.Columns {
+			columns[i].Name = col.Name
+			columns[i].Type = col.Type.String()
+		}
+
+		rows := make([]row, len(qr.Rows))
+
+		for i, r := range qr.Rows {
+			rows[i].Cells = make([]cell, len(qr.Columns))
+
+			for j, c := range r {
+				rows[i].Cells[j].Value = c.Value
+			}
+		}
+
+		detectedChart := charts.Detect(convertToChartTypes(qr.Columns))
+
+		return results{
+			ChartName: detectedChart.String(),
+			Columns:   columns,
+			Rows:      rows,
+		}, nil
 	}
-
-	detectedChart := charts.Detect(convertToChartTypes(qr.Columns))
-
-	return results{
-		ChartName: detectedChart.String(),
-		Columns:   columns,
-		Rows:      rows,
-	}, nil
 }
 
-func init() {
+func GraphQLHandler(app *app.App) func(w http.ResponseWriter, r *http.Request) {
 	queryErrorType := graphql.NewObject(graphql.ObjectConfig{
 		Name:        "queryError",
 		Description: "An error represents an error message from the data source",
@@ -306,7 +306,7 @@ func init() {
 	fields := graphql.Fields{
 		"dataSources": &graphql.Field{
 			Type:    graphql.NewList(dataSourceType),
-			Resolve: ResolveDataSources,
+			Resolve: ResolveDataSources(app),
 		},
 		"query": &graphql.Field{
 			Type: queryResultType,
@@ -318,7 +318,7 @@ func init() {
 					Type: graphql.NewNonNull(graphql.String),
 				},
 			},
-			Resolve: ResolveQuery,
+			Resolve: ResolveQuery(app),
 		},
 	}
 
@@ -331,4 +331,6 @@ func init() {
 	if err != nil {
 		log.Fatalf("failed to create new schema, error: %v", err)
 	}
+
+	return graphQLHandler(app)
 }
