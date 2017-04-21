@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"github.com/kr/pretty"
-	"github.com/lucapette/deloominator/pkg/app"
+	"github.com/lucapette/deloominator/pkg/config"
 	"github.com/lucapette/deloominator/pkg/db"
 )
 
@@ -60,7 +60,7 @@ func ParseFixture(t *testing.T, w io.Writer, fixture string, data interface{}) {
 }
 
 func randName() string {
-	return fmt.Sprintf("%s_%s", app.Name, strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid()))))
+	return fmt.Sprintf("%s_%s", config.BinaryName, strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid()))))
 }
 
 func setupPostgres(t *testing.T) (string, func()) {
@@ -180,16 +180,16 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, result db.QueryResu
 	}
 }
 
-func InitApp(t *testing.T, vars map[string]string) *app.App {
+func InitConfig(t *testing.T, vars map[string]string) *config.Config {
 	for k, v := range vars {
-		err := os.Setenv(fmt.Sprintf("%s_%s", strings.ToUpper(app.Name), k), v)
+		err := os.Setenv(fmt.Sprintf("%s_%s", strings.ToUpper(config.BinaryName), k), v)
 
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
-	return app.NewApp()
+	return config.GetConfig()
 }
 
 func Diff(expected, actual interface{}) []string {

@@ -6,22 +6,30 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/lucapette/deloominator/pkg/api"
-	"github.com/lucapette/deloominator/pkg/app"
+	"github.com/lucapette/deloominator/pkg/config"
+	"github.com/lucapette/deloominator/pkg/db"
 )
 
-func main() {
-	app := app.NewApp()
-	log.WithField("port", app.Opts.Port).
-		Infof("starting %s", app.Name)
+const appName = "deloominator"
 
-	api.Start(app)
+func main() {
+	cfg := config.GetConfig()
+	log.WithField("port", cfg.Port).
+		Infof("starting %s", config.BinaryName)
+
+	dataSources, err := db.NewDataSources(cfg.Sources)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	api.Start(cfg, dataSources)
 
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, os.Interrupt, os.Kill)
 	<-s
 
-	log.WithField("port", app.Opts.Port).
-		Infof("stopping %s", app.Name)
+	log.WithField("port", cfg.Port).
+		Infof("stopping %s", config.BinaryName)
 
-	app.Shutdown()
+	dataSources.Shutdown()
 }

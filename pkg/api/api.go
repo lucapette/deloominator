@@ -11,7 +11,8 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/lucapette/deloominator/pkg/app"
+	"github.com/lucapette/deloominator/pkg/config"
+	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/rs/cors"
 	"goji.io"
 	"goji.io/pat"
@@ -101,10 +102,10 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Start(app *app.App) {
+func Start(cfg *config.Config, dataSources db.DataSources) {
 	router := goji.NewMux()
 
-	if app.Opts.Debug {
+	if cfg.Debug {
 		router.Use(debugHandler)
 	}
 
@@ -115,12 +116,12 @@ func Start(app *app.App) {
 	router.Use(logHandler)
 	router.Use(c.Handler)
 
-	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler(app))
+	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler(dataSources))
 	router.HandleFunc(pat.Get("/:name.:ext"), assetsHandler)
 	router.HandleFunc(pat.Get("/*"), uiHandler)
 
 	go func() {
-		err := http.ListenAndServe(":"+strconv.Itoa(app.Opts.Port), router)
+		err := http.ListenAndServe(":"+strconv.Itoa(cfg.Port), router)
 		if err != nil {
 			log.Fatal("Cant start server:", err)
 		}
