@@ -22,6 +22,8 @@ export default class SimpleBar extends Component {
     spec["encoding"]["x"]["field"] = x;
     spec["encoding"]["y"]["field"] = y;
 
+    spec["width"] = this.props.width || 1000;
+
     return (<VegaLite spec={spec} data={data} />);
   }
 }

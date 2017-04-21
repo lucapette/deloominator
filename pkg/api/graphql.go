@@ -33,7 +33,6 @@ type column struct {
 }
 
 type results struct {
-	Total     int      `json:"total"`
 	Columns   []column `json:"columns"`
 	Rows      []row    `json:"rows"`
 	ChartName string   `json:"chartName"`
@@ -186,7 +185,6 @@ func ResolveQuery(p graphql.ResolveParams) (interface{}, error) {
 
 	return results{
 		ChartName: detectedChart.String(),
-		Total:     len(qr.Rows),
 		Columns:   columns,
 		Rows:      rows,
 	}, nil
@@ -251,10 +249,6 @@ func init() {
 			"chartName": &graphql.Field{
 				Description: "Detected chart name",
 				Type:        graphql.String,
-			},
-			"total": &graphql.Field{
-				Description: "Total count of returned results",
-				Type:        graphql.Int,
 			},
 			"columns": &graphql.Field{
 				Description: "Columns of the returned results",

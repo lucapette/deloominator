@@ -58,7 +58,7 @@ class PlaygroundPage extends Component {
                     search selection
                     onChange={this.handleDataSourcesChange}
                     options={this.dataSourcesOptions(this.props.data)} />
-                  <Button icon='play' primary content='Run' disabled={!this.state.selectedDataSource} onClick={this.handleRunClick}/>
+                  <Button icon='play' primary content='Run' disabled={!(this.state.selectedDataSource && this.state.currentQuery)} onClick={this.handleRunClick}/>
                 </Form.Group>
                 <Form.TextArea placeholder='Write your query here' value={this.state.currentQuery} onChange={this.handleQueryChange} />
               </Form>

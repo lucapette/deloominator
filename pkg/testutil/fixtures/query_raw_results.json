@@ -1,1 +1,1 @@
-{"data":{"query":{"chartName":"UnknownChart","columns":[{"name":"actor_id","type":"Number"},{"name":"first_name","type":"Text"},{"name":"last_name","type":"Text"}],"rows":[{"cells":[{"value":"42"},{"value":"Anna"},{"value":"Torv"}]}],"total":1}}}
+{"data":{"query":{"chartName":"UnknownChart","columns":[{"name":"actor_id","type":"Number"},{"name":"first_name","type":"Text"},{"name":"last_name","type":"Text"}],"rows":[{"cells":[{"value":"42"},{"value":"Anna"},{"value":"Torv"}]}]}}}

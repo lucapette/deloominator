@@ -71,7 +71,6 @@ func TestGraphQLQueries(t *testing.T) {
 			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select actor_id, first_name, last_name from actor") {
 			                                          ... on results {
 														chartName
-									                    total
 									                    columns { name type }
 									                    rows { cells { value } }
 								                      }
@@ -84,7 +83,6 @@ func TestGraphQLQueries(t *testing.T) {
 			query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select count(*), substr(first_name, 1, 1) initial  from actor group by 2") {
 			                                          ... on results {
 														chartName
-									                    total
 									                    columns { name type }
 									                    rows { cells { value } }
 								                      }
