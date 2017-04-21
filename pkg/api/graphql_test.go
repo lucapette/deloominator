@@ -39,10 +39,10 @@ func graphqlPayload(t *testing.T, query string) string {
 
 func TestGraphQLQueries(t *testing.T) {
 	dsn, cleanup := testutil.SetupDB(t, db.PostgresDriver)
-	app := testutil.InitApp(t, map[string]string{
+	cfg := testutil.InitConfig(t, map[string]string{
 		"DATA_SOURCES": dsn,
 	})
-	dataSources, err := db.NewDataSources(app.Opts.Sources)
+	dataSources, err := db.NewDataSources(cfg.Sources)
 	if err != nil {
 		t.Fatal(err)
 	}
