@@ -9,4 +9,3 @@ they are non critical to the product.
   env vars the app understands. It's good to have it that way so we can
   validate the input at startup better. We can use the Usage function for
   envconfing (it's pretty nice!)
-- testutil.InitApp has a strange signature. Look for improvements there.
