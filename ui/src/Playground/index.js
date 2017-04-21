@@ -11,14 +11,16 @@ import QueryResult from './QueryResult';
 
 class PlaygroundPage extends Component {
   state: {
-    selectedDataSource: string;
+    selectedDataSource?: string;
+    currentQuery?: string;
+    dataSource?: string;
+    query?: string;
+    showResult: bool;
   }
 
   constructor() {
     super();
     this.state = {
-      selectedDataSource: '',
-      currentQuery: '',
       showResult: false
     };
   }
