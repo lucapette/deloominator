@@ -1,11 +1,13 @@
 //@flow
 import React, { Component } from 'react';
 
-import { Container, Table, Message, Loader } from 'semantic-ui-react';
+import { Container, Table, Message, Loader, Segment, Divider } from 'semantic-ui-react';
 
 import { gql, graphql } from 'react-apollo';
 
 import RawResults from './RawResults';
+
+import Chart from './Chart';
 
 class QueryResultContainer extends Component {
   render() {
@@ -32,9 +34,23 @@ class QueryResultContainer extends Component {
       );
     }
 
+    if (query.chartName !== 'UnknownChart') {
+      return (
+        <Container>
+          <Segment padded>
+            <Chart data={query} />
+            <Divider horizontal>Raw data</Divider>
+            <RawResults columns={query.columns} rows={query.rows} />
+          </Segment>
+        </Container>
+      );
+    }
+
     return (
       <Container>
-        <RawResults columns={query.columns} rows={query.rows} />
+        <Segment padded>
+          <RawResults columns={query.columns} rows={query.rows} />
+        </Segment>
       </Container>
     );
   }
@@ -43,8 +59,9 @@ class QueryResultContainer extends Component {
 const Query = gql`
 query Query($source: String!, $input: String!) {
   query(source: $source, input: $input) {
-    ... on rawResults {
-        total
+    ... on results {
+        chartName
+
         columns {
           name
           type
