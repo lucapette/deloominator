@@ -2,4 +2,5 @@ deloominator
 bin/run
 ui/node_modules
 pkg/api/static.go
-ui/dist/App.js*
+ui/dist/App.js
+ui/dist/App.js.map
