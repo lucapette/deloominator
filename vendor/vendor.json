@@ -3,88 +3,92 @@
 	"ignore": "test",
 	"package": [
 		{
+			"path": "appengine/cloudsql",
+			"revision": ""
+		},
+		{
 			"checksumSHA1": "ZKxETlJdB2XubMrZnXB0FQimVA8=",
 			"path": "github.com/Sirupsen/logrus",
 			"revision": "10f801ebc38b33738c9d17d50860f484a0988ff5",
 			"revisionTime": "2017-03-17T14:32:14Z"
 		},
 		{
-			"checksumSHA1": "QD6LqgLz2JMxXqns8TaxtK9AuHs=",
+			"checksumSHA1": "42vkdsxNaLyPu+FktCzZ/8zsNSE=",
 			"path": "github.com/go-sql-driver/mysql",
-			"revision": "2e00b5cd70399450106cec6431c2e2ce3cae5034",
-			"revisionTime": "2016-12-24T12:10:19Z"
+			"revision": "9dee4ca50b83acdf57a35fb9e6fb4be640afa2f3",
+			"revisionTime": "2017-03-27T11:30:21Z"
 		},
 		{
-			"checksumSHA1": "rkgAfsK0G98G8Jl5imPJeslv1uo=",
+			"checksumSHA1": "vlIwCp269MAOp6LOyl+OnPy/K0U=",
 			"path": "github.com/graphql-go/graphql",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
 			"checksumSHA1": "EYsvdu2FEkUZcai8y+nRsj3B5zA=",
 			"path": "github.com/graphql-go/graphql/gqlerrors",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
-			"checksumSHA1": "F6DqOJeICQY0ZyW5XdP2bIhQjyE=",
+			"checksumSHA1": "t2SAPiaZ29ocFRyAPwV17OTccLE=",
 			"path": "github.com/graphql-go/graphql/language/ast",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
 			"checksumSHA1": "FNFpZJ07U5Ud3MCc25ast14qVbo=",
 			"path": "github.com/graphql-go/graphql/language/kinds",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
 			"checksumSHA1": "8prb7ZKM8a07/nduiBn9bjby6GI=",
 			"path": "github.com/graphql-go/graphql/language/lexer",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
 			"checksumSHA1": "yskrC6tG5BTJdIk4GKHzGTenQOc=",
 			"path": "github.com/graphql-go/graphql/language/location",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
-			"checksumSHA1": "6SH6pyHhLV2RR2rb0h9fNc3SB/U=",
+			"checksumSHA1": "eOtYOcF6kb2TeM8jRwbxbeJdT6E=",
 			"path": "github.com/graphql-go/graphql/language/parser",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
-			"checksumSHA1": "IDZTgXVgd/3Qgb05aX/nsjSBI8I=",
+			"checksumSHA1": "vvZgiJe8nZ6r++mAFcgXw1O1+nE=",
 			"path": "github.com/graphql-go/graphql/language/printer",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
 			"checksumSHA1": "dRrl/Ky/0NTYA3bZznpxp4tG5Jc=",
 			"path": "github.com/graphql-go/graphql/language/source",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
 			"checksumSHA1": "f62XVj7So29WO/HJC6znxHbbeTs=",
 			"path": "github.com/graphql-go/graphql/language/typeInfo",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
-			"checksumSHA1": "ueXuiQXmyDSosEmAoFNMX77bodY=",
+			"checksumSHA1": "qeUIi6ohnCSBjL7lbvqPcc+L0Ig=",
 			"path": "github.com/graphql-go/graphql/language/visitor",
-			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
-			"revisionTime": "2016-12-10T05:15:12Z"
+			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
+			"revisionTime": "2017-04-21T17:52:08Z"
 		},
 		{
-			"checksumSHA1": "pNria08/hqW7nnWb0erRBMdJU3M=",
+			"checksumSHA1": "Vkw47ZGKiFYYzHxsPfVWZH9USiA=",
 			"path": "github.com/kelseyhightower/envconfig",
-			"revision": "4069f29f08928c54bcb1fdf632b31b1bb54b4fdb",
-			"revisionTime": "2017-01-13T19:16:37Z"
+			"revision": "202b52d1dba0b93c3727d73515f5b54dec0c0909",
+			"revisionTime": "2017-04-20T21:23:16Z"
 		},
 		{
 			"checksumSHA1": "eOXF2PEvYLMeD8DSzLZJWbjYzco=",
@@ -99,22 +103,22 @@
 			"revisionTime": "2016-05-04T02:26:26Z"
 		},
 		{
-			"checksumSHA1": "e+1BYI9y5LUyfSC+lwQF0AXP5sA=",
+			"checksumSHA1": "uTUsjF7bymOuKvXbW2BpkK/w4Vg=",
 			"path": "github.com/lib/pq",
-			"revision": "5bf161122cd640c2a5a2c1d7fa49ea9befff31dd",
-			"revisionTime": "2016-12-20T09:00:36Z"
+			"revision": "2704adc878c21e1329f46f6e56a1c387d788ff94",
+			"revisionTime": "2017-03-24T20:46:54Z"
 		},
 		{
-			"checksumSHA1": "xppHi82MLqVx1eyQmbhTesAEjx8=",
+			"checksumSHA1": "Gk3jTNQ5uGDUE0WMJFWcYz9PMps=",
 			"path": "github.com/lib/pq/oid",
-			"revision": "5bf161122cd640c2a5a2c1d7fa49ea9befff31dd",
-			"revisionTime": "2016-12-20T09:00:36Z"
+			"revision": "2704adc878c21e1329f46f6e56a1c387d788ff94",
+			"revisionTime": "2017-03-24T20:46:54Z"
 		},
 		{
-			"checksumSHA1": "LjPdvMphElL0GOVNQCsmZMVgWIw=",
+			"checksumSHA1": "naf+sai8rdVYJ9ozLllNMMwE9aY=",
 			"path": "github.com/rs/cors",
-			"revision": "a62a804a8a009876ca59105f7899938a1349f4b3",
-			"revisionTime": "2016-06-17T23:19:35Z"
+			"revision": "2d7dd2a10331137ae3f931ba08c21fd00cbf208d",
+			"revisionTime": "2017-04-20T18:42:42Z"
 		},
 		{
 			"checksumSHA1": "hCRfPlNpqv8tvVivLzmXsoUOf1c=",
@@ -149,14 +153,14 @@
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
-			"revision": "41bba8d80bbfab43231ffdf4c210037baae5f6a3",
-			"revisionTime": "2017-01-27T14:21:26Z"
+			"revision": "0b588ed7a0cd59c271d128ec8c429c1c1607e8ab",
+			"revisionTime": "2017-04-21T11:32:07Z"
 		},
 		{
-			"checksumSHA1": "uTQtOqR0ePMMcvuvAIksiIZxhqU=",
+			"checksumSHA1": "ZVZBntvdoK/qUq/6uF8YMWmuMC4=",
 			"path": "golang.org/x/sys/unix",
-			"revision": "d75a52659825e75fff6158388dddc6a5b04f9ba5",
-			"revisionTime": "2016-12-14T18:38:57Z"
+			"revision": "ea9bcade75cb975a0b9738936568ab388b845617",
+			"revisionTime": "2017-03-08T18:50:27Z"
 		}
 	],
 	"rootPath": "github.com/lucapette/deloominator"
