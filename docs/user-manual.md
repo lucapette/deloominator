@@ -3,8 +3,12 @@ The scope of this document is to provide an overview of the usage of
 
 # Configuration
 
-`deloominator` uses enviroment variables for its configuration, you can find
-the full list of variables in [this document](/docs/variables.md).
+`deloominator` uses environment variables for its configuration, you can find
+a list of all available options running the following command:
+
+```sh
+$ deloominator --help
+```
 
 # User interface
 

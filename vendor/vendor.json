@@ -127,6 +127,12 @@
 			"revisionTime": "2016-06-18T19:32:21Z"
 		},
 		{
+			"checksumSHA1": "/iDm+vsu0bUFOgLzkeAXl0cJFXc=",
+			"path": "github.com/spf13/pflag",
+			"revision": "2300d0f8576fe575f71aaa5b9bbe4e1b0dc2eb51",
+			"revisionTime": "2017-04-18T05:23:14Z"
+		},
+		{
 			"checksumSHA1": "OvrNwcBO+xO4FZ7eMbazho1C3t0=",
 			"path": "goji.io",
 			"revision": "0d89ff54b2c18c9c4ba530e32496aef902d3c6cd",
