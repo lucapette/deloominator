@@ -183,13 +183,17 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, result db.QueryResu
 func InitConfig(t *testing.T, vars map[string]string) *config.Config {
 	for k, v := range vars {
 		err := os.Setenv(fmt.Sprintf("%s_%s", strings.ToUpper(config.BinaryName), k), v)
-
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
-	return config.GetConfig()
+	cfg, err := config.GetConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return cfg
 }
 
 func Diff(expected, actual interface{}) []string {
