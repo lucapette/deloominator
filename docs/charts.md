@@ -19,16 +19,39 @@ For example, let's say a data set returns the following:
 | 42    | B       |
 | 24    | C       |
 
-The data set has _2_ columns and they have the types _number_ and _text_, in
+The data set has _2_ columns and they have the types _Number_ and _Text_, in
 this order. `deloominator` would render a [Simple Bar](#simple-bar) in this case.
 
 ## Supported charts
 
-This is a list of all the charts `deloominator` supports.
+Here is a list of all the charts `deloominator` detects automatically.
 
 ### Simple Bar
 
 - *2* Columns
-- Columns types:
-  - `number`
-  - `text`
+- Types:
+  - `Number`
+  - `Text`
+
+### Simple Line
+
+- **2** Columns
+- Types:
+  - `Number`
+  - `Time`
+
+### Multiple Bar
+
+- **3** Columns
+- Types:
+  - `Number`
+  - `Text`
+  - `Text`
+
+### Multiple Lines
+
+- **3** Columns
+- Types:
+  - `Number`
+  - `Time`
+  - `Text`

@@ -7,6 +7,7 @@ type ChartType int
 const (
 	UnknownChart ChartType = iota
 	SimpleBar
+	SimpleLine
 )
 
 type DataType int
@@ -44,6 +45,8 @@ func (ct ChartType) String() string {
 	switch ct {
 	case SimpleBar:
 		return "SimpleBar"
+	case SimpleLine:
+		return "SimpleLine"
 	}
 
 	return "UnknownChart"
@@ -66,4 +69,5 @@ func init() {
 	charts = make(map[string]ChartType)
 
 	charts[sequence(DataTypes{Number, Text})] = SimpleBar
+	charts[sequence(DataTypes{Number, Time})] = SimpleLine
 }

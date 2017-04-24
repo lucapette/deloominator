@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 
 import SimpleBar from '../Charts/SimpleBar';
+import SimpleLine from '../Charts/SimpleLine';
 
 import _ from 'lodash';
 
 const CHARTS = {
-  'SimpleBar': SimpleBar
+  'SimpleBar': SimpleBar,
+  'SimpleLine': SimpleLine
 };
 
 export default class Chart extends Component {
