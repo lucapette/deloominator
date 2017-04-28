@@ -16,7 +16,7 @@ func (pg *Postgres) TablesQuery() string {
 
 func (pg *Postgres) ExtractCellInfo(data interface{}) (cell Cell, colType Type) {
 	switch data.(type) {
-	case int64:
+	case int64, float64:
 		cell = Cell{Value: fmt.Sprint(data)}
 		colType = Number
 	case string:
