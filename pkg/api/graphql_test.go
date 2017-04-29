@@ -61,40 +61,40 @@ func TestGraphQLQueries(t *testing.T) {
 		testutil.LoadData(t, dataSource, "actor", rows)
 
 		tests := []test{
-			{query: graphqlPayload(t, "{ notAQuery }"), code: 400, fixture: "wrong_query.json"},
-			{query: graphqlPayload(t, "{ dataSources {name} }"), code: 200, fixture: "data_sources.json"},
-			{query: graphqlPayload(t, "{ dataSources {name tables {name}}}"), code: 200, fixture: "data_sources_with_tables.json"},
+			{query: "{ notAQuery }", code: 400, fixture: "wrong_query.json"},
+			{query: "{ dataSources {name} }", code: 200, fixture: "data_sources.json"},
+			{query: "{ dataSources {name tables {name}}}", code: 200, fixture: "data_sources_with_tables.json"},
 			{
-				query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select actor_id, first_name, last_name from actor") {
+				query: fmt.Sprintf(`{ query(source: "%s", input: "select actor_id, first_name, last_name from actor") {
 			                                          ... on results {
 														chartName
 									                    columns { name type }
 									                    rows { cells { value } }
 								                      }
 		                                            }
-	                                              }`, dataSource.Name())),
+	                                              }`, dataSource.Name()),
 				code:    200,
 				fixture: "query_raw_results.json",
 			},
 			{
-				query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select substr(first_name, 1, 1) initial, count(*)  from actor group by 1") {
+				query: fmt.Sprintf(`{ query(source: "%s", input: "select substr(first_name, 1, 1) initial, count(*)  from actor group by 1") {
 			                                          ... on results {
 														chartName
 									                    columns { name type }
 									                    rows { cells { value } }
 								                      }
 		                                            }
-	                                              }`, dataSource.Name())),
+	                                              }`, dataSource.Name()),
 				code:    200,
 				fixture: "query_chart_detected.json",
 			},
 			{
-				query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select * from table_that_does_not_exist") {
+				query: fmt.Sprintf(`{ query(source: "%s", input: "select * from table_that_does_not_exist") {
 			                                          ... on queryError {
 								                        message
 								                      }
 		                                            }
-												  }`, dataSource.Name())),
+												  }`, dataSource.Name()),
 				code:    200,
 				fixture: "query_error.json",
 			},
@@ -102,8 +102,7 @@ func TestGraphQLQueries(t *testing.T) {
 
 		for _, test := range tests {
 			t.Run(test.fixture, func(t *testing.T) {
-				req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(test.query))
-
+				req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(graphqlPayload(t, test.query)))
 				w := httptest.NewRecorder()
 
 				api.GraphQLHandler(dataSources)(w, req)
