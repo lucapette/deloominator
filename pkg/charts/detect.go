@@ -68,6 +68,7 @@ func (t DataType) String() string {
 func init() {
 	charts = make(map[string]ChartType)
 
-	charts[sequence(DataTypes{Number, Text})] = SimpleBar
-	charts[sequence(DataTypes{Number, Time})] = SimpleLine
+	charts[sequence(DataTypes{Text, Number})] = SimpleBar
+	charts[sequence(DataTypes{Number, Number})] = SimpleBar
+	charts[sequence(DataTypes{Time, Number})] = SimpleLine
 }

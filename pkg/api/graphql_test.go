@@ -76,7 +76,7 @@ func TestGraphQLQueries(t *testing.T) {
 				fixture: "query_raw_results.json",
 			},
 			{
-				query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select count(*), substr(first_name, 1, 1) initial  from actor group by 2") {
+				query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select substr(first_name, 1, 1) initial, count(*)  from actor group by 1") {
 			                                          ... on results {
 														chartName
 									                    columns { name type }

@@ -16,8 +16,7 @@ export default class SimpleBar extends Component {
       "values": this.props.values
     };
 
-    // not sure this is a safe assumption
-    const [y, x] = Object.keys(this.props.values[0]);
+    const [x, y] = Object.keys(this.props.values[0]);
 
     spec["encoding"]["x"]["field"] = x;
     spec["encoding"]["y"]["field"] = y;

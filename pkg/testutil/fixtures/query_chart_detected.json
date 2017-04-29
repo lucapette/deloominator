@@ -1,1 +1,1 @@
-{"data":{"query":{"chartName":"SimpleBar","columns":[{"name":"count","type":"Number"},{"name":"initial","type":"Text"}],"rows":[{"cells":[{"value":"1"},{"value":"A"}]}]}}}
+{"data":{"query":{"chartName":"SimpleBar","columns":[{"name":"initial","type":"Text"},{"name":"count","type":"Number"}],"rows":[{"cells":[{"value":"A"},{"value":"1"}]}]}}}
