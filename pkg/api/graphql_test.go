@@ -43,9 +43,9 @@ func graphqlPayload(t *testing.T, query string) string {
 }
 
 func TestGraphQLDataSources(t *testing.T) {
-	dsn, cleanup := testutil.SetupPG(t)
+	dsnPG, cleanupPG := testutil.SetupPG(t)
 	cfg := testutil.InitConfig(t, map[string]string{
-		"DATA_SOURCES": dsn,
+		"DATA_SOURCES": dsnPG,
 	})
 	dataSources, err := db.NewDataSources(cfg.Sources)
 	if err != nil {
@@ -54,7 +54,7 @@ func TestGraphQLDataSources(t *testing.T) {
 
 	defer func() {
 		dataSources.Shutdown()
-		cleanup()
+		cleanupPG()
 	}()
 
 	tests := []test{
@@ -160,14 +160,13 @@ func TestGraphQLQuery(t *testing.T) {
 					t.Fatalf("expected code %d, got: %d. Resp: %s", 200, w.Code, actual)
 				}
 
-				var expected bytes.Buffer
-				testutil.ParseFixture(t, &expected, test.fixture, testutil.DBTemplate{Name: dataSource.Name()})
+				expected := testutil.LoadFixture(t, test.fixture)
 				if *update {
 					testutil.WriteFixture(t, test.fixture, actual)
 				}
 
-				if !reflect.DeepEqual(strings.TrimSuffix(expected.String(), "\n"), actual) {
-					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected.String(), actual))
+				if !reflect.DeepEqual(strings.TrimSuffix(expected, "\n"), actual) {
+					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
 				}
 			})
 		}
