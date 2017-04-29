@@ -12,6 +12,7 @@ import (
 type DataSource struct {
 	dialect Dialect
 	db      *sql.DB
+	Driver  string
 }
 
 type DataSources map[string]*DataSource
@@ -46,8 +47,10 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		return nil, err
 	}
 
+	driver := url.Scheme
+
 	var dialect Dialect
-	switch url.Scheme {
+	switch driver {
 	case "postgres":
 		dialect, err = NewPostgresDialect(source)
 	case "mysql":
@@ -66,7 +69,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DataSource{dialect: dialect, db: db}, nil
+	return &DataSource{dialect: dialect, db: db, Driver: driver}, nil
 }
 
 func (ds *DataSource) Tables() (QueryResult, error) {

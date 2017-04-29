@@ -19,8 +19,8 @@ import (
 var update = flag.Bool("update", false, "update golden files")
 
 var rows = db.QueryResult{
-	Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
-	Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}},
+	Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}, db.Cell{Value: "2016-01-01"}}},
+	Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}, {Name: "last_update"}},
 }
 
 type test struct {
@@ -60,7 +60,7 @@ func TestGraphQLDataSources(t *testing.T) {
 	tests := []test{
 		{query: "{ notAQuery }", code: 400, fixture: "wrong_query.json"},
 		{query: "{ dataSources {name} }", code: 200, fixture: "data_sources.json"},
-		{query: "{ dataSources {name tables {name}}}", code: 200, fixture: "data_sources_with_tables.json"},
+		{query: "{ dataSources {name tables {name} } }", code: 200, fixture: "data_sources_with_tables.json"},
 	}
 
 	for _, dataSource := range dataSources {
@@ -109,22 +109,7 @@ var graphQLQuery = `
 }
 `
 
-var queryTests = []test{
-	{
-		query:   `select * from table_that_does_not_exist`,
-		fixture: "query_error.json",
-	},
-	{
-		query:   `select actor_id, first_name, last_name from actor`,
-		fixture: "query_raw_results.json",
-	},
-	{
-		query:   `select substr(first_name, 1, 1) initial, count(*)  from actor group by 1`,
-		fixture: "query_simple_bar_detected.json",
-	},
-}
-
-func TestGraphQLQuery(t *testing.T) {
+func TestGraphQLQueryError(t *testing.T) {
 	dsn, cleanup := testutil.SetupPG(t)
 	cfg := testutil.InitConfig(t, map[string]string{
 		"DATA_SOURCES": dsn,
@@ -142,8 +127,71 @@ func TestGraphQLQuery(t *testing.T) {
 	for _, dataSource := range dataSources {
 		testutil.LoadData(t, dataSource, "actor", rows)
 
+		query := graphqlPayload(t, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
+		req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(query))
+		w := httptest.NewRecorder()
+
+		api.GraphQLHandler(dataSources)(w, req)
+
+		resp, err := ioutil.ReadAll(w.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		actual := string(resp)
+
+		if w.Code != 200 {
+			t.Fatalf("expected code 200, got: %d. Resp: %s", w.Code, actual)
+		}
+
+		fixture := fmt.Sprintf("query_error_%s.json", dataSource.Driver)
+		expected := testutil.LoadFixture(t, fixture)
+		if *update {
+			testutil.WriteFixture(t, fixture, actual)
+		}
+
+		if !reflect.DeepEqual(strings.TrimSuffix(expected, "\n"), actual) {
+			t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
+		}
+	}
+}
+
+var queryTests = []test{
+	{
+		query:   `select actor_id, first_name, last_name from actor`,
+		fixture: "query_raw_results.json",
+	},
+	{
+		query:   `select substr(first_name, 1, 1) initial, count(*) total  from actor group by 1`,
+		fixture: "query_simple_bar_detected.json",
+	},
+	{
+		query:   `select last_update, count(*) total from actor group by 1`,
+		fixture: "query_simple_line_detected.json",
+	},
+}
+
+func TestGraphQLQuery(t *testing.T) {
+	dsnPG, cleanupPG := testutil.SetupPG(t)
+	dsnMySQL, cleanupMySQL := testutil.SetupMySQL(t)
+	cfg := testutil.InitConfig(t, map[string]string{
+		"DATA_SOURCES": fmt.Sprintf("%s,%s", dsnPG, dsnMySQL),
+	})
+	dataSources, err := db.NewDataSources(cfg.Sources)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		dataSources.Shutdown()
+		cleanupPG()
+		cleanupMySQL()
+	}()
+
+	for _, dataSource := range dataSources {
+		testutil.LoadData(t, dataSource, "actor", rows)
+
 		for _, test := range queryTests {
-			t.Run(test.fixture, func(t *testing.T) {
+			t.Run(fmt.Sprintf("%s/%s", dataSource.Driver, test.fixture), func(t *testing.T) {
 				query := graphqlPayload(t, fmt.Sprintf(graphQLQuery, dataSource.Name(), test.query))
 				req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(query))
 				w := httptest.NewRecorder()
