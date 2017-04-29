@@ -38,7 +38,7 @@ func graphqlPayload(t *testing.T, query string) string {
 }
 
 func TestGraphQLQueries(t *testing.T) {
-	dsn, cleanup := testutil.SetupDB(t, db.PostgresDriver)
+	dsn, cleanup := testutil.SetupPG(t)
 	cfg := testutil.InitConfig(t, map[string]string{
 		"DATA_SOURCES": dsn,
 	})

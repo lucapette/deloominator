@@ -9,17 +9,17 @@ import (
 )
 
 var drivers = []struct {
-	name   string
-	driver db.DriverType
+	name  string
+	setup func(*testing.T) (string, func())
 }{
-	{"postgres", db.PostgresDriver},
-	{"mysql", db.MySQLDriver},
+	{"postgres", testutil.SetupPG},
+	{"mysql", testutil.SetupMySQL},
 }
 
 func TestDriversTables(t *testing.T) {
 	for _, test := range drivers {
 		t.Run(test.name, func(t *testing.T) {
-			dsn, cleanup := testutil.SetupDB(t, test.driver)
+			dsn, cleanup := test.setup(t)
 			driver, err := db.NewDataSource(dsn)
 			if err != nil {
 				t.Fatal(err)
@@ -55,7 +55,7 @@ func TestDriversTables(t *testing.T) {
 func TestDriversQuery(t *testing.T) {
 	for _, test := range drivers {
 		t.Run(test.name, func(t *testing.T) {
-			dsn, cleanup := testutil.SetupDB(t, test.driver)
+			dsn, cleanup := test.setup(t)
 			driver, err := db.NewDataSource(dsn)
 			if err != nil {
 				t.Fatal(err)

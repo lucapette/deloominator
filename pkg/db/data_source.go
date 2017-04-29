@@ -9,13 +9,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type DriverType int
-
-const (
-	PostgresDriver DriverType = iota
-	MySQLDriver
-)
-
 type DataSource struct {
 	dialect Dialect
 	db      *sql.DB

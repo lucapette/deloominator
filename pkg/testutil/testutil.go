@@ -63,7 +63,7 @@ func randName() string {
 	return fmt.Sprintf("%s_%s", config.BinaryName, strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid()))))
 }
 
-func setupPostgres(t *testing.T) (string, func()) {
+func SetupPG(t *testing.T) (string, func()) {
 	randName := randName()
 
 	dsn := fmt.Sprintf("postgres://localhost/%s?sslmode=disable", randName)
@@ -104,7 +104,7 @@ func setupPostgres(t *testing.T) (string, func()) {
 	}
 }
 
-func setupMysql(t *testing.T) (string, func()) {
+func SetupMySQL(t *testing.T) (string, func()) {
 	randName := randName()
 
 	dsn := fmt.Sprintf("mysql://root:root@/%s", randName)
@@ -133,17 +133,6 @@ func setupMysql(t *testing.T) (string, func()) {
 			t.Fatal(err)
 		}
 	}
-}
-
-func SetupDB(t *testing.T, driver db.DriverType) (dsn string, cleanup func()) {
-	switch driver {
-	case db.PostgresDriver:
-		dsn, cleanup = setupPostgres(t)
-	case db.MySQLDriver:
-		dsn, cleanup = setupMysql(t)
-	}
-
-	return dsn, cleanup
 }
 
 func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult) {
