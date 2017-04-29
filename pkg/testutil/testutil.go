@@ -146,19 +146,19 @@ func SetupDB(t *testing.T, driver db.DriverType) (dsn string, cleanup func()) {
 	return dsn, cleanup
 }
 
-func LoadData(t *testing.T, ds *db.DataSource, table string, result db.QueryResult) {
+func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult) {
 	query := bytes.NewBufferString(fmt.Sprintf("insert into %s (", table))
 
-	columns := make([]string, len(result.Columns))
-	for i, col := range result.Columns {
+	columns := make([]string, len(data.Columns))
+	for i, col := range data.Columns {
 		columns[i] = col.Name
 	}
 	query.WriteString(strings.Join(columns, ","))
 
 	query.WriteString(") values ")
 
-	rows := make([]string, len(result.Rows))
-	for i, r := range result.Rows {
+	rows := make([]string, len(data.Rows))
+	for i, r := range data.Rows {
 		row := bytes.NewBufferString("(")
 
 		cells := make([]string, len(r))

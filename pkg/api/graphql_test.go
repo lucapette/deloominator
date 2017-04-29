@@ -52,12 +52,13 @@ func TestGraphQLQueries(t *testing.T) {
 		cleanup()
 	}()
 
-	for _, driver := range dataSources {
-		rows := db.QueryResult{
-			Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
-			Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}},
-		}
-		testutil.LoadData(t, driver, "actor", rows)
+	rows := db.QueryResult{
+		Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
+		Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}},
+	}
+
+	for _, dataSource := range dataSources {
+		testutil.LoadData(t, dataSource, "actor", rows)
 
 		tests := []test{
 			{query: graphqlPayload(t, "{ notAQuery }"), code: 400, fixture: "wrong_query.json"},
@@ -71,7 +72,7 @@ func TestGraphQLQueries(t *testing.T) {
 									                    rows { cells { value } }
 								                      }
 		                                            }
-	                                              }`, driver.Name())),
+	                                              }`, dataSource.Name())),
 				code:    200,
 				fixture: "query_raw_results.json",
 			},
@@ -83,7 +84,7 @@ func TestGraphQLQueries(t *testing.T) {
 									                    rows { cells { value } }
 								                      }
 		                                            }
-	                                              }`, driver.Name())),
+	                                              }`, dataSource.Name())),
 				code:    200,
 				fixture: "query_chart_detected.json",
 			},
@@ -93,7 +94,7 @@ func TestGraphQLQueries(t *testing.T) {
 								                        message
 								                      }
 		                                            }
-												  }`, driver.Name())),
+												  }`, dataSource.Name())),
 				code:    200,
 				fixture: "query_error.json",
 			},
@@ -118,7 +119,7 @@ func TestGraphQLQueries(t *testing.T) {
 				}
 
 				var expected bytes.Buffer
-				testutil.ParseFixture(t, &expected, test.fixture, testutil.DBTemplate{Name: driver.Name()})
+				testutil.ParseFixture(t, &expected, test.fixture, testutil.DBTemplate{Name: dataSource.Name()})
 				if *update {
 					testutil.WriteFixture(t, test.fixture, actual)
 				}

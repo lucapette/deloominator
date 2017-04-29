@@ -47,23 +47,14 @@ func (dataSources DataSources) Shutdown() {
 	}
 }
 
-func parseDriver(source string) (string, error) {
-	url, err := url.Parse(source)
-	if err != nil {
-		return "", err
-	}
-
-	return url.Scheme, nil
-}
-
 func NewDataSource(source string) (ds *DataSource, err error) {
-	driver, err := parseDriver(source)
+	url, err := url.Parse(source)
 	if err != nil {
 		return nil, err
 	}
 
 	var dialect Dialect
-	switch driver {
+	switch url.Scheme {
 	case "postgres":
 		dialect, err = NewPostgresDialect(source)
 	case "mysql":
@@ -73,7 +64,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		return nil, err
 	}
 
-	db, err := sql.Open(driver, dialect.ConnectionString())
+	db, err := sql.Open(url.Scheme, dialect.ConnectionString())
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +73,6 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &DataSource{dialect: dialect, db: db}, nil
 }
 
