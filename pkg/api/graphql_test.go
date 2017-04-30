@@ -56,6 +56,18 @@ func doRequest(t *testing.T, dataSources db.DataSources, code int, query string)
 	return string(resp)
 }
 
+func loadOrUpdateFixture(t *testing.T, fixture string, dataSource *db.DataSource, actual string) string {
+	var out bytes.Buffer
+
+	testutil.ParseFixture(t, &out, fixture, testutil.DBTemplate{Name: dataSource.Name()})
+
+	if *update {
+		testutil.WriteFixture(t, fixture, strings.Replace(actual, dataSource.Name(), "{{.Name}}", -1))
+
+	}
+	return strings.TrimSuffix(out.String(), "\n")
+}
+
 func TestGraphQLDataSources(t *testing.T) {
 	dsnPG, cleanupPG := testutil.SetupPG(t)
 	cfg := testutil.InitConfig(t, map[string]string{
@@ -84,12 +96,7 @@ func TestGraphQLDataSources(t *testing.T) {
 			t.Run(test.fixture, func(t *testing.T) {
 				actual := doRequest(t, dataSources, test.code, test.query)
 
-				var out bytes.Buffer
-				testutil.ParseFixture(t, &out, test.fixture, testutil.DBTemplate{Name: dataSource.Name()})
-				if *update {
-					testutil.WriteFixture(t, test.fixture, strings.Replace(actual, dataSource.Name(), "{{.Name}}", -1))
-				}
-				expected := strings.TrimSuffix(out.String(), "\n")
+				expected := loadOrUpdateFixture(t, test.fixture, dataSource, actual)
 
 				if !reflect.DeepEqual(expected, actual) {
 					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
@@ -133,13 +140,7 @@ func TestGraphQLQueryError(t *testing.T) {
 		t.Run(dataSource.Driver, func(t *testing.T) {
 			actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
 
-			fixture := fmt.Sprintf("query_error_%s.json", dataSource.Driver)
-			var out bytes.Buffer
-			testutil.ParseFixture(t, &out, fixture, testutil.DBTemplate{Name: dataSource.Name()})
-			if *update {
-				testutil.WriteFixture(t, fixture, strings.Replace(actual, dataSource.Name(), "{{.Name}}", -1))
-			}
-			expected := strings.TrimSuffix(out.String(), "\n")
+			expected := loadOrUpdateFixture(t, fmt.Sprintf("query_error_%s.json", dataSource.Driver), dataSource, actual)
 
 			if !reflect.DeepEqual(expected, actual) {
 				t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
@@ -187,12 +188,7 @@ func TestGraphQLQuery(t *testing.T) {
 			t.Run(fmt.Sprintf("%s/%s", dataSource.Driver, test.fixture), func(t *testing.T) {
 				actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), test.query))
 
-				var out bytes.Buffer
-				testutil.ParseFixture(t, &out, test.fixture, testutil.DBTemplate{Name: dataSource.Name()})
-				if *update {
-					testutil.WriteFixture(t, test.fixture, strings.Replace(actual, dataSource.Name(), "{{.Name}}", -1))
-				}
-				expected := strings.TrimSuffix(out.String(), "\n")
+				expected := loadOrUpdateFixture(t, test.fixture, dataSource, actual)
 
 				if !reflect.DeepEqual(strings.TrimSuffix(expected, "\n"), actual) {
 					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
