@@ -110,9 +110,11 @@ var graphQLQuery = `
 `
 
 func TestGraphQLQueryError(t *testing.T) {
-	dsn, cleanup := testutil.SetupPG(t)
+	dsnPG, cleanupPG := testutil.SetupPG(t)
+	dsnMySQL, cleanupMySQL := testutil.SetupMySQL(t)
+
 	cfg := testutil.InitConfig(t, map[string]string{
-		"DATA_SOURCES": dsn,
+		"DATA_SOURCES": fmt.Sprintf("%s,%s", dsnPG, dsnMySQL),
 	})
 	dataSources, err := db.NewDataSources(cfg.Sources)
 	if err != nil {
@@ -121,37 +123,41 @@ func TestGraphQLQueryError(t *testing.T) {
 
 	defer func() {
 		dataSources.Shutdown()
-		cleanup()
+		cleanupPG()
+		cleanupMySQL()
 	}()
 
 	for _, dataSource := range dataSources {
-		testutil.LoadData(t, dataSource, "actor", rows)
+		t.Run(dataSource.Driver, func(t *testing.T) {
+			testutil.LoadData(t, dataSource, "actor", rows)
 
-		query := graphqlPayload(t, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
-		req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(query))
-		w := httptest.NewRecorder()
+			query := graphqlPayload(t, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
+			req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(query))
+			w := httptest.NewRecorder()
 
-		api.GraphQLHandler(dataSources)(w, req)
+			api.GraphQLHandler(dataSources)(w, req)
 
-		resp, err := ioutil.ReadAll(w.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
-		actual := string(resp)
+			resp, err := ioutil.ReadAll(w.Body)
+			if err != nil {
+				t.Fatal(err)
+			}
+			actual := string(resp)
 
-		if w.Code != 200 {
-			t.Fatalf("expected code 200, got: %d. Resp: %s", w.Code, actual)
-		}
+			if w.Code != 200 {
+				t.Fatalf("expected code 200, got: %d. Resp: %s", w.Code, actual)
+			}
 
-		fixture := fmt.Sprintf("query_error_%s.json", dataSource.Driver)
-		expected := testutil.LoadFixture(t, fixture)
-		if *update {
-			testutil.WriteFixture(t, fixture, actual)
-		}
+			fixture := fmt.Sprintf("query_error_%s.json", dataSource.Driver)
+			var expected bytes.Buffer
+			testutil.ParseFixture(t, &expected, fixture, testutil.DBTemplate{Name: dataSource.Name()})
+			if *update {
+				testutil.WriteFixture(t, fixture, actual)
+			}
 
-		if !reflect.DeepEqual(strings.TrimSuffix(expected, "\n"), actual) {
-			t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
-		}
+			if !reflect.DeepEqual(strings.TrimSuffix(expected.String(), "\n"), actual) {
+				t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected.String(), actual))
+			}
+		})
 	}
 }
 
@@ -205,7 +211,7 @@ func TestGraphQLQuery(t *testing.T) {
 				actual := string(resp)
 
 				if w.Code != 200 {
-					t.Fatalf("expected code %d, got: %d. Resp: %s", 200, w.Code, actual)
+					t.Fatalf("expected code 200, got: %d. Resp: %s", w.Code, actual)
 				}
 
 				expected := testutil.LoadFixture(t, test.fixture)
