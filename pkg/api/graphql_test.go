@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http/httptest"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 
@@ -23,18 +24,8 @@ var rows = db.QueryResult{
 	Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}, {Name: "last_update"}},
 }
 
-type test struct {
-	query   string
-	code    int
-	fixture string
-}
-
 func doRequest(t *testing.T, dataSources db.DataSources, code int, query string) string {
-	payload := struct {
-		Query string `json:"query"`
-	}{Query: query}
-
-	json, err := json.Marshal(payload)
+	json, err := json.Marshal(api.GraphqlPayload{Query: query})
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -68,40 +59,77 @@ func loadOrUpdateFixture(t *testing.T, fixture string, dataSource *db.DataSource
 	return strings.TrimSuffix(out.String(), "\n")
 }
 
-func TestGraphQLDataSources(t *testing.T) {
-	dsnPG, cleanupPG := testutil.SetupPG(t)
-	cfg := testutil.InitConfig(t, map[string]string{
-		"DATA_SOURCES": dsnPG,
-	})
-	dataSources, err := db.NewDataSources(cfg.Sources)
-	if err != nil {
-		t.Fatal(err)
+func TestGraphQLNotAValidGraphQLQuery(t *testing.T) {
+	actual := doRequest(t, db.DataSources{}, 400, `{ notAValidQuery }`)
+
+	expected := testutil.LoadFixture(t, "not_a_valid_query.json")
+	if *update {
+		testutil.WriteFixture(t, "not_a_valid_query.json", actual)
 	}
 
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
+	}
+}
+
+func TestGraphQLDataSources(t *testing.T) {
+	type response struct {
+		Data struct {
+			DataSources []api.DataSource `json:"dataSources"`
+		} `json:"data"`
+	}
+	dataSources, cleanup := testutil.SetupDataSources(t)
 	defer func() {
-		dataSources.Shutdown()
-		cleanupPG()
+		cleanup()
 	}()
 
-	tests := []test{
-		{query: "{ notAQuery }", code: 400, fixture: "wrong_query.json"},
-		{query: "{ dataSources {name} }", code: 200, fixture: "data_sources.json"},
-		{query: "{ dataSources {name tables {name} } }", code: 200, fixture: "data_sources_with_tables.json"},
+	jsonResp := doRequest(t, dataSources, 200, `{ dataSources { name tables { name } } }`)
+	var resp response
+	err := json.Unmarshal([]byte(jsonResp), &resp)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	actual := resp.Data.DataSources
+
+	if len(dataSources) != len(actual) {
+		t.Fatalf("expected response to have %d dataSources, but got %d", len(dataSources), len(actual))
 	}
 
 	for _, dataSource := range dataSources {
-		testutil.LoadData(t, dataSource, "actor", rows)
+		var found *api.DataSource
+		for _, ds := range actual {
 
-		for _, test := range tests {
-			t.Run(test.fixture, func(t *testing.T) {
-				actual := doRequest(t, dataSources, test.code, test.query)
+			if strings.Compare(dataSource.Name(), ds.Name) == 0 {
+				found = &ds
+				break
+			}
+		}
 
-				expected := loadOrUpdateFixture(t, test.fixture, dataSource, actual)
+		if found == nil {
+			t.Fatalf("expected to find %s in %v, but did not", dataSource.Name(), actual)
+		}
 
-				if !reflect.DeepEqual(expected, actual) {
-					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
-				}
-			})
+		// this is annoyingly long.
+		// Look for improvements.
+		queryResult, err := dataSource.Tables()
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+		rows := make([]string, len(queryResult.Rows))
+		for i, r := range queryResult.Rows {
+			rows[i] = r[0].Value
+		}
+		sort.Strings(rows)
+
+		tables := make([]string, len(found.Tables))
+
+		for i, r := range found.Tables {
+			tables[i] = r.Name
+		}
+		sort.Strings(tables)
+
+		if !reflect.DeepEqual(rows, tables) {
+			t.Fatalf("Unexpected result, diff: %v", testutil.Diff(rows, tables))
 		}
 	}
 }
@@ -119,21 +147,9 @@ var graphQLQuery = `
 `
 
 func TestGraphQLQueryError(t *testing.T) {
-	dsnPG, cleanupPG := testutil.SetupPG(t)
-	dsnMySQL, cleanupMySQL := testutil.SetupMySQL(t)
-
-	cfg := testutil.InitConfig(t, map[string]string{
-		"DATA_SOURCES": fmt.Sprintf("%s,%s", dsnPG, dsnMySQL),
-	})
-	dataSources, err := db.NewDataSources(cfg.Sources)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	dataSources, cleanup := testutil.SetupDataSources(t)
 	defer func() {
-		dataSources.Shutdown()
-		cleanupPG()
-		cleanupMySQL()
+		cleanup()
 	}()
 
 	for _, dataSource := range dataSources {
@@ -149,7 +165,7 @@ func TestGraphQLQueryError(t *testing.T) {
 	}
 }
 
-var queryTests = []test{
+var queryTests = []struct{ query, fixture string }{
 	{
 		query:   `select actor_id, first_name, last_name from actor`,
 		fixture: "query_raw_results.json",
@@ -165,20 +181,9 @@ var queryTests = []test{
 }
 
 func TestGraphQLQuery(t *testing.T) {
-	dsnPG, cleanupPG := testutil.SetupPG(t)
-	dsnMySQL, cleanupMySQL := testutil.SetupMySQL(t)
-	cfg := testutil.InitConfig(t, map[string]string{
-		"DATA_SOURCES": fmt.Sprintf("%s,%s", dsnPG, dsnMySQL),
-	})
-	dataSources, err := db.NewDataSources(cfg.Sources)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	dataSources, cleanup := testutil.SetupDataSources(t)
 	defer func() {
-		dataSources.Shutdown()
-		cleanupPG()
-		cleanupMySQL()
+		cleanup()
 	}()
 
 	for _, dataSource := range dataSources {

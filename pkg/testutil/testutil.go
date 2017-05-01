@@ -185,6 +185,25 @@ func InitConfig(t *testing.T, vars map[string]string) *config.Config {
 	return cfg
 }
 
+func SetupDataSources(t *testing.T) (db.DataSources, func()) {
+	dsnPG, cleanupPG := SetupPG(t)
+	dsnMySQL, cleanupMySQL := SetupMySQL(t)
+	cfg := InitConfig(t, map[string]string{
+		"DATA_SOURCES": fmt.Sprintf("%s,%s", dsnPG, dsnMySQL),
+	})
+	dataSources, err := db.NewDataSources(cfg.Sources)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return dataSources, func() {
+		dataSources.Shutdown()
+		cleanupPG()
+		cleanupMySQL()
+	}
+
+}
+
 func Diff(expected, actual interface{}) []string {
 	return pretty.Diff(expected, actual)
 }
