@@ -2,23 +2,23 @@ package charts
 
 import "bytes"
 
-type ChartType string
+type ChartType int
 
 const (
-	UnknownChart ChartType = "UnknownChart"
-	SimpleBar    ChartType = "SimpleBar"
-	SimpleLine   ChartType = "SimpleLine"
+	UnknownChart ChartType = iota
+	SimpleBar
+	SimpleLine
 )
 
-type DataType string
+type DataType int
 
 type DataTypes []DataType
 
 const (
-	UnknownType DataType = "UnknownType"
-	Text        DataType = "Text"
-	Number      DataType = "Number"
-	Time        DataType = "Time"
+	UnknownType DataType = iota
+	Text
+	Number
+	Time
 )
 
 var charts map[string]ChartType
@@ -42,11 +42,27 @@ func Detect(types DataTypes) ChartType {
 }
 
 func (ct ChartType) String() string {
-	return string(ct)
+	switch ct {
+	case SimpleBar:
+		return "SimpleBar"
+	case SimpleLine:
+		return "SimpleLine"
+	}
+
+	return "UnknownChart"
 }
 
 func (t DataType) String() string {
-	return string(t)
+	switch t {
+	case Text:
+		return "Text"
+	case Number:
+		return "Number"
+	case Time:
+		return "Time"
+	}
+
+	return "Unknown"
 }
 
 func init() {
