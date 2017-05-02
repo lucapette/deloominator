@@ -47,3 +47,9 @@ Here is a list of the charts `deloominator` automatically detects.
 **3** columns with one of the following type sequences:
 
 - `Text` - `Text` - `Number`
+
+### Multi Line
+
+**3** columns with one of the following type sequences:
+
+- `Time` - `Text` - `Number`

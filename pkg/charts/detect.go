@@ -9,6 +9,7 @@ const (
 	SimpleBar
 	SimpleLine
 	GroupedBar
+	MultiLine
 )
 
 type DataType int
@@ -50,6 +51,8 @@ func (ct ChartType) String() string {
 		return "SimpleLine"
 	case GroupedBar:
 		return "GroupedBar"
+	case MultiLine:
+		return "MultiLine"
 	}
 
 	return "UnknownChart"
@@ -75,4 +78,5 @@ func init() {
 	charts[sequence(DataTypes{Number, Number})] = SimpleBar
 	charts[sequence(DataTypes{Time, Number})] = SimpleLine
 	charts[sequence(DataTypes{Text, Text, Number})] = GroupedBar
+	charts[sequence(DataTypes{Time, Text, Number})] = MultiLine
 }
