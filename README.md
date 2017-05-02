@@ -4,9 +4,9 @@ Shed the light on your data!
 
 # Overview
 
-`deloominator` helps you exploring your data with SQL. You can create charts
-and dashboard to share with your team. You can schedule reports or just play
-around with your schema.
+`deloominator` helps you exploring your data with SQL. You can create charts and
+dashboard to share with your team. You can schedule reports or just play around
+with your schema.
 
 # Project goals
 
@@ -21,10 +21,10 @@ understand the current status of the project and the upcoming developments.
 
 # Documentation
 
-Please refer to the [user manual](/docs/user-manual.md) to learn your way
-around `deloominator` features. If you are interested in learning more about
-how to develop new features or build the project on your own, we have a
-[developers' manual](/docs/developers-manual.md).
+Please refer to the [user manual](/docs/user-manual.md) to learn your way around
+`deloominator` features. If you are interested in learning more about how to
+develop new features or build the project on your own, we have a [developers'
+manual](/docs/developers-manual.md).
 
 # Installation guide
 
@@ -39,8 +39,8 @@ $ brew install deloominator
 
 ## Standalone
 
-`deloominator` can be installed as an executable. Download the latest
-[compiled binaries](https://github.com/lucapette/deloominator/releases) and put it
+`deloominator` can be installed as an executable. Download the latest [compiled
+binaries](https://github.com/lucapette/deloominator/releases) and put it
 anywhere in your executable path.
 
 ## Source
