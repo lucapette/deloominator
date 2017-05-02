@@ -63,7 +63,7 @@ func randName() string {
 	return fmt.Sprintf("%s_%s", config.BinaryName, strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid()))))
 }
 
-func setupPostgres(t *testing.T) (string, func()) {
+func SetupPG(t *testing.T) (string, func()) {
 	randName := randName()
 
 	dsn := fmt.Sprintf("postgres://localhost/%s?sslmode=disable", randName)
@@ -104,7 +104,7 @@ func setupPostgres(t *testing.T) (string, func()) {
 	}
 }
 
-func setupMysql(t *testing.T) (string, func()) {
+func SetupMySQL(t *testing.T) (string, func()) {
 	randName := randName()
 
 	dsn := fmt.Sprintf("mysql://root:root@/%s", randName)
@@ -135,30 +135,19 @@ func setupMysql(t *testing.T) (string, func()) {
 	}
 }
 
-func SetupDB(t *testing.T, driver db.DriverType) (dsn string, cleanup func()) {
-	switch driver {
-	case db.PostgresDriver:
-		dsn, cleanup = setupPostgres(t)
-	case db.MySQLDriver:
-		dsn, cleanup = setupMysql(t)
-	}
-
-	return dsn, cleanup
-}
-
-func LoadData(t *testing.T, ds *db.DataSource, table string, result db.QueryResult) {
+func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult) {
 	query := bytes.NewBufferString(fmt.Sprintf("insert into %s (", table))
 
-	columns := make([]string, len(result.Columns))
-	for i, col := range result.Columns {
+	columns := make([]string, len(data.Columns))
+	for i, col := range data.Columns {
 		columns[i] = col.Name
 	}
 	query.WriteString(strings.Join(columns, ","))
 
 	query.WriteString(") values ")
 
-	rows := make([]string, len(result.Rows))
-	for i, r := range result.Rows {
+	rows := make([]string, len(data.Rows))
+	for i, r := range data.Rows {
 		row := bytes.NewBufferString("(")
 
 		cells := make([]string, len(r))
@@ -194,6 +183,25 @@ func InitConfig(t *testing.T, vars map[string]string) *config.Config {
 	}
 
 	return cfg
+}
+
+func SetupDataSources(t *testing.T) (db.DataSources, func()) {
+	dsnPG, cleanupPG := SetupPG(t)
+	dsnMySQL, cleanupMySQL := SetupMySQL(t)
+	cfg := InitConfig(t, map[string]string{
+		"DATA_SOURCES": fmt.Sprintf("%s,%s", dsnPG, dsnMySQL),
+	})
+	dataSources, err := db.NewDataSources(cfg.Sources)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return dataSources, func() {
+		dataSources.Shutdown()
+		cleanupPG()
+		cleanupMySQL()
+	}
+
 }
 
 func Diff(expected, actual interface{}) []string {

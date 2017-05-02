@@ -36,16 +36,16 @@ type results struct {
 	ChartName string   `json:"chartName"`
 }
 
-type table struct {
+type Table struct {
 	Name string `json:"name"`
 }
 
-type dataSource struct {
+type DataSource struct {
 	Name   string   `json:"name"`
-	Tables []*table `json:"tables"`
+	Tables []*Table `json:"tables"`
 }
 
-type graphqlPayload struct {
+type GraphqlPayload struct {
 	Query         string                 `json:"query"`
 	OperationName string                 `json:"operationName,omitempty"`
 	Variables     map[string]interface{} `json:"variables,omitempty"`
@@ -80,7 +80,7 @@ func graphQLHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *h
 			return
 		}
 
-		var payload graphqlPayload
+		var payload GraphqlPayload
 
 		err = json.Unmarshal(query, &payload)
 		if err != nil {
@@ -116,7 +116,7 @@ func graphQLHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *h
 
 func ResolveDataSources(dbDataSources db.DataSources) func(p graphql.ResolveParams) (interface{}, error) {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		var dataSources []*dataSource
+		var dataSources []*DataSource
 
 		for _, ds := range dbDataSources {
 			log.WithField("schema_name", ds.Name()).Info("query metadata")
@@ -128,9 +128,9 @@ func ResolveDataSources(dbDataSources db.DataSources) func(p graphql.ResolvePara
 				return dataSources, err
 			}
 
-			ts := make([]*table, len(qr.Rows))
+			ts := make([]*Table, len(qr.Rows))
 			for i, t := range qr.Rows {
-				ts[i] = &table{Name: t[0].Value}
+				ts[i] = &Table{Name: t[0].Value}
 			}
 
 			log.WithFields(log.Fields{
@@ -139,7 +139,7 @@ func ResolveDataSources(dbDataSources db.DataSources) func(p graphql.ResolvePara
 				"spent":       time.Now().Sub(start),
 			}).Info("tables loaded")
 
-			dataSources = append(dataSources, &dataSource{Name: ds.Name(), Tables: ts})
+			dataSources = append(dataSources, &DataSource{Name: ds.Name(), Tables: ts})
 		}
 
 		return dataSources, nil

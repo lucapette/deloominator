@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 
 import SimpleBar from '../Charts/SimpleBar';
+import SimpleLine from '../Charts/SimpleLine';
+import GroupedBar from '../Charts/GroupedBar';
+import MultiLine from '../Charts/MultiLine';
 
 import _ from 'lodash';
 
 const CHARTS = {
-  'SimpleBar': SimpleBar
+  'SimpleBar': SimpleBar,
+  'SimpleLine': SimpleLine,
+  'GroupedBar': GroupedBar,
+  'MultiLine': MultiLine
 };
 
 export default class Chart extends Component {

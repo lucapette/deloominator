@@ -1,1 +1,0 @@
-{"data":{"dataSources":[{"name":"{{.Name}}","tables":[{"name":"actor"},{"name":"address"},{"name":"category"},{"name":"city"},{"name":"country"},{"name":"customer"},{"name":"film"},{"name":"film_actor"},{"name":"film_category"},{"name":"inventory"},{"name":"language"},{"name":"payment"},{"name":"rental"},{"name":"staff"},{"name":"store"}]}]}}

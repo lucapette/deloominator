@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import VegaLite from 'react-vega-lite';
 
 const spec = {
-  "description": "A simple bar chart with embedded data.",
-  "mark": "bar",
+  "description": "A simple line chart with embedded data.",
+  "mark": "line",
   "encoding": {
-    "x": {"type": "ordinal"},
+    "x": {"type": "temporal", "axis": {"shortTimeLabels": true}},
     "y": {"type": "quantitative"}
   }
 };
 
-export default class SimpleBar extends Component {
+export default class SimpleLine extends Component {
   render() {
     const data = {
       "values": this.props.values

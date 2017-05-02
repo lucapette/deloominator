@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http/httptest"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 
@@ -18,113 +19,192 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-type test struct {
-	query   string
-	code    int
-	fixture string
+var rows = db.QueryResult{
+	Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}, db.Cell{Value: "2016-01-01"}}},
+	Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}, {Name: "last_update"}},
 }
 
-func graphqlPayload(t *testing.T, query string) string {
-	payload := struct {
-		Query string `json:"query"`
-	}{Query: query}
-
-	json, err := json.Marshal(payload)
+func doRequest(t *testing.T, dataSources db.DataSources, code int, query string) string {
+	json, err := json.Marshal(api.GraphqlPayload{Query: query})
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
 
-	return string(json)
-}
+	req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(string(json)))
+	w := httptest.NewRecorder()
 
-func TestGraphQLQueries(t *testing.T) {
-	dsn, cleanup := testutil.SetupDB(t, db.PostgresDriver)
-	cfg := testutil.InitConfig(t, map[string]string{
-		"DATA_SOURCES": dsn,
-	})
-	dataSources, err := db.NewDataSources(cfg.Sources)
+	api.GraphQLHandler(dataSources)(w, req)
+
+	resp, err := ioutil.ReadAll(w.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	if w.Code != code {
+		t.Fatalf("expected code %d, got: %d", code, w.Code)
+	}
+
+	return string(resp)
+}
+
+func loadOrUpdateFixture(t *testing.T, fixture string, dataSource *db.DataSource, actual string) string {
+	var out bytes.Buffer
+
+	testutil.ParseFixture(t, &out, fixture, testutil.DBTemplate{Name: dataSource.Name()})
+
+	if *update {
+		testutil.WriteFixture(t, fixture, strings.Replace(actual, dataSource.Name(), "{{.Name}}", -1))
+
+	}
+	return strings.TrimSuffix(out.String(), "\n")
+}
+
+func TestGraphQLNotAValidGraphQLQuery(t *testing.T) {
+	actual := doRequest(t, db.DataSources{}, 400, `{ notAValidQuery }`)
+
+	expected := testutil.LoadFixture(t, "not_a_valid_query.json")
+	if *update {
+		testutil.WriteFixture(t, "not_a_valid_query.json", actual)
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
+	}
+}
+
+func TestGraphQLDataSources(t *testing.T) {
+	type response struct {
+		Data struct {
+			DataSources []api.DataSource `json:"dataSources"`
+		} `json:"data"`
+	}
+	dataSources, cleanup := testutil.SetupDataSources(t)
 	defer func() {
-		dataSources.Shutdown()
 		cleanup()
 	}()
 
-	for _, driver := range dataSources {
-		rows := db.QueryResult{
-			Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}}},
-			Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}},
-		}
-		testutil.LoadData(t, driver, "actor", rows)
+	jsonResp := doRequest(t, dataSources, 200, `{ dataSources { name tables { name } } }`)
+	var resp response
+	err := json.Unmarshal([]byte(jsonResp), &resp)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	actual := resp.Data.DataSources
 
-		tests := []test{
-			{query: graphqlPayload(t, "{ notAQuery }"), code: 400, fixture: "wrong_query.json"},
-			{query: graphqlPayload(t, "{ dataSources {name} }"), code: 200, fixture: "data_sources.json"},
-			{query: graphqlPayload(t, "{ dataSources {name tables {name}}}"), code: 200, fixture: "data_sources_with_tables.json"},
-			{
-				query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select actor_id, first_name, last_name from actor") {
-			                                          ... on results {
-														chartName
-									                    columns { name type }
-									                    rows { cells { value } }
-								                      }
-		                                            }
-	                                              }`, driver.Name())),
-				code:    200,
-				fixture: "query_raw_results.json",
-			},
-			{
-				query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select count(*), substr(first_name, 1, 1) initial  from actor group by 2") {
-			                                          ... on results {
-														chartName
-									                    columns { name type }
-									                    rows { cells { value } }
-								                      }
-		                                            }
-	                                              }`, driver.Name())),
-				code:    200,
-				fixture: "query_chart_detected.json",
-			},
-			{
-				query: graphqlPayload(t, fmt.Sprintf(`{ query(source: "%s", input: "select * from table_that_does_not_exist") {
-			                                          ... on queryError {
-								                        message
-								                      }
-		                                            }
-												  }`, driver.Name())),
-				code:    200,
-				fixture: "query_error.json",
-			},
+	if len(dataSources) != len(actual) {
+		t.Fatalf("expected response to have %d dataSources, but got %d", len(dataSources), len(actual))
+	}
+
+	for _, dataSource := range dataSources {
+		var found *api.DataSource
+		for _, ds := range actual {
+
+			if strings.Compare(dataSource.Name(), ds.Name) == 0 {
+				found = &ds
+				break
+			}
 		}
 
-		for _, test := range tests {
-			t.Run(test.fixture, func(t *testing.T) {
-				req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(test.query))
+		if found == nil {
+			t.Fatalf("expected to find %s in %v, but did not", dataSource.Name(), actual)
+		}
 
-				w := httptest.NewRecorder()
+		// this is annoyingly long.
+		// Look for improvements.
+		queryResult, err := dataSource.Tables()
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+		rows := make([]string, len(queryResult.Rows))
+		for i, r := range queryResult.Rows {
+			rows[i] = r[0].Value
+		}
+		sort.Strings(rows)
 
-				api.GraphQLHandler(dataSources)(w, req)
+		tables := make([]string, len(found.Tables))
 
-				resp, err := ioutil.ReadAll(w.Body)
-				if err != nil {
-					t.Fatal(err)
-				}
-				actual := string(resp)
+		for i, r := range found.Tables {
+			tables[i] = r.Name
+		}
+		sort.Strings(tables)
 
-				if w.Code != test.code {
-					t.Fatalf("expected code %d, got: %d. Resp: %s", test.code, w.Code, actual)
-				}
+		if !reflect.DeepEqual(rows, tables) {
+			t.Fatalf("Unexpected result, diff: %v", testutil.Diff(rows, tables))
+		}
+	}
+}
 
-				var expected bytes.Buffer
-				testutil.ParseFixture(t, &expected, test.fixture, testutil.DBTemplate{Name: driver.Name()})
-				if *update {
-					testutil.WriteFixture(t, test.fixture, actual)
-				}
+var graphQLQuery = `
+{ query(source: "%s", input: "%s") {
+	... on results {
+		chartName
+	    columns { name type }
+	    rows { cells { value } }
+    }
+    ... on queryError { message }
+  }
+}
+`
 
-				if !reflect.DeepEqual(strings.TrimSuffix(expected.String(), "\n"), actual) {
-					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected.String(), actual))
+func TestGraphQLQueryError(t *testing.T) {
+	dataSources, cleanup := testutil.SetupDataSources(t)
+	defer func() {
+		cleanup()
+	}()
+
+	for _, dataSource := range dataSources {
+		t.Run(dataSource.Driver, func(t *testing.T) {
+			actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
+
+			expected := loadOrUpdateFixture(t, fmt.Sprintf("query_error_%s.json", dataSource.Driver), dataSource, actual)
+
+			if !reflect.DeepEqual(expected, actual) {
+				t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
+			}
+		})
+	}
+}
+
+var queryTests = []struct{ query, fixture string }{
+	{
+		query:   `select actor_id, first_name, last_name from actor`,
+		fixture: "query_raw_results.json",
+	},
+	{
+		query:   `select substr(first_name, 1, 1) initial, count(*) total  from actor group by 1`,
+		fixture: "query_simple_bar_detected.json",
+	},
+	{
+		query:   `select last_update, count(*) total from actor group by 1`,
+		fixture: "query_simple_line_detected.json",
+	},
+	{
+		query:   `select first_name, last_name, count(*) total from actor group by 1, 2`,
+		fixture: "query_grouped_bar_detected.json",
+	},
+	{
+		query:   `select last_update, first_name, count(*) total from actor group by 1, 2`,
+		fixture: "query_multi_line_detected.json",
+	},
+}
+
+func TestGraphQLQuery(t *testing.T) {
+	dataSources, cleanup := testutil.SetupDataSources(t)
+	defer func() {
+		cleanup()
+	}()
+
+	for _, dataSource := range dataSources {
+		testutil.LoadData(t, dataSource, "actor", rows)
+
+		for _, test := range queryTests {
+			t.Run(fmt.Sprintf("%s/%s", dataSource.Driver, test.fixture), func(t *testing.T) {
+				actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), test.query))
+
+				expected := loadOrUpdateFixture(t, test.fixture, dataSource, actual)
+
+				if !reflect.DeepEqual(strings.TrimSuffix(expected, "\n"), actual) {
+					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
 				}
 			})
 		}

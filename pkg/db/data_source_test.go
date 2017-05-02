@@ -8,8 +8,8 @@ import (
 )
 
 func TestNewDataSources(t *testing.T) {
-	pg, pgClean := testutil.SetupDB(t, db.PostgresDriver)
-	my, myClean := testutil.SetupDB(t, db.MySQLDriver)
+	pg, pgClean := testutil.SetupPG(t)
+	my, myClean := testutil.SetupMySQL(t)
 	sources := []string{pg, my}
 
 	dataSources, err := db.NewDataSources(sources)

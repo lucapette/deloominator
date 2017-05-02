@@ -11,24 +11,45 @@ returned dataset:
 - The number of columns returned
 - The types of the columns and their order
 
-For example, let's say a data set returns the following:
+For example, let's consider the following dataset:
 
-| total | country |
-|-------|---------|
-| 10    | A       |
-| 42    | B       |
-| 24    | C       |
+| country | total |
+|---------|-------|
+| A       | 10    |
+| B       | 42    |
+| C       | 24    |
 
-The data set has _2_ columns and they have the types _number_ and _text_, in
-this order. `deloominator` would render a [Simple Bar](#simple-bar) in this case.
+It has *2* columns and the sequece of types is:
+
+- `Text` - `Number`
+
+In such a case, `deloominator` renders a [Simple Bar](#simple-bar).
 
 ## Supported charts
 
-This is a list of all the charts `deloominator` supports.
+Here is a list of the charts `deloominator` automatically detects.
 
 ### Simple Bar
 
-- *2* Columns
-- Columns types:
-  - `number`
-  - `text`
+*2* columns with one of the following type sequences:
+
+- `Text`   - `Number`
+- `Number` - `Number`
+
+### Simple Line
+
+**2** columns with one of the following type sequences:
+
+- `Number` - `Time`
+
+### Grouped Bar
+
+**3** columns with one of the following type sequences:
+
+- `Text` - `Text` - `Number`
+
+### Multi Line
+
+**3** columns with one of the following type sequences:
+
+- `Time` - `Text` - `Number`

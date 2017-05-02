@@ -1,1 +1,0 @@
-{"data":null,"errors":[{"message":"Cannot query field \"notAQuery\" on type \"query\".","locations":[{"line":1,"column":3}]}]}

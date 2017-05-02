@@ -9,16 +9,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type DriverType int
-
-const (
-	PostgresDriver DriverType = iota
-	MySQLDriver
-)
-
 type DataSource struct {
 	dialect Dialect
 	db      *sql.DB
+	Driver  string
 }
 
 type DataSources map[string]*DataSource
@@ -47,20 +41,13 @@ func (dataSources DataSources) Shutdown() {
 	}
 }
 
-func parseDriver(source string) (string, error) {
-	url, err := url.Parse(source)
-	if err != nil {
-		return "", err
-	}
-
-	return url.Scheme, nil
-}
-
 func NewDataSource(source string) (ds *DataSource, err error) {
-	driver, err := parseDriver(source)
+	url, err := url.Parse(source)
 	if err != nil {
 		return nil, err
 	}
+
+	driver := url.Scheme
 
 	var dialect Dialect
 	switch driver {
@@ -73,7 +60,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		return nil, err
 	}
 
-	db, err := sql.Open(driver, dialect.ConnectionString())
+	db, err := sql.Open(url.Scheme, dialect.ConnectionString())
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +69,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return &DataSource{dialect: dialect, db: db}, nil
+	return &DataSource{dialect: dialect, db: db, Driver: driver}, nil
 }
 
 func (ds *DataSource) Tables() (QueryResult, error) {

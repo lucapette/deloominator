@@ -1,0 +1,1 @@
+{"data":{"query":{"chartName":"GroupedBar","columns":[{"name":"first_name","type":"Text"},{"name":"last_name","type":"Text"},{"name":"total","type":"Number"}],"rows":[{"cells":[{"value":"Anna"},{"value":"Torv"},{"value":"1"}]}]}}}
