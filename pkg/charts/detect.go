@@ -8,6 +8,7 @@ const (
 	UnknownChart ChartType = iota
 	SimpleBar
 	SimpleLine
+	GroupedBar
 )
 
 type DataType int
@@ -47,6 +48,8 @@ func (ct ChartType) String() string {
 		return "SimpleBar"
 	case SimpleLine:
 		return "SimpleLine"
+	case GroupedBar:
+		return "GroupedBar"
 	}
 
 	return "UnknownChart"
@@ -71,4 +74,5 @@ func init() {
 	charts[sequence(DataTypes{Text, Number})] = SimpleBar
 	charts[sequence(DataTypes{Number, Number})] = SimpleBar
 	charts[sequence(DataTypes{Time, Number})] = SimpleLine
+	charts[sequence(DataTypes{Text, Text, Number})] = GroupedBar
 }

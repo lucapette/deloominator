@@ -15,6 +15,7 @@ func TestDetect(t *testing.T) {
 		{expected: charts.SimpleBar, dataTypes: charts.DataTypes{charts.Number, charts.Number}},
 		{expected: charts.SimpleBar, dataTypes: charts.DataTypes{charts.Text, charts.Number}},
 		{expected: charts.SimpleLine, dataTypes: charts.DataTypes{charts.Time, charts.Number}},
+		{expected: charts.GroupedBar, dataTypes: charts.DataTypes{charts.Text, charts.Text, charts.Number}},
 	}
 
 	for _, test := range tests {

@@ -178,6 +178,10 @@ var queryTests = []struct{ query, fixture string }{
 		query:   `select last_update, count(*) total from actor group by 1`,
 		fixture: "query_simple_line_detected.json",
 	},
+	{
+		query:   `select first_name, last_name, count(*) total from actor group by 1, 2`,
+		fixture: "query_grouped_bar_detected.json",
+	},
 }
 
 func TestGraphQLQuery(t *testing.T) {

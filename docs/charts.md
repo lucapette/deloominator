@@ -31,13 +31,19 @@ Here is a list of the charts `deloominator` automatically detects.
 
 ### Simple Bar
 
-*2* Columns with one of the following type sequences:
+*2* columns with one of the following type sequences:
 
 - `Text`   - `Number`
 - `Number` - `Number`
 
 ### Simple Line
 
-**2** Columns with one of the following type sequences:
+**2** columns with one of the following type sequences:
 
 - `Number` - `Time`
+
+### Grouped Bar
+
+**3** columns with one of the following type sequences:
+
+- `Text` - `Text` - `Number`
