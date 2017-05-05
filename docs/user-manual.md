@@ -37,12 +37,11 @@ determine which graph to show.
 
 Users can save their queries via the `save` button. As the goal of each
 visualisation is to answer a question, `deloominator` calls a visualisation
-`Q&A` and asks the user to provide:
+`Q&A` and asks to provide the following information in order to save a
+visualisation:
 
 - a `title` that uniquely describes the `Q&A`.
-- a `description` field that will render markdown.
-
-in order to save them.
+- a `description` that will render markdown.
 
 # Q&A
 
