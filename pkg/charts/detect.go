@@ -2,27 +2,6 @@ package charts
 
 import "bytes"
 
-type ChartType int
-
-const (
-	UnknownChart ChartType = iota
-	SimpleBar
-	SimpleLine
-	GroupedBar
-	MultiLine
-)
-
-type DataType int
-
-type DataTypes []DataType
-
-const (
-	UnknownType DataType = iota
-	Text
-	Number
-	Time
-)
-
 var charts map[string]ChartType
 
 func sequence(types DataTypes) string {
@@ -41,34 +20,6 @@ func Detect(types DataTypes) ChartType {
 	}
 
 	return UnknownChart
-}
-
-func (ct ChartType) String() string {
-	switch ct {
-	case SimpleBar:
-		return "SimpleBar"
-	case SimpleLine:
-		return "SimpleLine"
-	case GroupedBar:
-		return "GroupedBar"
-	case MultiLine:
-		return "MultiLine"
-	}
-
-	return "UnknownChart"
-}
-
-func (t DataType) String() string {
-	switch t {
-	case Text:
-		return "Text"
-	case Number:
-		return "Number"
-	case Time:
-		return "Time"
-	}
-
-	return "Unknown"
 }
 
 func init() {
