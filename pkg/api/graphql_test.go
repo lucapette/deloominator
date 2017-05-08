@@ -19,11 +19,6 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-var rows = db.QueryResult{
-	Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}, db.Cell{Value: "2016-01-01"}}},
-	Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}, {Name: "last_update"}},
-}
-
 func doRequest(t *testing.T, dataSources db.DataSources, code int, query string) string {
 	json, err := json.Marshal(api.GraphqlPayload{Query: query})
 	if err != nil {
@@ -189,6 +184,11 @@ var queryTests = []struct{ query, fixture string }{
 }
 
 func TestGraphQLQuery(t *testing.T) {
+	rows := db.QueryResult{
+		Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}, db.Cell{Value: "2016-01-01"}}},
+		Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}, {Name: "last_update"}},
+	}
+
 	dataSources, cleanup := testutil.SetupDataSources(t)
 	defer func() {
 		cleanup()
