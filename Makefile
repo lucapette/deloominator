@@ -3,9 +3,21 @@ TEST_PATTERN?=.
 TEST_OPTIONS?=
 
 setup: ## Install all the build and lint dependencies
+	go get -u golang.org/x/tools/cmd/stringer
 	go get -u github.com/jteeuwen/go-bindata/...
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
+
+build-api: ## Build the API server
+	go generate $(SOURCE_FILES)
+	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
+	gofmt -s -w pkg/api/static.go
+	go build cmd/deloominator.go
+
+build-ui: ## Build the UI
+	cd ui && yarn build
+
+build: build-ui build-api ## Build a dev version of deloominator
 
 test: build-api ## Run all the tests
 	go test $(TEST_OPTIONS) -cover $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
@@ -17,23 +29,13 @@ lint: build-api ## Run all the linters
 	--enable=errcheck \
 	./...
 
-ci: build-ui build-api lint test ## Run all the tests and code checks
-
-build-api:
-	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
-	gofmt -s -w pkg/api/static.go
-	go build cmd/deloominator.go
-
-build-ui: ## Build the UI
-	cd ui && yarn build
-
-build: build-ui build-api ## Build a dev version of deloominator
-
 run-api: build-api ## Run the API server
 	bin/run deloominator
 
 run-ui: ## Run the UI application
 	cd ui && yarn start
+
+ci: build-ui build-api lint test ## Run all the tests and code checks
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
