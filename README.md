@@ -1,23 +1,19 @@
 # Deloominator
 
-Shed the light on your data!
+`deloominator` helps you explore your data with SQL queries. You can visualize
+charts and group them in dashboard to share with your team. You can schedule
+reports or just play around with your data. `deloominator` is in a very alpha
+stage at the moment. You can have a look at [product
+roadmap](https://github.com/lucapette/deloominator/projects/1) and at our
+[milestones](https://github.com/lucapette/deloominator/milestones?direction=desc&sort=completeness&state=open) to better understand what's the current status of the project.
 
-# Overview
-
-`deloominator` helps you exploring your data with SQL. You can create charts and
-dashboard to share with your team. You can schedule reports or just play around
-with your schema.
-
-# Project goals
-
-- No dependencies
-- Lots of charts
-- Auto-updating dashboards
-- Easy chart sharing
-
-You can have a look at [product
-roadmap](https://github.com/lucapette/deloominator/projects/1) to better
-understand the current status of the project and the upcoming developments.
+- [Documentation](#documentation)
+- [Installation Guide](#installation-guide)
+ - [Homebrew](#homebrew)
+  - [Standalone](#standalone)
+  - [Source Code](#standalone)
+- [How To Contribute](#how-to-contribute)
+- [Code Of Conduct](#code-of-conduct)
 
 # Documentation
 
@@ -50,8 +46,18 @@ install `deloominator` from the source.
 
 # How to contribute
 
-Please refer to our [contributing guidelines](/CONTRIBUTING.md) and to our
-[developer manual](/docs/developer-manual.md).
+We welcome (and love) every form of contribution! Good entry points to the project are:
+
+- Our [contributing guidelines](/CONTRIBUTING.md) document
+- Our [developer manual](/docs/developer-manual.md)
+- Issues with the tag
+  [gardenging](https://github.com/lucapette/deloominator/issues?q=is%3Aissue+is%3Aopen+label%3Agardening)
+- Issues with the tag [good first
+  patch](https://github.com/lucapette/deloominator/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+patch%22)
+
+If you're still not sure where to start, please open a [new
+issue](https://github.com/lucapette/deloominator/issues/new) and we'll gladly
+help you to get started.
 
 # Code of Conduct
 
