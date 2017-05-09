@@ -1,17 +1,6 @@
 The scope of this document is to provide an overview of the usage of
 `deloominator`.
 
-# Configuration
-
-`deloominator` uses environment variables for its configuration, you can find
-a list of all available options running the following command:
-
-```sh
-$ deloominator --help
-```
-
-# User interface
-
 Each of the following sections of the document represents an item in the main
 menu of the application:
 
@@ -20,11 +9,7 @@ menu of the application:
 - [Dashboards](#dashboards)
 - [Reports](#reports)
 
-Please *note* this document serves as a product roadmap at the moment, the
-idea is to describe all the features we want to have for a beta version of the
-application and then build each section.
-
-## Playground
+# Playground
 
 The playground is the place where users explore their datasets. The interface
 presents a SQL editor, a data source selector and  call to action that runs
@@ -48,8 +33,8 @@ Running a query in the playground has four possible outcomes:
 `deloominator` uses a simple [algorithm](/docs/charts.md#algorithm) to
 determine which graph to show.
 
-## Q&A
+# Q&A
 
-## Dashboards
+# Dashboards
 
-## Reports
+# Reports

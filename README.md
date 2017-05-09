@@ -8,8 +8,11 @@ roadmap](https://github.com/lucapette/deloominator/projects/1) and at our
 [milestones](https://github.com/lucapette/deloominator/milestones?direction=desc&sort=completeness&state=open) to better understand what's the current status of the project.
 
 - [Documentation](#documentation)
+  - [Quick Start](#quick-start)
+  - [User Manual](#user-manual)
+  - [Demo](#demo)
 - [Installation Guide](#installation-guide)
- - [Homebrew](#homebrew)
+  - [Homebrew](#homebrew)
   - [Standalone](#standalone)
   - [Source Code](#standalone)
 - [How To Contribute](#how-to-contribute)
@@ -17,10 +20,30 @@ roadmap](https://github.com/lucapette/deloominator/projects/1) and at our
 
 # Documentation
 
-Please refer to the [user manual](/docs/user-manual.md) to learn your way around
-`deloominator` features. If you are interested in learning more about how to
-develop new features or build the project on your own, we have a [developers'
-manual](/docs/developers-manual.md).
+## Quick start
+
+Once you [installed](#installation-guide) `deloominator`, you can find a list of the available options running the following command: 
+
+```sh
+$ deloominator --help
+```
+
+`deloominator` uses only enviroment variables for configuration. The easiest way
+to learn how to configure and run `deloominator` is reading our
+[run.example](/bin/run.example).
+
+## User Manual
+
+Please refer to our [user manual](/docs/user-manual.md) to learn more about
+`deloominator` features. Please **note** that the document serves as an entry
+point for the [product
+roadmap](https://github.com/lucapette/deloominator/projects/1) at the moment.
+The idea is we write the documentation of a feature _before_ we implement it so
+that, once the feature is there, our user manual is already there.
+
+## Demo
+
+TODO
 
 # Installation guide
 
@@ -49,7 +72,7 @@ install `deloominator` from the source.
 We welcome (and love) every form of contribution! Good entry points to the project are:
 
 - Our [contributing guidelines](/CONTRIBUTING.md) document
-- Our [developer manual](/docs/developer-manual.md)
+- Our [developers' manual](/docs/developers-manual.md)
 - Issues with the tag
   [gardenging](https://github.com/lucapette/deloominator/issues?q=is%3Aissue+is%3Aopen+label%3Agardening)
 - Issues with the tag [good first
