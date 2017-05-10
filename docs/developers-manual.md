@@ -14,19 +14,17 @@ do with it, you can run:
 $ make help
 ```
 
-Which shows all the documented targets. `deloominator` is written in
-[Go](https://golang.org/) and JavaScript. Here is a list of prerequisites to
-build and test the code:
+`deloominator` is written in [Go](https://golang.org/) and JavaScript. Here is a
+list of prerequisites to build and test the project:
 
-* Build:
-  * `make`
-  * [Go 1.8+](http://golang.org/doc/install)
-  * [Yarn](https://yarnpkg.com/en/)
-  * [Node.js](https://nodejs.org/en/)
-* Test:
-  * [PostgreSQL](https://www.postgresql.org/)
-  * [MySQL](https://www.mysql.com/)
-  * [PhantomJS](http://phantomjs.org/)
+- Build:
+  - `make`
+  - [Go 1.8+](http://golang.org/doc/install)
+  - [Node.js](https://nodejs.org/en/)
+  - [Yarn](https://yarnpkg.com/en/)
+- Test:
+  - [PostgreSQL](https://www.postgresql.org/)
+  - [MySQL](https://www.mysql.com/)
 
 Clone `deloominator` from source:
 
@@ -55,7 +53,8 @@ if you run into any problem.
 `deloominator` has two main components:
 
 - An API server written in [Go](https::/golang.org)
-- A UI written in JavaScript that uses [React](https://facebook.github.io/react/)
+- A UI written in JavaScript that uses
+  [React](https://facebook.github.io/react/)
 
 You can build the entire application by running `make` without arguments:
 
@@ -63,8 +62,8 @@ You can build the entire application by running `make` without arguments:
 make
 ```
 
-since `build` is the default target. Both components have their own
-building target:
+since `build` is the default target. Both components have their own building
+target:
 
 ```sh
 $ make build-api # builds the API server
@@ -78,9 +77,9 @@ $ make
 $ ./deloominator
 ```
 
-These steps will do a full build of the application so it's a slower process.
-If you're working only with one of the components, you can use a more
-specialised command:
+These steps will do a full build of the application so it's a slower process. If
+you're working only with one of the components, you can use a more specialised
+command:
 
 ```sh
 $ make run-api # runs the API server
@@ -88,8 +87,8 @@ $ make run-ui # runs the UI application
 ```
 
 Please *note* that `make run-api` relies on a small bash script called
-`bin/run`. There is an example file [here](bin/run.example). You can create
-your own script with the following command:
+`bin/run`. There is an example file [here](bin/run.example). You can create your
+own script with the following command:
 
 ```sh
 cp bin/run{.example,}
@@ -125,7 +124,7 @@ $ make test TEST_OPTIONS=-v
 ```
 
 You can combine the two options which is very helpful if you are working on a
-specific feature and want immediate feedback. Like so:
+specific feature and want immediate feedback:
 
 ```sh
 $ make test TEST_OPTIONS=-v TEST_PATTERN=TheAnswerIsFortyTwo
@@ -146,10 +145,10 @@ You can find an example of it [here](/pkg/api/graphql_test.go).
 
 ### Use testutil
 
-The [testutil](pkg/testutil) package contains a number of utitilies for
-testing our Go code. In the spirit of [Advanced testing with
-Go](https://speakerdeck.com/mitchellh/advanced-testing-with-go), we follow
-these guidelines:
+The [testutil](pkg/testutil) package contains a number of utitilies for testing
+our Go code. In the spirit of [Advanced testing with
+Go](https://speakerdeck.com/mitchellh/advanced-testing-with-go), we follow these
+guidelines:
 
 - Each public function takes `t *testing.T` as a first parameter
 - Functions that use temporary resources (like databases, files, and so on)
