@@ -1,8 +1,11 @@
-The scope of this document is to provide an overview of the usage of
-`deloominator`.
+The scope of this document is to provide an overview of how to use
+`deloominator`. As long as `deloominator` is not in beta (you can check the
+current status
+[here](https://github.com/lucapette/deloominator/milestones?direction=desc&sort=completeness&state=open)),
+this document serves as a brief spec of the features we want to build.
 
-Each of the following sections of the document represents an item in the main
-menu of the application:
+Each of the following sections of the document represents a section of the
+application. Each section has a corresponding menu item in the top navigation:
 
 - [Playground](#playground)
 - [Q&A](#q&a)
@@ -11,7 +14,7 @@ menu of the application:
 
 # Playground
 
-The playground is the place where users explore their datasets. The interface
+The playground is the place where users explore their data sets. The interface
 presents a SQL editor, a data source selector and  call to action that runs
 queries. It looks like this:
 
