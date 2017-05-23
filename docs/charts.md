@@ -3,10 +3,20 @@
 The scope of this document is to present the core functionality of
 `deloominator`: the automatic chart display.
 
-## How it works
+- [How it works](#how-it-works)
+- [Supported charts](#supported-charts)
+  - [Two-column charts](#two-column-charts)
+    -[Simple Bar](#simple-bar)
+    -[Simple Line](#simple-line)
+    -[Simple Bar](#simple-bar)
+  - [Three-column charts](#three-column-charts)
+    -[Grouped Bar](#grouped-bar)
+    -[Multi Line](#Multi-line)
 
-`deloominator detects chart based on the following characteristics of the
-data set:
+# How it works
+
+`deloominator` detects chart based on the following characteristics of the data
+set:
 
 - The number of columns returned
 - The types of the columns and their order
@@ -25,9 +35,14 @@ It has *2* columns and the sequence of types is:
 
 In such a case, `deloominator` renders a [Simple Bar](#simple-bar).
 
-## Supported charts
+# Supported charts
 
-Here is a list of the charts `deloominator` automatically detects.
+Here is a list of the charts `deloominator` automatically detects. They're
+organized by the number of columns of the data set. Each charts comes with an
+example query that is based on the [Sakila Sample
+Database](https://dev.mysql.com/doc/sakila/en/).
+
+## Two-Column charts
 
 ### Simple Bar
 
@@ -45,6 +60,8 @@ Here is a list of the charts `deloominator` automatically detects.
 - `Number` - `Time`
 
 ![simple line](/img/simple-line.png)
+
+## Three-column charts
 
 ### Grouped Bar
 
