@@ -50,15 +50,14 @@ TODO
 # Installation guide
 
 `deloominator` has **zero** external dependencies, what you need is a binary for
-your operating system. In the following, we offer multiple installation methods.
+your operating system and we offer multiple installation procedures.
 
 ## Homebrew
 
 `deloominator` can be installed through Homebrew:
 
 ``` sh
-$ brew tap lucapette/tap
-$ brew install deloominator
+$ brew tap lucapette/tap/deloominator
 ```
 
 ## Standalone
