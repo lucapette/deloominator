@@ -5,10 +5,10 @@ const spec = {
   "description": "A multiple columns bar chart.",
   "mark": "bar",
   "encoding": {
-    "column": {"type": "ordinal", "scale": {"padding": 4}, "axis": {"orient": "bottom", "axisWidth": 1, "offset": -8}},
-    "x": {"type": "nominal", "scale": {"bandSize": 9}, "axis": null},
+    "column": {"type": "ordinal"},
+    "x": { "type": "nominal", "scale": { "rangeStep": 9 }, "axis": {"title": ""}},
     "y": {"type": "quantitative", "axis": { "grid": false}},
-    "color": {"type": "nominal", "scale": {"range": "category20"}},
+    "color": {"type": "nominal"},
   },
   "config": {"facet": {"cell": {"strokeWidth": 0}}}
 };
@@ -28,9 +28,9 @@ export default class GroupedBar extends Component {
     spec["encoding"]["column"]["field"] = y;
 
     spec["transform"] = [
-      {"field": x, "expr": `datum.${x}`}
+      { "calculate": `datum.${x}`, "as": x}
     ];
 
-    return (<VegaLite spec={spec} data={data} />);
+    return <VegaLite spec={spec} data={data} onNewView={this.props.onNewView} />;
   }
 }

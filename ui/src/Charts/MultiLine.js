@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import VegaLite from 'react-vega-lite';
 
 const spec = {
-  "description": "A multipe lines chart with embedded data.",
+  "description": "A multiple lines chart with embedded data.",
   "mark": "line",
   "encoding": {
     "x": {"type": "temporal", "axis": {"shortTimeLabels": true}},
@@ -25,6 +25,6 @@ export default class SimpleLine extends Component {
 
     spec["width"] = this.props.width || 1000;
 
-    return (<VegaLite spec={spec} data={data} />);
+    return <VegaLite spec={spec} data={data} onNewView={this.props.onNewView} />;
   }
 }
