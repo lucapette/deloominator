@@ -46,35 +46,66 @@ Database](https://dev.mysql.com/doc/sakila/en/).
 
 ### Simple Bar
 
-*2* columns with one of the following type sequences:
+One of the following type sequences:
 
 - `Text`   - `Number`
 - `Number` - `Number`
 
-![simple bar](/img/simple-bar.png)
+Example:
+
+```sql
+SELECT rating, count(*) total FROM film GROUP BY 1
+```
+
+![simple bar](img/simple-bar.png)
 
 ### Simple Line
 
-**2** columns with one of the following type sequences:
+Type sequence:
 
-- `Number` - `Time`
+- `Time` - `Number`
 
-![simple line](/img/simple-line.png)
+Example:
+
+```sql
+SELECT last_update , count(*) total FROM film group by 1
+```
+
+![simple line](img/simple-line.png)
 
 ## Three-column charts
 
 ### Grouped Bar
 
-**3** columns with one of the following type sequences:
+Type sequences:
 
 - `Text` - `Text` - `Number`
 
-![grouped bar](/img/grouped-bar.png)
+Example:
+
+```sql
+SELECT rating, c.name, count(*) FROM film f
+INNER JOIN film_category fc ON fc.film_id = f.film_id
+INNER JOIN category c ON fc.category_id = c.category_id
+GROUP BY 1, 2
+```
+
+![grouped bar](img/grouped-bar.png)
 
 ### Multi Line
 
-**3** columns with one of the following type sequences:
+Type sequence:
 
 - `Time` - `Text` - `Number`
 
-![multi-line](/img/multi-line.png)
+Example:
+
+```sql
+SELECT f.last_update, c.name, count(*) FROM film f
+INNER JOIN film_category fc ON fc.film_id = f.film_id
+INNER JOIN category c ON fc.category_id = c.category_id
+WHERE c.name IN ('Sci-Fi', 'Drama', 'Travel', 'Documentary')
+GROUP BY 1, 2
+```
+
+![multi-line](img/multi-line.png)
