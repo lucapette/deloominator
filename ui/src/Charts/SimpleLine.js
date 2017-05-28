@@ -23,6 +23,6 @@ export default class SimpleLine extends Component {
 
     spec["width"] = this.props.width || 1000;
 
-    return (<VegaLite spec={spec} data={data} />);
+    return <VegaLite spec={spec} data={data} onNewView={this.props.onNewView} />;
   }
 }

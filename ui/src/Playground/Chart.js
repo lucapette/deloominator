@@ -15,6 +15,23 @@ const CHARTS = {
 };
 
 export default class Chart extends Component {
+
+  onNewView = (view) => {
+    this.view = view;
+  }
+
+  onClick = (e) => {
+    e.preventDefault()
+    this.view.toImageURL('png').then(url => {
+      var link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('download', 'chart.png');
+      link.dispatchEvent(new MouseEvent('click'));
+    }).catch(function (error) { /* error handling */ });
+  }
+  
+
   render() {
     const {chartName, columns, rows} = this.props.data;
 
@@ -28,7 +45,12 @@ export default class Chart extends Component {
       return _.zipObject(columnNames, cells);
     });
 
-    return <Handler values={values}/>;
+    return (
+      <div>
+        <Handler values={values} onNewView={this.onNewView}/>
+        <a href="" onClick={this.onClick}>Download as PNG</a>
+      </div>
+    );
   }
 }
 
