@@ -39,12 +39,12 @@ Hitting the `save` button shows the following screen:
 
 ![save q&a mock](/docs/img/save-q-and-a.png)
 
-As the goal of each visualization is to answer a question, `deloominator` calls
-a visualization `Q&A` and asks to provide the following information in order to
-save a visualization:
+As the goal of each visualization or query is to answer a question,
+`deloominator` saves the information as a `Q&A`. The following information is
+required to save a `Q&A`:
 
 - a `title` that uniquely describes the `Q&A`
-- a `description` that will render markdown
+- a `description` that will render as markdown
 
 # Q&A
 
