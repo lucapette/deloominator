@@ -18,7 +18,6 @@ Table of contents:
   - [User Manual](#user-manual)
   - [Demo](#demo)
 - [Installation Guide](#installation-guide)
-  - [Homebrew](#homebrew)
   - [Standalone](#standalone)
   - [Source Code](#standalone)
 - [How To Contribute](#how-to-contribute)
@@ -56,14 +55,6 @@ Coming soon
 
 `deloominator` has **zero** external dependencies; what you need is a binary for
 your operating system and we offer multiple installation procedures.
-
-## Homebrew
-
-`deloominator` can be installed through Homebrew:
-
-``` sh
-$ brew tap lucapette/tap/deloominator
-```
 
 ## Standalone
 
