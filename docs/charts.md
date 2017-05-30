@@ -15,11 +15,11 @@ The scope of this document is to present the core functionality of
 
 # How it works
 
-`deloominator` detects chart based on the following characteristics of the data
+`deloominator` detects a chart based on the following characteristics of the data
 set:
 
 - The number of columns returned
-- The types of the columns and their order
+- The type of columns and their order
 
 For example, let's consider the following data set:
 
@@ -37,18 +37,18 @@ In such a case, `deloominator` renders a [Simple Bar](#simple-bar).
 
 # Supported charts
 
-Here is a list of the charts `deloominator` automatically detects. They're
-organized by the number of columns of the data set. Each charts comes with an
+Here is a list of the charts `deloominator` detects automatically. They're
+organized by the number of columns in the data set. Each chart comes with an
 example query that is based on the [Sakila Sample
 Database](https://dev.mysql.com/doc/sakila/en/).
 
-## Two-Column charts
+## Two-column charts
 
 ### Simple Bar
 
 One of the following type sequences:
 
-- `Text`   - `Number`
+- `Text` - `Number`
 - `Number` - `Number`
 
 Example:
