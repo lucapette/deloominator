@@ -1,10 +1,10 @@
-# Developers' Manual
+# Developers' manual
 
 This is a _living_ document, its purpose is to describe the tooling available
 to `deloominator` contributors regarding testing, building and releasing new
 versions.
 
-## Setup your machine
+## Set up your machine
 
 Our [Makefile](/Makefile) is the entry point for most of the activities you
 will run into as a contributor. To get a basic understanding of what you can
@@ -56,7 +56,7 @@ if you run into any problem.
 - A UI written in JavaScript that uses
   [React](https://facebook.github.io/react/)
 
-You can build the entire application by running `make` without arguments:
+You can build the entire application by running `make` without arguments
 
 ```sh
 make
@@ -77,8 +77,8 @@ $ make
 $ ./deloominator
 ```
 
-These steps will do a full build of the application so it's a slower process. If
-you're working only with one of the components, you can use a more specialised
+These steps will do a full build of the application, so it's a slower process. If
+you're working with only one of the components, you can use a more specialised
 command:
 
 ```sh
@@ -88,17 +88,17 @@ $ make run-ui # runs the UI application
 
 Please *note* that `make run-api` relies on a small bash script called
 `bin/run`. There is an example file [here](bin/run.example). You can create your
-own script with the following command:
+own script with the following command
 
 ```sh
 cp bin/run{.example,}
 ```
 
-And then edit it accordingly to your local configuration.
+and then edit it according to your local configuration.
 
 ## Testing
 
-We try to cover as much as we can with testing. The goal is having each single
+We try to cover with testing as much as we can. The goal is to have each single
 feature covered by one or more tests. Adding more tests is a great way of
 contributing to the project!
 
@@ -132,9 +132,9 @@ $ make test TEST_OPTIONS=-v TEST_PATTERN=TheAnswerIsFortyTwo
 
 ### Golden files
 
-Our test suite has fixtures files that facilitate both test setup, as in the
-case of the SQL scripts to create databases, and test assertion. Golden files
-are a technique to handle fixtures files used in assertion. It works this way:
+Our test suite has fixture files that facilitate both the test setup (as in the
+case of the SQL scripts to create databases) and test assertion. Golden files
+is a technique to handle fixture files used in assertion. It works this way:
 
 - You store complex output you expect (like a JSON response for example) in a
   file and use it to compare it to the actual outcome of a test
