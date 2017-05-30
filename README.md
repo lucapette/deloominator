@@ -36,16 +36,16 @@ available options by running the following command:
 $ deloominator --help
 ```
 
-`deloominator` uses only enviroment variables for configuration. The easiest way
-to learn how to configure and run `deloominator` is to read our
+`deloominator` uses only environment variables for configuration. The easiest
+way to learn how to configure and run `deloominator` is reading our
 [run.example](/bin/run.example).
 
 ## User Manual
 
 Please refer to our [user manual](/docs/user-manual.md) to learn more about
-`deloominator` features. **Note** that the document serves as an entry
-point for the [product
-roadmap](https://github.com/lucapette/deloominator/projects/1) at the moment.
+`deloominator` features. **Note** that the document serves as an entry point for
+the [product roadmap](https://github.com/lucapette/deloominator/projects/1) at
+the moment.
 
 ## Demo
 
@@ -59,8 +59,8 @@ your operating system and we offer multiple installation procedures.
 ## Standalone
 
 `deloominator` can be installed as an executable. Download the latest [compiled
-binary](https://github.com/lucapette/deloominator/releases) and put it
-anywhere in your executable path.
+binary](https://github.com/lucapette/deloominator/releases) and put it anywhere
+in your executable path.
 
 ## Source
 
