@@ -1,12 +1,18 @@
 # Deloominator
 
-`deloominator` helps you explore your data with SQL queries. You can visualize
-charts and group them in a dashboard to share with your team. You can schedule
-reports or just play around with your data. `deloominator` is in a very alpha
-stage at the moment. You can have a look at the [product
+A data visualization tool for SQL users.
+
+![screenshot](/docs/img/screenshot.png)
+
+You can visualize charts and group them in a dashboard to share with your team.
+You can schedule reports or just play around with your data. `deloominator` is
+in a very alpha stage at the moment. You can have a look at the [product
 roadmap](https://github.com/lucapette/deloominator/projects/1) and at our
 [milestones](https://github.com/lucapette/deloominator/milestones?direction=desc&sort=completeness&state=open)
 to better understand what the current status of the project is.
+
+Table of contents:
+
 
 - [Documentation](#documentation)
   - [Quick Start](#quick-start)
