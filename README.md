@@ -13,7 +13,6 @@ to better understand what the current status of the project is.
 
 Table of contents:
 
-
 - [Documentation](#documentation)
   - [Quick Start](#quick-start)
   - [User Manual](#user-manual)
