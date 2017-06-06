@@ -66,40 +66,43 @@ func randName() string {
 func SetupPG(t *testing.T) (string, func()) {
 	randName := randName()
 
-	dsn := fmt.Sprintf("postgres://localhost/%s?sslmode=disable", randName)
+	cfg, err := getTestConfig()
+	if err != nil {
+		t.Fatalf("could not get test config: %v", err)
+	}
+
+	dsn := fmt.Sprintf("postgres://%s:%s@localhost/%s?sslmode=disable", cfg.PGUser, cfg.PGPass, randName)
 
 	tmpfile, err := ioutil.TempFile("", "db_test")
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("could not create temp file: %v", err)
 	}
 	defer func() {
 		err = os.Remove(tmpfile.Name())
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("could not remove temp file: %v", err)
 		}
 	}()
 
 	ParseFixture(t, tmpfile, "postgres.sql", DBTemplate{Name: randName})
 
-	err = exec.Command("psql", "-f", tmpfile.Name()).Run()
-	if err != nil {
-		t.Fatal(err)
+	if output, err := exec.Command("psql", "-f", tmpfile.Name()).CombinedOutput(); err != nil {
+		t.Fatalf("%s\ncould not run psql: %v", output, err)
 	}
 
 	return dsn, func() {
-		db, err := sql.Open("postgres", "postgres://localhost/?sslmode=disable")
+		db, err := sql.Open("postgres",
+			fmt.Sprintf("postgres://%s:%s@localhost/?sslmode=disable", cfg.PGUser, cfg.PGPass))
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("could not open postgres database: %v", err)
 		}
 
-		_, err = db.Exec(fmt.Sprintf("DROP DATABASE %s;", randName))
-		if err != nil {
-			t.Fatal(err)
+		if _, err = db.Exec(fmt.Sprintf("DROP DATABASE %s;", randName)); err != nil {
+			t.Fatalf("could not drop database %s: %v", randName, err)
 		}
 
-		err = db.Close()
-		if err != nil {
-			t.Fatal(err)
+		if err := db.Close(); err != nil {
+			t.Fatalf("could not close database %s: %v", randName, err)
 		}
 	}
 }
@@ -107,61 +110,63 @@ func SetupPG(t *testing.T) (string, func()) {
 func SetupMySQL(t *testing.T) (string, func()) {
 	randName := randName()
 
-	dsn := fmt.Sprintf("mysql://root:root@/%s", randName)
-
-	var query bytes.Buffer
-	ParseFixture(t, &query, "mysql.sql", DBTemplate{Name: randName})
-
-	db, err := sql.Open("mysql", "root:root@/?multiStatements=true")
+	cfg, err := getTestConfig()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("could not get test config: %v", err)
 	}
 
-	_, err = db.Exec(query.String())
+	dsn := fmt.Sprintf("mysql://%s:%s@/%s", cfg.MysqlUser, cfg.MysqlPass, randName)
+
+	query := bytes.Buffer{}
+	ParseFixture(t, &query, "mysql.sql", DBTemplate{Name: randName})
+
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/?multiStatements=true", cfg.MysqlUser, cfg.MysqlPass))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("could not open mysql database %s: %v", randName, err)
+	}
+
+	if _, err := db.Exec(query.String()); err != nil {
+		t.Fatalf("could not execute %s on mysql database %s: %v", query.String(), randName, err)
 	}
 
 	return dsn, func() {
-		_, err = db.Exec(fmt.Sprintf("DROP DATABASE %s;", randName))
-		if err != nil {
-			t.Fatal(err)
+		if _, err := db.Exec(fmt.Sprintf("DROP DATABASE %s;", randName)); err != nil {
+			t.Fatalf("could not drop mysql database %s: %v", randName, err)
 		}
 
-		err = db.Close()
-		if err != nil {
-			t.Fatal(err)
+		if err = db.Close(); err != nil {
+			t.Fatalf("could not close mysql database %s: %v", randName, err)
 		}
 	}
 }
 
 func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult) {
-	query := bytes.NewBufferString(fmt.Sprintf("insert into %s (", table))
+	query := &bytes.Buffer{}
 
 	columns := make([]string, len(data.Columns))
 	for i, col := range data.Columns {
 		columns[i] = col.Name
 	}
-	query.WriteString(strings.Join(columns, ","))
-
-	query.WriteString(") values ")
 
 	rows := make([]string, len(data.Rows))
 	for i, r := range data.Rows {
-		row := bytes.NewBufferString("(")
+		row := &bytes.Buffer{}
 
 		cells := make([]string, len(r))
 		for i, c := range r {
 			cells[i] = fmt.Sprintf("'%s'", c.Value)
 		}
 
-		row.WriteString(strings.Join(cells, ","))
-
-		row.WriteString(")")
+		fmt.Fprintf(row, "(%s)", strings.Join(cells, ","))
 
 		rows[i] = row.String()
 	}
-	query.WriteString(strings.Join(rows, ","))
+
+	fmt.Fprintf(query, "insert into %s (%s) values %s",
+		table,
+		strings.Join(columns, ","),
+		strings.Join(rows, ","),
+	)
 
 	_, err := ds.Query(query.String())
 	if err != nil {
@@ -201,9 +206,9 @@ func SetupDataSources(t *testing.T) (db.DataSources, func()) {
 		cleanupPG()
 		cleanupMySQL()
 	}
-
 }
 
+// Diff returns a string of differences between expected and actual if any
 func Diff(expected, actual interface{}) []string {
 	return pretty.Diff(expected, actual)
 }

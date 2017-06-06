@@ -42,6 +42,8 @@ $ make setup
 A good way of making sure everything is all right is running the test suite:
 
 ```sh
+$ cp bin/run-test{.example,}
+$ $EDITOR bin/run-test # edit according to your needs
 $ make test
 ```
 
@@ -77,9 +79,9 @@ $ make
 $ ./deloominator
 ```
 
-These steps will do a full build of the application, so it's a slower process. If
-you're working with only one of the components, you can use a more specialised
-command:
+These steps will do a full build of the application, so it's a slower process.
+If you're working with only one of the components, you can use a more
+specialized command:
 
 ```sh
 $ make run-api # runs the API server

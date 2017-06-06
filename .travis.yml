@@ -2,6 +2,19 @@ language: go
 go: 
    - 1.8
    - master
+before_script:
+   - cp bin/run-test{.travis,}
+   - psql -c 'create database travis;' -U postgres
+   - nvm install 6
+   - npm install -g yarn
+   - npm install -g webpack
+   - cd ui && yarn install && cd ..
+cache:
+  directories:
+  - $HOME/.yarn-cache
+services:
+  - mysql
+  - postgresql
 install:
   - make setup
 script:
