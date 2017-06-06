@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+# please have a look at pkg/testutil/testconfig.go for the available options
+
+export TEST_MYSQLUSER=deloominator
+export TEST_MYSQLPASS=secret
+export TEST_PGUSER=deloominator
+export TEST_PGPASS=secret
+
+exec "$@"

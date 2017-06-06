@@ -15,8 +15,7 @@ type Config struct {
 }
 
 func GetConfig() (*Config, error) {
-	var cfg Config
-
+	cfg := Config{}
 	err := envconfig.Process(BinaryName, &cfg)
 	if err != nil {
 		return &cfg, err
@@ -35,6 +34,5 @@ func GetConfig() (*Config, error) {
 }
 
 func Help() error {
-	var cfg Config
-	return envconfig.Usage(BinaryName, &cfg)
+	return envconfig.Usage(BinaryName, &Config{})
 }
