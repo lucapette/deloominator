@@ -34,7 +34,12 @@ run-api: build-api ## Run the API server
 run-ui: ## Run the UI application
 	cd ui && yarn start
 
-ci: build-ui build-api lint test ## Run all the tests and code checks
+# For now, it doesn't make sense to build the UI on travis as there
+# no tests that rely on that.
+stub-ui:
+	touch ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
+
+ci: stub-ui build-api lint test ## Run all the tests and code checks
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
