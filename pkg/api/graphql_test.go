@@ -36,16 +36,16 @@ func doRequest(t *testing.T, dataSources db.DataSources, code int, query string)
 	}
 
 	if w.Code != code {
-		t.Fatalf("expected code %d, got: %d", code, w.Code)
+		t.Fatalf("expected request to return %d, but got: %d", code, w.Code)
 	}
 
 	return string(resp)
 }
 
 func loadOrUpdateFixture(t *testing.T, fixture string, dataSource *db.DataSource, actual string) string {
-	var out bytes.Buffer
+	out := &bytes.Buffer{}
 
-	testutil.ParseFixture(t, &out, fixture, testutil.DBTemplate{Name: dataSource.Name()})
+	testutil.ParseFixture(t, out, fixture, testutil.DBTemplate{Name: dataSource.Name()})
 
 	if *update {
 		testutil.WriteFixture(t, fixture, strings.Replace(actual, dataSource.Name(), "{{.Name}}", -1))
@@ -79,10 +79,10 @@ func TestGraphQLDataSources(t *testing.T) {
 	}()
 
 	jsonResp := doRequest(t, dataSources, 200, `{ dataSources { name tables { name } } }`)
-	var resp response
+	resp := response{}
 	err := json.Unmarshal([]byte(jsonResp), &resp)
 	if err != nil {
-		t.Fatal(err.Error())
+		t.Fatalf("cannot unmarshal response: %v", err)
 	}
 	actual := resp.Data.DataSources
 
@@ -91,7 +91,7 @@ func TestGraphQLDataSources(t *testing.T) {
 	}
 
 	for _, dataSource := range dataSources {
-		var found *api.DataSource
+		found := &api.DataSource{}
 		for _, ds := range actual {
 
 			if strings.Compare(dataSource.Name(), ds.Name) == 0 {
@@ -108,7 +108,7 @@ func TestGraphQLDataSources(t *testing.T) {
 		// Look for improvements.
 		queryResult, err := dataSource.Tables()
 		if err != nil {
-			t.Fatal(err.Error())
+			t.Fatalf("cannot load tables: %v", err)
 		}
 		rows := make([]string, len(queryResult.Rows))
 		for i, r := range queryResult.Rows {
@@ -129,7 +129,7 @@ func TestGraphQLDataSources(t *testing.T) {
 	}
 }
 
-var graphQLQuery = `
+const graphQLQuery = `
 { query(source: "%s", input: "%s") {
 	... on results {
 		chartName
@@ -185,7 +185,7 @@ var queryTests = []struct{ query, fixture string }{
 
 func TestGraphQLQuery(t *testing.T) {
 	rows := db.QueryResult{
-		Rows:    []db.Row{{db.Cell{Value: "42"}, db.Cell{Value: "Anna"}, db.Cell{Value: "Torv"}, db.Cell{Value: "2016-01-01"}}},
+		Rows:    []db.Row{{{Value: "42"}, {Value: "Anna"}, {Value: "Torv"}, {Value: "2016-01-01"}}},
 		Columns: []db.Column{{Name: "actor_id"}, {Name: "first_name"}, {Name: "last_name"}, {Name: "last_update"}},
 	}
 
@@ -201,9 +201,9 @@ func TestGraphQLQuery(t *testing.T) {
 			t.Run(fmt.Sprintf("%s/%s", dataSource.Driver, test.fixture), func(t *testing.T) {
 				actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), test.query))
 
-				expected := loadOrUpdateFixture(t, test.fixture, dataSource, actual)
+				expected := strings.TrimSuffix(loadOrUpdateFixture(t, test.fixture, dataSource, actual), "\n")
 
-				if !reflect.DeepEqual(strings.TrimSuffix(expected, "\n"), actual) {
+				if !reflect.DeepEqual(expected, actual) {
 					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
 				}
 			})

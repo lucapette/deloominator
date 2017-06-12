@@ -25,7 +25,7 @@ func debugHandler(inner http.Handler) http.Handler {
 
 		b, err := ioutil.ReadAll(reader)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("cannot read request: %v", err)
 		}
 
 		entry := log.WithFields(log.Fields{
@@ -67,14 +67,14 @@ func uiHandler(w http.ResponseWriter, request *http.Request) {
 	asset, err := Asset("ui/dist/index.html")
 
 	if err != nil {
-		log.Println(err)
+		log.Printf("cannot load index: %v", err)
 	}
 
 	w.Header().Set("Content-Type", "text/html")
 	_, err = w.Write(asset)
 
 	if err != nil {
-		log.Println(err)
+		log.Printf("cannot write: %v", err)
 	}
 }
 
@@ -83,7 +83,6 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	ext := pat.Param(r, "ext")
 
 	asset, err := Asset(strings.Join([]string{"ui", "dist", fmt.Sprintf("%s.%s", name, ext)}, "/"))
-
 	if err != nil {
 		log.Println(err)
 	}
@@ -95,13 +94,12 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 	}
 
-	_, err = w.Write(asset)
-
-	if err != nil {
-		log.Println(err)
+	if _, err = w.Write(asset); err != nil {
+		log.Printf("cannot write: %v", err)
 	}
 }
 
+// Start starts an api serve according to the cfg configuration
 func Start(cfg *config.Config, dataSources db.DataSources) {
 	router := goji.NewMux()
 
@@ -121,9 +119,8 @@ func Start(cfg *config.Config, dataSources db.DataSources) {
 	router.HandleFunc(pat.Get("/*"), uiHandler)
 
 	go func() {
-		err := http.ListenAndServe(":"+strconv.Itoa(cfg.Port), router)
-		if err != nil {
-			log.Fatal("Cant start server:", err)
+		if err := http.ListenAndServe(":"+strconv.Itoa(cfg.Port), router); err != nil {
+			log.Fatalf("cannot start server: %v", err)
 		}
 	}()
 }
