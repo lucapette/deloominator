@@ -181,7 +181,7 @@ func SetupDataSources(t *testing.T) (db.DataSources, func()) {
 
 	dataSources, err := db.NewDataSources(sources)
 	if err != nil {
-		t.Fatal("could not create DataSources from %v: %v", sources, err)
+		t.Fatalf("could not create DataSources from %v: %v", sources, err)
 	}
 
 	return dataSources, func() {
