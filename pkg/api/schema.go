@@ -59,19 +59,19 @@ func resolveDataSources(dbDataSources db.DataSources) func(p graphql.ResolvePara
 
 			start := time.Now()
 
-			qr, err := ds.Tables()
+			names, err := ds.Tables()
 			if err != nil {
 				return dataSources, err
 			}
 
-			ts := make([]*Table, len(qr.Rows))
-			for i, t := range qr.Rows {
-				ts[i] = &Table{Name: t[0].Value}
+			ts := make([]*Table, len(names))
+			for i, name := range names {
+				ts[i] = &Table{Name: name}
 			}
 
 			logrus.WithFields(logrus.Fields{
 				"schema_name": ds.Name(),
-				"n_tables":    len(qr.Rows),
+				"n_tables":    len(names),
 				"spent":       time.Now().Sub(start),
 			}).Info("tables loaded")
 

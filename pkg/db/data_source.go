@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"net/url"
+	"sort"
 
 	"github.com/Sirupsen/logrus"
 	_ "github.com/go-sql-driver/mysql"
@@ -62,8 +63,19 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	return &DataSource{dialect: dialect, db: db, Driver: url.Scheme}, nil
 }
 
-func (ds *DataSource) Tables() (QueryResult, error) {
-	return ds.Query(ds.dialect.TablesQuery())
+func (ds *DataSource) Tables() (names []string, err error) {
+	queryResult, err := ds.Query(ds.dialect.TablesQuery())
+	if err != nil {
+		return names, err
+	}
+
+	names = make([]string, len(queryResult.Rows))
+	for i, r := range queryResult.Rows {
+		names[i] = r[0].Value
+	}
+	sort.Strings(names)
+
+	return names, err
 }
 
 func (ds *DataSource) Name() string {

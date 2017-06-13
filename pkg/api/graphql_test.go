@@ -74,9 +74,7 @@ func TestGraphQLDataSources(t *testing.T) {
 		} `json:"data"`
 	}
 	dataSources, cleanup := testutil.SetupDataSources(t)
-	defer func() {
-		cleanup()
-	}()
+	defer cleanup()
 
 	jsonResp := doRequest(t, dataSources, 200, `{ dataSources { name tables { name } } }`)
 	resp := response{}
@@ -94,7 +92,7 @@ func TestGraphQLDataSources(t *testing.T) {
 		found := &api.DataSource{}
 		for _, ds := range actual {
 
-			if strings.Compare(dataSource.Name(), ds.Name) == 0 {
+			if dataSource.Name() == ds.Name {
 				found = &ds
 				break
 			}
@@ -106,18 +104,12 @@ func TestGraphQLDataSources(t *testing.T) {
 
 		// this is annoyingly long.
 		// Look for improvements.
-		queryResult, err := dataSource.Tables()
+		rows, err := dataSource.Tables()
 		if err != nil {
 			t.Fatalf("cannot load tables: %v", err)
 		}
-		rows := make([]string, len(queryResult.Rows))
-		for i, r := range queryResult.Rows {
-			rows[i] = r[0].Value
-		}
-		sort.Strings(rows)
 
 		tables := make([]string, len(found.Tables))
-
 		for i, r := range found.Tables {
 			tables[i] = r.Name
 		}
@@ -143,9 +135,7 @@ const graphQLQuery = `
 
 func TestGraphQLQueryError(t *testing.T) {
 	dataSources, cleanup := testutil.SetupDataSources(t)
-	defer func() {
-		cleanup()
-	}()
+	defer cleanup()
 
 	for _, dataSource := range dataSources {
 		t.Run(dataSource.Driver, func(t *testing.T) {
@@ -190,9 +180,7 @@ func TestGraphQLQuery(t *testing.T) {
 	}
 
 	dataSources, cleanup := testutil.SetupDataSources(t)
-	defer func() {
-		cleanup()
-	}()
+	defer cleanup()
 
 	for _, dataSource := range dataSources {
 		testutil.LoadData(t, dataSource, "actor", rows)

@@ -28,7 +28,7 @@ type DBTemplate struct {
 func fixturePath(t *testing.T, fixture string) string {
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
-		t.Fatalf("problems recovering caller information")
+		t.Fatal("problems recovering caller information")
 	}
 
 	return filepath.Join(filepath.Dir(filename), "fixtures", fixture)
@@ -37,14 +37,14 @@ func fixturePath(t *testing.T, fixture string) string {
 func WriteFixture(t *testing.T, fixture, content string) {
 	err := ioutil.WriteFile(fixturePath(t, fixture), []byte(content), 0644)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("could not write fixture %s: %v", fixture, err)
 	}
 }
 
 func LoadFixture(t *testing.T, fixture string) string {
 	content, err := ioutil.ReadFile(fixturePath(t, fixture))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("could not read fixture %s: %v", fixture, err)
 	}
 
 	return string(content)
@@ -55,23 +55,52 @@ func ParseFixture(t *testing.T, w io.Writer, fixture string, data interface{}) {
 
 	err := tmpl.Execute(w, data)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("could not execute template %s: %v", fixture, err)
 	}
 }
 
-func randName() string {
+func randDBName() string {
 	return fmt.Sprintf("%s_%s", config.BinaryName, strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid()))))
 }
 
-func SetupPG(t *testing.T) (string, func()) {
-	randName := randName()
+func createPG(t *testing.T) (string, func()) {
+	randName := randDBName()
 
 	cfg, err := getTestConfig()
 	if err != nil {
 		t.Fatalf("could not get test config: %v", err)
 	}
 
-	dsn := fmt.Sprintf("postgres://%s:%s@localhost/%s?sslmode=disable", cfg.PGUser, cfg.PGPass, randName)
+	db, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@localhost/?sslmode=disable", cfg.PGUser, cfg.PGPass))
+	if err != nil {
+		t.Fatalf("could not open postgres database: %v", err)
+	}
+
+	if _, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s;", randName)); err != nil {
+		t.Fatalf("could not create database %s: %v", randName, err)
+	}
+
+	return randName, func() {
+		if _, err = db.Exec(fmt.Sprintf("DROP DATABASE %s;", randName)); err != nil {
+			t.Fatalf("could not drop database %s: %v", randName, err)
+		}
+
+		if err := db.Close(); err != nil {
+			t.Fatalf("could not close database %s: %v", randName, err)
+		}
+	}
+}
+
+func pgDSN(cfg *testConfig, name string) string {
+	return fmt.Sprintf("postgres://%s:%s@localhost/%s?sslmode=disable", cfg.PGUser, cfg.PGPass, name)
+}
+
+func setupPG(t *testing.T) (string, func()) {
+	name, cleanup := createPG(t)
+	cfg, err := getTestConfig()
+	if err != nil {
+		t.Fatalf("could not get test config: %v", err)
+	}
 
 	tmpfile, err := ioutil.TempFile("", "db_test")
 	if err != nil {
@@ -84,19 +113,32 @@ func SetupPG(t *testing.T) (string, func()) {
 		}
 	}()
 
-	ParseFixture(t, tmpfile, "postgres.sql", DBTemplate{Name: randName})
+	ParseFixture(t, tmpfile, "postgres.sql", DBTemplate{Name: name})
 
 	if output, err := exec.Command("psql", "-f", tmpfile.Name()).CombinedOutput(); err != nil {
 		t.Fatalf("%s\ncould not run psql: %v", output, err)
 	}
 
-	return dsn, func() {
-		db, err := sql.Open("postgres",
-			fmt.Sprintf("postgres://%s:%s@localhost/?sslmode=disable", cfg.PGUser, cfg.PGPass))
-		if err != nil {
-			t.Fatalf("could not open postgres database: %v", err)
-		}
+	return pgDSN(cfg, name), cleanup
+}
 
+func createMySQL(t *testing.T) (string, func()) {
+	randName := randDBName()
+	cfg, err := getTestConfig()
+	if err != nil {
+		t.Fatalf("could not get test config: %v", err)
+	}
+
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/?multiStatements=true", cfg.MysqlUser, cfg.MysqlPass))
+	if err != nil {
+		t.Fatalf("could not open mysql database %s: %v", randName, err)
+	}
+
+	if _, err := db.Exec(fmt.Sprintf("CREATE DATABASE %s;", randName)); err != nil {
+		t.Fatalf("could not create mysql database %s: %v", randName, err)
+	}
+
+	return randName, func() {
 		if _, err = db.Exec(fmt.Sprintf("DROP DATABASE %s;", randName)); err != nil {
 			t.Fatalf("could not drop database %s: %v", randName, err)
 		}
@@ -107,36 +149,34 @@ func SetupPG(t *testing.T) (string, func()) {
 	}
 }
 
-func SetupMySQL(t *testing.T) (string, func()) {
-	randName := randName()
+func mysqlDSN(cfg *testConfig, name string) string {
+	return fmt.Sprintf("mysql://%s:%s@/%s", cfg.MysqlUser, cfg.MysqlPass, name)
+}
 
+func setupMySQL(t *testing.T) (string, func()) {
+	name, cleanup := createMySQL(t)
 	cfg, err := getTestConfig()
 	if err != nil {
 		t.Fatalf("could not get test config: %v", err)
 	}
 
-	dsn := fmt.Sprintf("mysql://%s:%s@/%s", cfg.MysqlUser, cfg.MysqlPass, randName)
-
 	query := bytes.Buffer{}
-	ParseFixture(t, &query, "mysql.sql", DBTemplate{Name: randName})
+	ParseFixture(t, &query, "mysql.sql", DBTemplate{Name: name})
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/?multiStatements=true", cfg.MysqlUser, cfg.MysqlPass))
 	if err != nil {
-		t.Fatalf("could not open mysql database %s: %v", randName, err)
+		t.Fatalf("could not open mysql database %s: %v", name, err)
 	}
 
 	if _, err := db.Exec(query.String()); err != nil {
-		t.Fatalf("could not execute %s on mysql database %s: %v", query.String(), randName, err)
+		t.Fatalf("could not execute %s on mysql database %s: %v", query.String(), name, err)
 	}
 
-	return dsn, func() {
-		if _, err := db.Exec(fmt.Sprintf("DROP DATABASE %s;", randName)); err != nil {
-			t.Fatalf("could not drop mysql database %s: %v", randName, err)
-		}
-
+	return mysqlDSN(cfg, name), func() {
 		if err = db.Close(); err != nil {
-			t.Fatalf("could not close mysql database %s: %v", randName, err)
+			t.Fatalf("could not close mysql database %s: %v", name, err)
 		}
+		cleanup()
 	}
 }
 
@@ -173,9 +213,23 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult
 	}
 }
 
+func CreateDataSources(t *testing.T) ([]string, func()) {
+	cfg, err := getTestConfig()
+	if err != nil {
+		t.Fatalf("could not get test config: %v", err)
+	}
+	pgName, cleanupPG := createPG(t)
+	mysqlName, cleanupMySQL := createMySQL(t)
+
+	return []string{mysqlDSN(cfg, mysqlName), pgDSN(cfg, pgName)}, func() {
+		cleanupPG()
+		cleanupMySQL()
+	}
+}
+
 func SetupDataSources(t *testing.T) (db.DataSources, func()) {
-	dsnPG, cleanupPG := SetupPG(t)
-	dsnMySQL, cleanupMySQL := SetupMySQL(t)
+	dsnPG, cleanupPG := setupPG(t)
+	dsnMySQL, cleanupMySQL := setupMySQL(t)
 
 	sources := []string{dsnMySQL, dsnPG}
 
