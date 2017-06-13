@@ -2,10 +2,11 @@ package api
 
 import (
 	"fmt"
+	"log"
 
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/graphql-go/graphql"
 	"github.com/lucapette/deloominator/pkg/charts"
 	"github.com/lucapette/deloominator/pkg/db"
@@ -54,7 +55,7 @@ func resolveDataSources(dbDataSources db.DataSources) func(p graphql.ResolvePara
 		var dataSources []*DataSource
 
 		for _, ds := range dbDataSources {
-			log.WithField("schema_name", ds.Name()).Info("query metadata")
+			logrus.WithField("schema_name", ds.Name()).Info("query metadata")
 
 			start := time.Now()
 
@@ -68,7 +69,7 @@ func resolveDataSources(dbDataSources db.DataSources) func(p graphql.ResolvePara
 				ts[i] = &Table{Name: t[0].Value}
 			}
 
-			log.WithFields(log.Fields{
+			logrus.WithFields(logrus.Fields{
 				"schema_name": ds.Name(),
 				"n_tables":    len(qr.Rows),
 				"spent":       time.Now().Sub(start),
@@ -86,7 +87,7 @@ func resolveQuery(dataSources db.DataSources) func(p graphql.ResolveParams) (int
 		source := p.Args["source"].(string)
 		input := p.Args["input"].(string)
 
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"source": source,
 			"input":  input,
 		}).Infof("Query requested")

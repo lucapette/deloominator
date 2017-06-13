@@ -14,15 +14,13 @@ func TestNewDataSources(t *testing.T) {
 
 	dataSources, err := db.NewDataSources(sources)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("could not create dataSources from %v: %v", sources, err)
 	}
 
 	defer func() {
 		for _, ds := range dataSources {
-			err = ds.Close()
-
-			if err != nil {
-				t.Fatal(err)
+			if err = ds.Close(); err != nil {
+				t.Fatalf("could not close %s: %v", ds.Name(), err)
 			}
 		}
 

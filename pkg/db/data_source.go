@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"net/url"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 )
@@ -32,11 +32,10 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 	return dataSources, nil
 }
 
-func (dataSources DataSources) Shutdown() {
+func (dataSources DataSources) Close() {
 	for _, ds := range dataSources {
-		err := ds.Close()
-		if err != nil {
-			log.Fatal(err.Error())
+		if err := ds.Close(); err != nil {
+			logrus.Fatalf("could not close %s: %v", ds.Name(), err)
 		}
 	}
 }
@@ -46,16 +45,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	if err != nil {
 		return nil, err
 	}
-
-	driver := url.Scheme
-
-	var dialect Dialect
-	switch driver {
-	case "postgres":
-		dialect, err = NewPostgresDialect(source)
-	case "mysql":
-		dialect, err = NewMySQLDialect(source)
-	}
+	dialect, err := NewDialect(url)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +59,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DataSource{dialect: dialect, db: db, Driver: driver}, nil
+	return &DataSource{dialect: dialect, db: db, Driver: url.Scheme}, nil
 }
 
 func (ds *DataSource) Tables() (QueryResult, error) {

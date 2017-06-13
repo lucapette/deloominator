@@ -1,11 +1,12 @@
 package db
 
 import (
+	"net/url"
 	"strconv"
 	"time"
 )
 
-const TimeFormat = "2006-01-02 15:04:05"
+const timeFormat = "2006-01-02 15:04:05"
 
 type Dialect interface {
 	TablesQuery() string
@@ -14,14 +15,23 @@ type Dialect interface {
 	DBName() string
 }
 
+func NewDialect(url *url.URL) (dialect Dialect, err error) {
+	switch url.Scheme {
+	case "postgres":
+		return NewPostgresDialect(url.String())
+	case "mysql":
+		return NewMySQLDialect(url.String())
+	}
+
+	return dialect, err
+}
+
 func inferType(value string) Type {
-	_, err := strconv.ParseFloat(value, 32)
-	if err == nil {
+	if _, err := strconv.ParseFloat(value, 32); err == nil {
 		return Number
 	}
 
-	_, err = time.Parse(TimeFormat, value)
-	if err == nil {
+	if _, err := time.Parse(timeFormat, value); err == nil {
 		return Time
 	}
 

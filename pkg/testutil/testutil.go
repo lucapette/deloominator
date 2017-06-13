@@ -168,41 +168,24 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult
 		strings.Join(rows, ","),
 	)
 
-	_, err := ds.Query(query.String())
-	if err != nil {
-		t.Fatal(err)
+	if _, err := ds.Query(query.String()); err != nil {
+		t.Fatalf("could not execute query %s on db %s: %v", query.String(), ds.Name(), err)
 	}
-}
-
-func InitConfig(t *testing.T, vars map[string]string) *config.Config {
-	for k, v := range vars {
-		err := os.Setenv(fmt.Sprintf("%s_%s", strings.ToUpper(config.BinaryName), k), v)
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	cfg, err := config.GetConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return cfg
 }
 
 func SetupDataSources(t *testing.T) (db.DataSources, func()) {
 	dsnPG, cleanupPG := SetupPG(t)
 	dsnMySQL, cleanupMySQL := SetupMySQL(t)
-	cfg := InitConfig(t, map[string]string{
-		"DATA_SOURCES": fmt.Sprintf("%s,%s", dsnPG, dsnMySQL),
-	})
-	dataSources, err := db.NewDataSources(cfg.Sources)
+
+	sources := []string{dsnMySQL, dsnPG}
+
+	dataSources, err := db.NewDataSources(sources)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal("could not create DataSources from %v: %v", sources, err)
 	}
 
 	return dataSources, func() {
-		dataSources.Shutdown()
+		dataSources.Close()
 		cleanupPG()
 		cleanupMySQL()
 	}

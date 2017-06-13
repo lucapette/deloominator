@@ -5,6 +5,7 @@ set -e
 export DELOOMINATOR_DEBUG=true
 export DELOOMINATOR_LOG_FORMAT=TEXT
 
+export DELOOMINATOR_STORAGE=postgres://localhost/deloominator?sslmode=disable
 export DELOOMINATOR_DATA_SOURCES=postgres://localhost/example?sslmode=disable
 
 exec "$@"

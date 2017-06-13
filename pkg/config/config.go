@@ -1,7 +1,7 @@
 package config
 
 import (
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -10,6 +10,7 @@ const BinaryName = "deloominator"
 type Config struct {
 	Port      int      `default:"3000"`
 	Sources   []string `envconfig:"data_sources" required:"true"`
+	Storage   string   `envconfig:"storage"`
 	LogFormat string   `default:"JSON" split_words:"true"`
 	Debug     bool     `default:"false"`
 }
@@ -23,11 +24,11 @@ func GetConfig() (*Config, error) {
 
 	switch cfg.LogFormat {
 	case "JSON":
-		log.SetFormatter(&log.JSONFormatter{})
+		logrus.SetFormatter(&logrus.JSONFormatter{})
 	case "TEXT":
-		log.SetFormatter(&log.TextFormatter{})
+		logrus.SetFormatter(&logrus.TextFormatter{})
 	default:
-		log.Fatalf("unknown log format: %s\n", cfg.LogFormat)
+		logrus.Fatalf("unknown log format: %s\n", cfg.LogFormat)
 	}
 
 	return &cfg, err
