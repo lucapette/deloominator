@@ -21,41 +21,51 @@ import (
 	"github.com/lucapette/deloominator/pkg/db"
 )
 
-type DBTemplate struct {
-	Name string
+type TestFile struct {
+	t    *testing.T
+	name string
+	dir  string
 }
 
-func fixturePath(t *testing.T, fixture string) string {
+func NewFixture(t *testing.T, name string) *TestFile {
+	return &TestFile{t: t, name: name, dir: "fixtures"}
+}
+
+func NewGoldenFile(t *testing.T, name string) *TestFile {
+	return &TestFile{t: t, name: name, dir: "golden"}
+}
+
+func (tf *TestFile) path() string {
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
-		t.Fatal("problems recovering caller information")
+		tf.t.Fatal("problems recovering caller information")
 	}
 
-	return filepath.Join(filepath.Dir(filename), "fixtures", fixture)
+	return filepath.Join(filepath.Dir(filename), tf.dir, tf.name)
 }
 
-func WriteFixture(t *testing.T, fixture, content string) {
-	err := ioutil.WriteFile(fixturePath(t, fixture), []byte(content), 0644)
+func (tf *TestFile) Write(content string) {
+	err := ioutil.WriteFile(tf.path(), []byte(content), 0644)
 	if err != nil {
-		t.Fatalf("could not write fixture %s: %v", fixture, err)
+		tf.t.Fatalf("could not write %s: %v", tf.name, err)
 	}
 }
 
-func LoadFixture(t *testing.T, fixture string) string {
-	content, err := ioutil.ReadFile(fixturePath(t, fixture))
+func (tf *TestFile) Load() string {
+	content, err := ioutil.ReadFile(tf.path())
 	if err != nil {
-		t.Fatalf("could not read fixture %s: %v", fixture, err)
+		tf.t.Fatalf("could not read file %s: %v", tf.name, err)
 	}
 
 	return string(content)
 }
 
-func ParseFixture(t *testing.T, w io.Writer, fixture string, data interface{}) {
-	tmpl := template.Must(template.New(fixture).Parse(LoadFixture(t, fixture)))
+func (tf *TestFile) Parse(w io.Writer, data string) {
+	tmpl := template.Must(template.New(tf.name).Parse(tf.Load()))
 
 	err := tmpl.Execute(w, data)
 	if err != nil {
-		t.Fatalf("could not execute template %s: %v", fixture, err)
+		tf.t.Fatalf("could not execute template %s: %v", tf.name, err)
 	}
 }
 
@@ -113,7 +123,7 @@ func setupPG(t *testing.T) (string, func()) {
 		}
 	}()
 
-	ParseFixture(t, tmpfile, "postgres.sql", DBTemplate{Name: name})
+	NewFixture(t, "postgres.sql").Parse(tmpfile, name)
 
 	if output, err := exec.Command("psql", "-f", tmpfile.Name()).CombinedOutput(); err != nil {
 		t.Fatalf("%s\ncould not run psql: %v", output, err)
@@ -160,8 +170,8 @@ func setupMySQL(t *testing.T) (string, func()) {
 		t.Fatalf("could not get test config: %v", err)
 	}
 
-	query := bytes.Buffer{}
-	ParseFixture(t, &query, "mysql.sql", DBTemplate{Name: name})
+	query := &bytes.Buffer{}
+	NewFixture(t, "mysql.sql").Parse(query, name)
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/?multiStatements=true", cfg.MysqlUser, cfg.MysqlPass))
 	if err != nil {
@@ -177,6 +187,14 @@ func setupMySQL(t *testing.T) (string, func()) {
 			t.Fatalf("could not close mysql database %s: %v", name, err)
 		}
 		cleanup()
+	}
+}
+
+func LoadDataFromFixture(t *testing.T, ds *db.DataSource, fixture string) {
+	query := NewFixture(t, fixture).Load()
+
+	if _, err := ds.Exec(query); err != nil {
+		t.Fatalf("could not execute query %s on %s: %v", query, ds.Name(), err)
 	}
 }
 
@@ -221,7 +239,7 @@ func CreateDataSources(t *testing.T) ([]string, func()) {
 	pgName, cleanupPG := createPG(t)
 	mysqlName, cleanupMySQL := createMySQL(t)
 
-	return []string{mysqlDSN(cfg, mysqlName), pgDSN(cfg, pgName)}, func() {
+	return []string{pgDSN(cfg, pgName), mysqlDSN(cfg, mysqlName)}, func() {
 		cleanupPG()
 		cleanupMySQL()
 	}

@@ -2,8 +2,10 @@ package db
 
 import (
 	"github.com/Sirupsen/logrus"
-	_ "github.com/go-sql-driver/mysql" // import db drivers
-	_ "github.com/lib/pq"
+	"github.com/mattes/migrate"
+	_ "github.com/mattes/migrate/database/mysql"
+	_ "github.com/mattes/migrate/database/postgres"
+	bindata "github.com/mattes/migrate/source/go-bindata"
 )
 
 // Storage is a struct for deloominator own database
@@ -21,29 +23,30 @@ func NewStorage(source string) (*Storage, error) {
 	return &Storage{ds: dataSource}, nil
 }
 
+// AutoUpgrade runs embedded migration
 func (s *Storage) AutoUpgrade() error {
-	names, err := s.ds.Tables()
+	resource := bindata.Resource(AssetNames(), func(name string) ([]byte, error) {
+		return Asset(name)
+	})
+
+	driver, err := bindata.WithInstance(resource)
 	if err != nil {
 		return err
 	}
 
-	found := false
-	for _, name := range names {
-		if name == "migrations" {
-			found = true
-			break
-		}
+	m, err := migrate.NewWithSourceInstance("go-bindata", driver, s.ds.dialect.ConnectionString())
+	if err != nil {
+		return err
+	}
+	err = m.Up()
+	if err == migrate.ErrNoChange {
+		return nil
 	}
 
-	if !found {
-		_, err := s.ds.Query("CREATE TABLE migrations (version varchar(255));")
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return err
 }
 
+// Close closes deloominator internal storage
 func (s *Storage) Close() {
 	if err := s.ds.Close(); err != nil {
 		logrus.Fatalf("could not close storage: %v", err)

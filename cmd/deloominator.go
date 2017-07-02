@@ -57,10 +57,10 @@ func main() {
 	}
 
 	if storage != nil {
-		options = append(options, api.Storage(storage))
-
 		if err := storage.AutoUpgrade(); err != nil {
-			logrus.Fatalf("could not upgrade %s storage: %v", config.BinaryName, err)
+			logrus.Printf("could not upgrade %s storage: %v", config.BinaryName, err)
+		} else {
+			options = append(options, api.Storage(storage))
 		}
 	}
 

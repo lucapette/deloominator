@@ -3,10 +3,6 @@
 	"ignore": "test",
 	"package": [
 		{
-			"path": "appengine/cloudsql",
-			"revision": ""
-		},
-		{
 			"checksumSHA1": "ZKxETlJdB2XubMrZnXB0FQimVA8=",
 			"path": "github.com/Sirupsen/logrus",
 			"revision": "10f801ebc38b33738c9d17d50860f484a0988ff5",
@@ -19,70 +15,70 @@
 			"revisionTime": "2017-03-27T11:30:21Z"
 		},
 		{
-			"checksumSHA1": "vlIwCp269MAOp6LOyl+OnPy/K0U=",
+			"checksumSHA1": "rkgAfsK0G98G8Jl5imPJeslv1uo=",
 			"path": "github.com/graphql-go/graphql",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
 			"checksumSHA1": "EYsvdu2FEkUZcai8y+nRsj3B5zA=",
 			"path": "github.com/graphql-go/graphql/gqlerrors",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
-			"checksumSHA1": "t2SAPiaZ29ocFRyAPwV17OTccLE=",
+			"checksumSHA1": "F6DqOJeICQY0ZyW5XdP2bIhQjyE=",
 			"path": "github.com/graphql-go/graphql/language/ast",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
 			"checksumSHA1": "FNFpZJ07U5Ud3MCc25ast14qVbo=",
 			"path": "github.com/graphql-go/graphql/language/kinds",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
 			"checksumSHA1": "8prb7ZKM8a07/nduiBn9bjby6GI=",
 			"path": "github.com/graphql-go/graphql/language/lexer",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
 			"checksumSHA1": "yskrC6tG5BTJdIk4GKHzGTenQOc=",
 			"path": "github.com/graphql-go/graphql/language/location",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
-			"checksumSHA1": "eOtYOcF6kb2TeM8jRwbxbeJdT6E=",
+			"checksumSHA1": "6SH6pyHhLV2RR2rb0h9fNc3SB/U=",
 			"path": "github.com/graphql-go/graphql/language/parser",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
-			"checksumSHA1": "vvZgiJe8nZ6r++mAFcgXw1O1+nE=",
+			"checksumSHA1": "IDZTgXVgd/3Qgb05aX/nsjSBI8I=",
 			"path": "github.com/graphql-go/graphql/language/printer",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
 			"checksumSHA1": "dRrl/Ky/0NTYA3bZznpxp4tG5Jc=",
 			"path": "github.com/graphql-go/graphql/language/source",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
 			"checksumSHA1": "f62XVj7So29WO/HJC6znxHbbeTs=",
 			"path": "github.com/graphql-go/graphql/language/typeInfo",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
-			"checksumSHA1": "qeUIi6ohnCSBjL7lbvqPcc+L0Ig=",
+			"checksumSHA1": "ueXuiQXmyDSosEmAoFNMX77bodY=",
 			"path": "github.com/graphql-go/graphql/language/visitor",
-			"revision": "44a52a8d9f1d5c8ac30977eb9dbbbd0f20432420",
-			"revisionTime": "2017-04-21T17:52:08Z"
+			"revision": "22050eec5107e195fbbd45345e4429bf912571dd",
+			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
 			"checksumSHA1": "Vkw47ZGKiFYYzHxsPfVWZH9USiA=",
@@ -103,22 +99,58 @@
 			"revisionTime": "2016-05-04T02:26:26Z"
 		},
 		{
-			"checksumSHA1": "uTUsjF7bymOuKvXbW2BpkK/w4Vg=",
+			"checksumSHA1": "e+1BYI9y5LUyfSC+lwQF0AXP5sA=",
 			"path": "github.com/lib/pq",
-			"revision": "2704adc878c21e1329f46f6e56a1c387d788ff94",
-			"revisionTime": "2017-03-24T20:46:54Z"
+			"revision": "5bf161122cd640c2a5a2c1d7fa49ea9befff31dd",
+			"revisionTime": "2016-12-20T09:00:36Z"
 		},
 		{
-			"checksumSHA1": "Gk3jTNQ5uGDUE0WMJFWcYz9PMps=",
+			"checksumSHA1": "xppHi82MLqVx1eyQmbhTesAEjx8=",
 			"path": "github.com/lib/pq/oid",
-			"revision": "2704adc878c21e1329f46f6e56a1c387d788ff94",
-			"revisionTime": "2017-03-24T20:46:54Z"
+			"revision": "5bf161122cd640c2a5a2c1d7fa49ea9befff31dd",
+			"revisionTime": "2016-12-20T09:00:36Z"
 		},
 		{
-			"checksumSHA1": "naf+sai8rdVYJ9ozLllNMMwE9aY=",
+			"checksumSHA1": "uSG4V6AcVQNcll5Vk3HG0eT9+UU=",
+			"path": "github.com/mattes/migrate",
+			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
+			"revisionTime": "2017-06-10T17:25:06Z"
+		},
+		{
+			"checksumSHA1": "6QePtWUFN9x9U/Y6OzcENUUudmM=",
+			"path": "github.com/mattes/migrate/database",
+			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
+			"revisionTime": "2017-06-10T17:25:06Z"
+		},
+		{
+			"checksumSHA1": "5a4JDqeWPUO2jOdytGThkh2QE/k=",
+			"path": "github.com/mattes/migrate/database/mysql",
+			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
+			"revisionTime": "2017-06-10T17:25:06Z"
+		},
+		{
+			"checksumSHA1": "QSLooIeXnzHZElwTfIZoPH4FNH0=",
+			"path": "github.com/mattes/migrate/database/postgres",
+			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
+			"revisionTime": "2017-06-10T17:25:06Z"
+		},
+		{
+			"checksumSHA1": "kIHQkF+Nm0LBPppYbchll3njidY=",
+			"path": "github.com/mattes/migrate/source",
+			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
+			"revisionTime": "2017-06-10T17:25:06Z"
+		},
+		{
+			"checksumSHA1": "k/prxs5UJ3aiz0wEiHVIPfGGR9k=",
+			"path": "github.com/mattes/migrate/source/go-bindata",
+			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
+			"revisionTime": "2017-06-10T17:25:06Z"
+		},
+		{
+			"checksumSHA1": "LjPdvMphElL0GOVNQCsmZMVgWIw=",
 			"path": "github.com/rs/cors",
-			"revision": "2d7dd2a10331137ae3f931ba08c21fd00cbf208d",
-			"revisionTime": "2017-04-20T18:42:42Z"
+			"revision": "a62a804a8a009876ca59105f7899938a1349f4b3",
+			"revisionTime": "2016-06-17T23:19:35Z"
 		},
 		{
 			"checksumSHA1": "hCRfPlNpqv8tvVivLzmXsoUOf1c=",
@@ -159,8 +191,8 @@
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
-			"revision": "0b588ed7a0cd59c271d128ec8c429c1c1607e8ab",
-			"revisionTime": "2017-04-21T11:32:07Z"
+			"revision": "41bba8d80bbfab43231ffdf4c210037baae5f6a3",
+			"revisionTime": "2017-01-27T14:21:26Z"
 		},
 		{
 			"checksumSHA1": "ZVZBntvdoK/qUq/6uF8YMWmuMC4=",

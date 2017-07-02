@@ -4,17 +4,13 @@ package pq
 
 import "os"
 
-// sslKeyPermissions checks the permissions on user-supplied ssl key files.
-// The key file should have very little access.
+// sslCertificatePermissions checks the permissions on user-supplied certificate
+// files. The key file should have very little access.
 //
 // libpq does not check key file permissions on Windows.
-func sslKeyPermissions(sslkey string) error {
-	info, err := os.Stat(sslkey)
-	if err != nil {
-		return err
+func sslCertificatePermissions(cert, key os.FileInfo) {
+	kmode := key.Mode()
+	if kmode != kmode&0600 {
+		panic(ErrSSLKeyHasWorldPermissions)
 	}
-	if info.Mode().Perm()&0077 != 0 {
-		return ErrSSLKeyHasWorldPermissions
-	}
-	return nil
 }

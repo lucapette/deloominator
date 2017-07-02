@@ -95,7 +95,7 @@ type ValidationContext struct {
 	variableUsages                 map[HasSelectionSet][]*VariableUsage
 	recursiveVariableUsages        map[*ast.OperationDefinition][]*VariableUsage
 	recursivelyReferencedFragments map[*ast.OperationDefinition][]*ast.FragmentDefinition
-	fragmentSpreads                map[*ast.SelectionSet][]*ast.FragmentSpread
+	fragmentSpreads                map[HasSelectionSet][]*ast.FragmentSpread
 }
 
 func NewValidationContext(schema *Schema, astDoc *ast.Document, typeInfo *TypeInfo) *ValidationContext {
@@ -107,7 +107,7 @@ func NewValidationContext(schema *Schema, astDoc *ast.Document, typeInfo *TypeIn
 		variableUsages:                 map[HasSelectionSet][]*VariableUsage{},
 		recursiveVariableUsages:        map[*ast.OperationDefinition][]*VariableUsage{},
 		recursivelyReferencedFragments: map[*ast.OperationDefinition][]*ast.FragmentDefinition{},
-		fragmentSpreads:                map[*ast.SelectionSet][]*ast.FragmentSpread{},
+		fragmentSpreads:                map[HasSelectionSet][]*ast.FragmentSpread{},
 	}
 }
 
@@ -146,13 +146,13 @@ func (ctx *ValidationContext) Fragment(name string) *ast.FragmentDefinition {
 	f, _ := ctx.fragments[name]
 	return f
 }
-func (ctx *ValidationContext) FragmentSpreads(node *ast.SelectionSet) []*ast.FragmentSpread {
+func (ctx *ValidationContext) FragmentSpreads(node HasSelectionSet) []*ast.FragmentSpread {
 	if spreads, ok := ctx.fragmentSpreads[node]; ok && spreads != nil {
 		return spreads
 	}
 
 	spreads := []*ast.FragmentSpread{}
-	setsToVisit := []*ast.SelectionSet{node}
+	setsToVisit := []*ast.SelectionSet{node.GetSelectionSet()}
 
 	for {
 		if len(setsToVisit) == 0 {
@@ -189,14 +189,14 @@ func (ctx *ValidationContext) RecursivelyReferencedFragments(operation *ast.Oper
 
 	fragments := []*ast.FragmentDefinition{}
 	collectedNames := map[string]bool{}
-	nodesToVisit := []*ast.SelectionSet{operation.SelectionSet}
+	nodesToVisit := []HasSelectionSet{operation}
 
 	for {
 		if len(nodesToVisit) == 0 {
 			break
 		}
 
-		var node *ast.SelectionSet
+		var node HasSelectionSet
 
 		node, nodesToVisit = nodesToVisit[len(nodesToVisit)-1], nodesToVisit[:len(nodesToVisit)-1]
 		spreads := ctx.FragmentSpreads(node)
@@ -210,7 +210,7 @@ func (ctx *ValidationContext) RecursivelyReferencedFragments(operation *ast.Oper
 				fragment := ctx.Fragment(fragName)
 				if fragment != nil {
 					fragments = append(fragments, fragment)
-					nodesToVisit = append(nodesToVisit, fragment.SelectionSet)
+					nodesToVisit = append(nodesToVisit, fragment)
 				}
 			}
 

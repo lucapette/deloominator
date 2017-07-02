@@ -1,1 +1,0 @@
-{"data":{"query":{"message":"Error 1146: Table '{{.Name}}.table_that_does_not_exist' doesn't exist"}}}

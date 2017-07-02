@@ -42,24 +42,27 @@ func doRequest(t *testing.T, dataSources db.DataSources, code int, query string)
 	return string(resp)
 }
 
-func loadOrUpdateFixture(t *testing.T, fixture string, dataSource *db.DataSource, actual string) string {
+func loadOrUpdateGoldenFile(t *testing.T, fixture string, dataSource *db.DataSource, actual string) string {
 	out := &bytes.Buffer{}
 
-	testutil.ParseFixture(t, out, fixture, testutil.DBTemplate{Name: dataSource.Name()})
+	testFile := testutil.NewGoldenFile(t, fixture)
+
+	testFile.Parse(out, dataSource.Name())
 
 	if *update {
-		testutil.WriteFixture(t, fixture, strings.Replace(actual, dataSource.Name(), "{{.Name}}", -1))
-
+		testFile.Write(strings.Replace(actual, dataSource.Name(), "{{.}}", -1))
 	}
+
 	return strings.TrimSuffix(out.String(), "\n")
 }
 
 func TestGraphQLNotAValidGraphQLQuery(t *testing.T) {
 	actual := doRequest(t, db.DataSources{}, 400, `{ notAValidQuery }`)
 
-	expected := testutil.LoadFixture(t, "not_a_valid_query.json")
+	testFile := testutil.NewGoldenFile(t, "not_a_valid_query.json")
+	expected := testFile.Load()
 	if *update {
-		testutil.WriteFixture(t, "not_a_valid_query.json", actual)
+		testFile.Write(actual)
 	}
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -141,7 +144,7 @@ func TestGraphQLQueryError(t *testing.T) {
 		t.Run(dataSource.Driver, func(t *testing.T) {
 			actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
 
-			expected := loadOrUpdateFixture(t, fmt.Sprintf("query_error_%s.json", dataSource.Driver), dataSource, actual)
+			expected := loadOrUpdateGoldenFile(t, fmt.Sprintf("query_error_%s.json", dataSource.Driver), dataSource, actual)
 
 			if !reflect.DeepEqual(expected, actual) {
 				t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
@@ -189,7 +192,7 @@ func TestGraphQLQuery(t *testing.T) {
 			t.Run(fmt.Sprintf("%s/%s", dataSource.Driver, test.fixture), func(t *testing.T) {
 				actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), test.query))
 
-				expected := strings.TrimSuffix(loadOrUpdateFixture(t, test.fixture, dataSource, actual), "\n")
+				expected := strings.TrimSuffix(loadOrUpdateGoldenFile(t, test.fixture, dataSource, actual), "\n")
 
 				if !reflect.DeepEqual(expected, actual) {
 					t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))

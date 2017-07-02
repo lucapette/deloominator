@@ -6,14 +6,14 @@ import (
 	"sort"
 
 	"github.com/Sirupsen/logrus"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql" // import db drivers
 	_ "github.com/lib/pq"
 )
 
 type DataSource struct {
 	dialect Dialect
-	db      *sql.DB
-	Driver  string
+	*sql.DB
+	Driver string
 }
 
 type DataSources map[string]*DataSource
@@ -60,9 +60,10 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DataSource{dialect: dialect, db: db, Driver: url.Scheme}, nil
+	return &DataSource{dialect: dialect, DB: db, Driver: url.Scheme}, nil
 }
 
+// Tables returns the names of the available tables in the data source
 func (ds *DataSource) Tables() (names []string, err error) {
 	queryResult, err := ds.Query(ds.dialect.TablesQuery())
 	if err != nil {
@@ -78,18 +79,20 @@ func (ds *DataSource) Tables() (names []string, err error) {
 	return names, err
 }
 
+// Name returns the database name of the data source
 func (ds *DataSource) Name() string {
 	return ds.dialect.DBName()
 }
 
+// Close closes the connection to the data source
 func (ds *DataSource) Close() error {
-	return ds.db.Close()
+	return ds.DB.Close()
 }
 
 func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
 	// We use a prepare statement here so we can force MySQL binary protocol and
 	// get real types back. See: https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
-	statement, err := ds.db.Prepare(input)
+	statement, err := ds.DB.Prepare(input)
 	if err != nil {
 		return qr, err
 	}

@@ -4,7 +4,7 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-\c {{.Name}}
+\c {{.}}
 
 CREATE TYPE mpaa_rating AS ENUM (
     'G',
