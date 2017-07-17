@@ -64,6 +64,10 @@ func (s *Server) Start() {
 		AllowedOrigins: []string{"http://localhost:8080"},
 	})
 
+	if s.storage == nil {
+		logrus.Warn("server running in read-only mode")
+	}
+
 	router.Use(logHandler)
 	router.Use(c.Handler)
 

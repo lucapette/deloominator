@@ -47,7 +47,7 @@ func main() {
 
 	storage, err := db.NewStorage(cfg.Storage)
 	if err != nil {
-		logrus.Printf("cannot create storage from %v: %v\n", cfg.Storage, err)
+		logrus.Printf("cannot create storage from %v: %v", cfg.Storage, err)
 	}
 
 	options := []api.Option{
