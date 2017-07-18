@@ -3,7 +3,7 @@ package db
 import (
 	"github.com/Sirupsen/logrus"
 	"github.com/mattes/migrate"
-	_ "github.com/mattes/migrate/database/mysql"
+	_ "github.com/mattes/migrate/database/mysql" // migration drivers
 	_ "github.com/mattes/migrate/database/postgres"
 	bindata "github.com/mattes/migrate/source/go-bindata"
 )

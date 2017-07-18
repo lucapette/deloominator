@@ -26,6 +26,9 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 		if err != nil {
 			return nil, err
 		}
+		if err := ds.Ping(); err != nil {
+			return nil, err
+		}
 
 		dataSources[ds.Name()] = ds
 	}
@@ -36,7 +39,7 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 func (dataSources DataSources) Close() {
 	for _, ds := range dataSources {
 		if err := ds.Close(); err != nil {
-			logrus.Fatalf("could not close %s: %v", ds.Name(), err)
+			logrus.Printf("could not close %s: %v", ds.Name(), err)
 		}
 	}
 }
@@ -56,10 +59,6 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		return nil, err
 	}
 
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
 	return &DataSource{dialect: dialect, DB: db, Driver: url.Scheme}, nil
 }
 

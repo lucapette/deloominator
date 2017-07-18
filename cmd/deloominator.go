@@ -45,9 +45,12 @@ func main() {
 		logrus.Fatalf("cannot create dataSources from %v: %v", cfg.Sources, err)
 	}
 
-	storage, err := db.NewStorage(cfg.Storage)
-	if err != nil {
-		logrus.Printf("cannot create storage from %v: %v", cfg.Storage, err)
+	var storage *db.Storage
+	if cfg.Storage != "" {
+		storage, err = db.NewStorage(cfg.Storage)
+		if err != nil {
+			logrus.Printf("cannot create storage from %v: %v", cfg.Storage, err)
+		}
 	}
 
 	options := []api.Option{
@@ -72,8 +75,7 @@ func main() {
 	signal.Notify(s, os.Interrupt, os.Kill)
 	<-s
 
-	logrus.WithField("port", cfg.Port).
-		Infof("stopping %s", config.BinaryName)
+	logrus.WithField("port", cfg.Port).Infof("stopping %s", config.BinaryName)
 
 	dataSources.Close()
 }
