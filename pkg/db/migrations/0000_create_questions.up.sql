@@ -1,6 +1,6 @@
 CREATE TABLE questions (
-    id char(36),
-    title varchar,
-    description varchar,
-    query text
+    id VARCHAR(36),
+    title TEXT,
+    description TEXT,
+    query TEXT
 );

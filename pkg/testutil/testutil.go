@@ -231,6 +231,14 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult
 	}
 }
 
+func CreateDSN(t *testing.T) []string {
+	cfg, err := getTestConfig()
+	if err != nil {
+		t.Fatalf("could not get test config: %v", err)
+	}
+	return []string{pgDSN(cfg, randDBName()), mysqlDSN(cfg, randDBName())}
+}
+
 func CreateDataSources(t *testing.T) ([]string, func()) {
 	cfg, err := getTestConfig()
 	if err != nil {

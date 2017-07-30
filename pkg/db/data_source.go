@@ -2,12 +2,13 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"net/url"
 	"sort"
 
+	"strings"
+
 	"github.com/Sirupsen/logrus"
-	_ "github.com/go-sql-driver/mysql" // import db drivers
-	_ "github.com/lib/pq"
 )
 
 type DataSource struct {
@@ -38,9 +39,7 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 
 func (dataSources DataSources) Close() {
 	for _, ds := range dataSources {
-		if err := ds.Close(); err != nil {
-			logrus.Printf("could not close %s: %v", ds.Name(), err)
-		}
+		ds.Close()
 	}
 }
 
@@ -83,9 +82,40 @@ func (ds *DataSource) Name() string {
 	return ds.dialect.DBName()
 }
 
+func (ds *DataSource) CreateDBIfNotExist() error {
+	if !ds.dialect.IsUnknown(ds.Ping()) {
+		return nil
+	}
+
+	db, err := sql.Open(ds.Driver, strings.Replace(ds.dialect.ConnectionString(), ds.dialect.DBName(), "", 1))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			logrus.Printf("could not close %s: %v", ds.dialect.ConnectionString(), err)
+		}
+	}()
+
+	logrus.WithFields(logrus.Fields{
+		"storage_name": ds.dialect.DBName(),
+	}).Printf("creating storage")
+
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", ds.Name()))
+	if err == nil {
+		logrus.WithFields(logrus.Fields{
+			"storage_name": ds.dialect.DBName(),
+		}).Printf("storage created successfully")
+	}
+
+	return err
+}
+
 // Close closes the connection to the data source
-func (ds *DataSource) Close() error {
-	return ds.DB.Close()
+func (ds *DataSource) Close() {
+	if err := ds.DB.Close(); err != nil {
+		logrus.Printf("could not close data source: %v", err)
+	}
 }
 
 func (ds *DataSource) Query(input string) (qr QueryResult, err error) {

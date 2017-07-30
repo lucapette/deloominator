@@ -13,6 +13,7 @@ type Dialect interface {
 	ExtractCellInfo(interface{}) (Cell, Type)
 	ConnectionString() string
 	DBName() string
+	IsUnknown(error) bool
 }
 
 func NewDialect(url *url.URL) (dialect Dialect, err error) {

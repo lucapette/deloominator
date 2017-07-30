@@ -39,6 +39,13 @@ func (my *MySQL) DBName() string {
 	return my.cfg.DBName
 }
 
+func (my *MySQL) IsUnknown(e error) bool {
+	if err, ok := e.(*mysql.MySQLError); ok {
+		return err.Number == 1049
+	}
+	return false
+}
+
 func NewMySQLDialect(source string) (*MySQL, error) {
 	config, err := mysql.ParseDSN(strings.Replace(source, "mysql://", "", 1))
 	if err != nil {

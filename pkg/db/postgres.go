@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 type Postgres struct {
@@ -42,6 +44,13 @@ func (pg *Postgres) ConnectionString() string {
 
 func (pg *Postgres) DBName() string {
 	return pg.u.Path[1:]
+}
+
+func (pg *Postgres) IsUnknown(e error) bool {
+	if err, ok := e.(*pq.Error); ok {
+		return err.Code == "3D000"
+	}
+	return false
 }
 
 func NewPostgresDialect(source string) (*Postgres, error) {
