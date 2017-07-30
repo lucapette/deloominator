@@ -3,16 +3,16 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "ZKxETlJdB2XubMrZnXB0FQimVA8=",
+			"checksumSHA1": "BCmjskha6fhGDUxvgayGZnF8RUc=",
 			"path": "github.com/Sirupsen/logrus",
-			"revision": "10f801ebc38b33738c9d17d50860f484a0988ff5",
-			"revisionTime": "2017-03-17T14:32:14Z"
+			"revision": "181d419aa9e2223811b824e8f0b4af96f9ba9302",
+			"revisionTime": "2017-07-28T07:42:14Z"
 		},
 		{
-			"checksumSHA1": "42vkdsxNaLyPu+FktCzZ/8zsNSE=",
+			"checksumSHA1": "i3UtE7/Cn57eX1hO5Z0CqY/Eeb4=",
 			"path": "github.com/go-sql-driver/mysql",
-			"revision": "9dee4ca50b83acdf57a35fb9e6fb4be640afa2f3",
-			"revisionTime": "2017-03-27T11:30:21Z"
+			"revision": "3955978caca48c1658a4bb7a9c6a0f084e326af3",
+			"revisionTime": "2017-07-15T19:24:08Z"
 		},
 		{
 			"checksumSHA1": "rkgAfsK0G98G8Jl5imPJeslv1uo=",
@@ -81,10 +81,10 @@
 			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
-			"checksumSHA1": "Vkw47ZGKiFYYzHxsPfVWZH9USiA=",
+			"checksumSHA1": "gWlw0l2wMBLhmejJCTr/Zywqyk8=",
 			"path": "github.com/kelseyhightower/envconfig",
-			"revision": "202b52d1dba0b93c3727d73515f5b54dec0c0909",
-			"revisionTime": "2017-04-20T21:23:16Z"
+			"revision": "70f0258d44cbaa3b6a2581d82f58da01a38e4de4",
+			"revisionTime": "2017-05-23T19:07:22Z"
 		},
 		{
 			"checksumSHA1": "eOXF2PEvYLMeD8DSzLZJWbjYzco=",
@@ -99,16 +99,16 @@
 			"revisionTime": "2016-05-04T02:26:26Z"
 		},
 		{
-			"checksumSHA1": "e+1BYI9y5LUyfSC+lwQF0AXP5sA=",
+			"checksumSHA1": "ZAj/o03zG8Ui4mZ4XmzU4yyKC04=",
 			"path": "github.com/lib/pq",
-			"revision": "5bf161122cd640c2a5a2c1d7fa49ea9befff31dd",
-			"revisionTime": "2016-12-20T09:00:36Z"
+			"revision": "dd1fe2071026ce53f36a39112e645b4d4f5793a4",
+			"revisionTime": "2017-07-07T05:36:02Z"
 		},
 		{
-			"checksumSHA1": "xppHi82MLqVx1eyQmbhTesAEjx8=",
+			"checksumSHA1": "Gk3jTNQ5uGDUE0WMJFWcYz9PMps=",
 			"path": "github.com/lib/pq/oid",
-			"revision": "5bf161122cd640c2a5a2c1d7fa49ea9befff31dd",
-			"revisionTime": "2016-12-20T09:00:36Z"
+			"revision": "dd1fe2071026ce53f36a39112e645b4d4f5793a4",
+			"revisionTime": "2017-07-07T05:36:02Z"
 		},
 		{
 			"checksumSHA1": "uSG4V6AcVQNcll5Vk3HG0eT9+UU=",
@@ -189,16 +189,22 @@
 			"revisionTime": "2016-11-14T00:05:42Z"
 		},
 		{
+			"checksumSHA1": "+WzOFwhDdPcz5PYt7imWl71ekZY=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "558b6879de74bc843225cde5686419267ff707ca",
+			"revisionTime": "2017-07-28T12:36:07Z"
+		},
+		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
 			"revision": "41bba8d80bbfab43231ffdf4c210037baae5f6a3",
 			"revisionTime": "2017-01-27T14:21:26Z"
 		},
 		{
-			"checksumSHA1": "ZVZBntvdoK/qUq/6uF8YMWmuMC4=",
+			"checksumSHA1": "rE620LTXvIR3d0WFYYU7fPthpUQ=",
 			"path": "golang.org/x/sys/unix",
-			"revision": "ea9bcade75cb975a0b9738936568ab388b845617",
-			"revisionTime": "2017-03-08T18:50:27Z"
+			"revision": "0f826bdd13b500be0f1d4004938ad978fcc6031e",
+			"revisionTime": "2017-07-27T15:10:50Z"
 		}
 	],
 	"rootPath": "github.com/lucapette/deloominator"
