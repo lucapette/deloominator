@@ -29,29 +29,25 @@ Running a query in the playground has four possible outcomes:
 - A chart displayed
   `deloominator` chose to display the data as a chart. Please refer to [this
   document](/docs/charts.md) for further information.
-- Raw data displayed
-  `deloominator` renders only a table with raw data in case no chart was detected.
+- Raw data displayed `deloominator`
+  renders only a table with raw data in case no chart was detected.
 
-`deloominator` uses a simple [algorithm](/docs/charts.md#algorithm) to
-determine which graph to show.
+`deloominator` uses a simple [algorithm](/docs/charts.md#algorithm) to determine
+which graph to show.
 
-Hitting the `save` button shows the following screen:
+You can name your playground experiment and then hit the `save` button which
+will show you the following screen:
 
-![save q&a mock](/docs/img/save-q-and-a.png)
+![save q&a](/docs/img/save-q-and-a.png)
 
-As the goal of each visualization or query is to answer a question,
-`deloominator` saves the information as a `Q&A`. The following information is
-required to save a `Q&A`:
-
-- a `title` that uniquely describes the `Q&A`
-- a `description` that will render as markdown
+Here you can add a `description` (you can use markdown) to your `Q&A`.
 
 # Q&A
 
 The `Q&A` section presents the list of the questions users saved in
 `deloominator`. It looks like this:
 
-![q&a mock](/docs/img/list-of-q-and-a.png)
+![q&as](/docs/img/q-and-a-s.png)
 
 Users can search for existing `q&a`, edit and duplicate existing ones.
 

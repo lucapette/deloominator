@@ -1,22 +1,26 @@
 //@flow
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { Container, Table, Message, Loader, Segment, Divider } from 'semantic-ui-react';
+import { Container, Table, Message, Loader, Segment, Divider } from "semantic-ui-react";
 
-import { gql, graphql } from 'react-apollo';
+import { gql, graphql } from "react-apollo";
 
-import RawResults from './RawResults';
+import RawResults from "./RawResults";
 
-import Chart from './Chart';
+import Chart from "./Chart";
 
 class QueryResultContainer extends Component {
   render() {
-    const { data: { loading, error, query } } = this.props;
+    const { data: { loading, error, query }, handleQuerySuccess } = this.props;
+
+    handleQuerySuccess(false);
 
     if (loading) {
       return (
         <Container>
-          <Loader active inline='centered'>Loading</Loader>
+          <Loader active inline="centered">
+            Loading
+          </Loader>
         </Container>
       );
     }
@@ -25,16 +29,20 @@ class QueryResultContainer extends Component {
       return <p>Error!</p>;
     }
 
-    if (query.__typename == 'queryError') {
+    if (query.__typename == "queryError") {
       return (
         <Message negative>
           <Message.Header>There is a problem with your query.</Message.Header>
-          <p>{query.message}</p>
+          <p>
+            {query.message}
+          </p>
         </Message>
       );
     }
 
-    if (query.chartName !== 'UnknownChart') {
+    handleQuerySuccess(true);
+
+    if (query.chartName !== "UnknownChart") {
       return (
         <Container>
           <Segment padded>
@@ -57,29 +65,29 @@ class QueryResultContainer extends Component {
 }
 
 const Query = gql`
-query Query($source: String!, $input: String!) {
-  query(source: $source, input: $input) {
-    ... on results {
+  query Query($source: String!, $input: String!) {
+    query(source: $source, input: $input) {
+      ... on results {
         chartName
-
         columns {
           name
           type
         }
-
         rows {
           cells {
             value
           }
         }
+      }
+      ... on queryError {
+        message
+      }
     }
-
-    ... on queryError { message }
   }
-}`;
+`;
 
 const QueryResult = graphql(Query, {
-  options: ({source, input}) => ({ variables: {source, input} }),
+  options: ({ source, input }) => ({ variables: { source, input } }),
 })(QueryResultContainer);
 
 export default QueryResult;
