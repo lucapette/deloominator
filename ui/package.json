@@ -36,10 +36,13 @@
     "webpack-dev-server": "2"
   },
   "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack -p --config webpack.config.js",
+    "start": "webpack-dev-server --progress",
+    "build": "webpack --progress -p --config webpack.config.js",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "flow && jest",
     "test:watch": "jest --watch"
+  },
+  "optionalDependencies": {
+    "fsevents": "^1.1.2"
   }
 }
