@@ -1,19 +1,19 @@
 //@flow
 import React, { Component } from "react";
-
+import { gql, graphql } from "react-apollo";
 import { Container, Table, Message, Loader, Segment, Divider } from "semantic-ui-react";
 
-import { gql, graphql } from "react-apollo";
-
+import Chart from "./Chart";
 import RawResults from "./RawResults";
 
-import Chart from "./Chart";
-
 class QueryResultContainer extends Component {
+  componentWillUpdate(nextProps, nextState) {
+    const { data: { loading, error, query }, handleQuerySuccess } = nextProps;
+    handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == "queryError"));
+  }
+
   render() {
     const { data: { loading, error, query }, handleQuerySuccess } = this.props;
-
-    handleQuerySuccess(false);
 
     if (loading) {
       return (
@@ -39,8 +39,6 @@ class QueryResultContainer extends Component {
         </Message>
       );
     }
-
-    handleQuerySuccess(true);
 
     if (query.chartName !== "UnknownChart") {
       return (

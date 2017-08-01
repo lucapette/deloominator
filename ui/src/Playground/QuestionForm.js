@@ -1,17 +1,21 @@
 //@flow
+import { sortBy } from "lodash";
 import React, { Component } from "react";
-
+import { gql, graphql } from "react-apollo";
 import { Button, Form } from "semantic-ui-react";
 
-import { sortBy } from "lodash";
-
-class QuestionForm extends Component {
+class QuestionFormContainer extends Component {
   dataSourcesOptions = (dataSources: [string]) => {
     return sortBy(dataSources || [], ["name"], ["asc"]).map(s => ({
       name: s.name,
       text: s.name,
       value: s.name,
     }));
+  };
+
+  handleSave = e => {
+    e.preventDefault();
+    this.props.mutate({ variables: { title: "nonworkingmutation", query: this.props.currentQuery } });
   };
 
   render() {
@@ -45,12 +49,24 @@ class QuestionForm extends Component {
             disabled={!(selectedDataSource && currentQuery)}
             onClick={handleRunClick}
           />
-          <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={handleRunClick} />
+          <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={this.handleSave} />
         </Form.Group>
         <Form.TextArea placeholder="Write your query here" value={currentQuery} onChange={handleQueryChange} />
       </Form>
     );
   }
 }
+
+const SaveQuestion = gql`
+  mutation SubmitQuestion($title: String!, $query: String!) {
+    saveQuestion(title: $title, query: $query) {
+      id
+      title
+      query
+    }
+  }
+`;
+
+const QuestionForm = graphql(SaveQuestion)(QuestionFormContainer);
 
 export default QuestionForm;

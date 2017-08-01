@@ -1,9 +1,8 @@
 //@flow
 import React, { Component } from "react";
-import DocumentTitle from "react-document-title";
-
-import { Container, Grid } from "semantic-ui-react";
 import { gql, graphql } from "react-apollo";
+import DocumentTitle from "react-document-title";
+import { Container, Grid } from "semantic-ui-react";
 
 import QueryResult from "./QueryResult";
 import QuestionForm from "./QuestionForm";
