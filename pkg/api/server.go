@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/lucapette/deloominator/pkg/api/graphql"
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/rs/cors"
 	goji "goji.io"
@@ -71,7 +72,7 @@ func (s *Server) Start() {
 	router.Use(logHandler)
 	router.Use(c.Handler)
 
-	router.HandleFunc(pat.Post("/graphql"), GraphQLHandler(s.dataSources))
+	router.HandleFunc(pat.Post("/graphql"), graphql.Handler(s.dataSources, s.storage))
 	router.HandleFunc(pat.Get("/:name.:ext"), assetsHandler)
 	router.HandleFunc(pat.Get("/*"), uiHandler)
 

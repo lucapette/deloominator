@@ -1,4 +1,4 @@
-package api_test
+package graphql_test
 
 import (
 	"bytes"
@@ -12,15 +12,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lucapette/deloominator/pkg/api"
+	"github.com/lucapette/deloominator/pkg/api/graphql"
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/lucapette/deloominator/pkg/testutil"
 )
 
 var update = flag.Bool("update", false, "update golden files")
 
-func doRequest(t *testing.T, dataSources db.DataSources, code int, query string) string {
-	json, err := json.Marshal(api.GraphqlPayload{Query: query})
+func doRequest(t *testing.T, dataSources db.DataSources, storage *db.Storage, code int, query string) string {
+	json, err := json.Marshal(graphql.Payload{Query: query})
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -28,7 +28,7 @@ func doRequest(t *testing.T, dataSources db.DataSources, code int, query string)
 	req := httptest.NewRequest("POST", "http://example.com/graphql", strings.NewReader(string(json)))
 	w := httptest.NewRecorder()
 
-	api.GraphQLHandler(dataSources)(w, req)
+	graphql.Handler(dataSources, storage)(w, req)
 
 	resp, err := ioutil.ReadAll(w.Body)
 	if err != nil {
@@ -57,7 +57,7 @@ func loadOrUpdateGoldenFile(t *testing.T, fixture string, dataSource *db.DataSou
 }
 
 func TestGraphQLNotAValidGraphQLQuery(t *testing.T) {
-	actual := doRequest(t, db.DataSources{}, 400, `{ notAValidQuery }`)
+	actual := doRequest(t, db.DataSources{}, nil, 400, `{ notAValidQuery }`)
 
 	testFile := testutil.NewGoldenFile(t, "not_a_valid_query.json")
 	expected := testFile.Load()
@@ -73,13 +73,13 @@ func TestGraphQLNotAValidGraphQLQuery(t *testing.T) {
 func TestGraphQLDataSources(t *testing.T) {
 	type response struct {
 		Data struct {
-			DataSources []api.DataSource `json:"dataSources"`
+			DataSources []graphql.DataSource `json:"dataSources"`
 		} `json:"data"`
 	}
 	dataSources, cleanup := testutil.SetupDataSources(t)
 	defer cleanup()
 
-	jsonResp := doRequest(t, dataSources, 200, `{ dataSources { name tables { name } } }`)
+	jsonResp := doRequest(t, dataSources, nil, 200, `{ dataSources { name tables { name } } }`)
 	resp := response{}
 	err := json.Unmarshal([]byte(jsonResp), &resp)
 	if err != nil {
@@ -92,7 +92,7 @@ func TestGraphQLDataSources(t *testing.T) {
 	}
 
 	for _, dataSource := range dataSources {
-		found := &api.DataSource{}
+		found := &graphql.DataSource{}
 		for _, ds := range actual {
 
 			if dataSource.Name() == ds.Name {
@@ -142,7 +142,7 @@ func TestGraphQLQueryError(t *testing.T) {
 
 	for _, dataSource := range dataSources {
 		t.Run(dataSource.Driver, func(t *testing.T) {
-			actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
+			actual := doRequest(t, dataSources, nil, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
 
 			expected := loadOrUpdateGoldenFile(t, fmt.Sprintf("query_error_%s.json", dataSource.Driver), dataSource, actual)
 
@@ -190,7 +190,7 @@ func TestGraphQLQuery(t *testing.T) {
 
 		for _, test := range queryTests {
 			t.Run(fmt.Sprintf("%s/%s", dataSource.Driver, test.fixture), func(t *testing.T) {
-				actual := doRequest(t, dataSources, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), test.query))
+				actual := doRequest(t, dataSources, nil, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), test.query))
 
 				expected := strings.TrimSuffix(loadOrUpdateGoldenFile(t, test.fixture, dataSource, actual), "\n")
 

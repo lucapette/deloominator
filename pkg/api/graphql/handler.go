@@ -1,17 +1,17 @@
-package api
+package graphql
 
 import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
-	"github.com/graphql-go/graphql"
+	gql "github.com/graphql-go/graphql"
 	"github.com/lucapette/deloominator/pkg/db"
 )
 
-// GraphQLHandler is an HTTP handler for GraphQL queries
-func GraphQLHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *http.Request) {
-	schema := createSchema(dataSources)
+// Handler is an HTTP handler for GraphQL queries
+func Handler(dataSources db.DataSources, storage *db.Storage) func(w http.ResponseWriter, r *http.Request) {
+	schema := createSchema(dataSources, storage)
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/json")
@@ -22,7 +22,7 @@ func GraphQLHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *h
 			return
 		}
 
-		payload := GraphqlPayload{}
+		payload := Payload{}
 
 		err = json.Unmarshal(query, &payload)
 		if err != nil {
@@ -30,7 +30,7 @@ func GraphQLHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *h
 			return
 		}
 
-		res := graphql.Do(graphql.Params{
+		res := gql.Do(gql.Params{
 			Schema:         schema,
 			RequestString:  payload.Query,
 			OperationName:  payload.OperationName,

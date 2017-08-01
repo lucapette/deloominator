@@ -58,7 +58,7 @@ class QuestionFormContainer extends Component {
 }
 
 const SaveQuestion = gql`
-  mutation SubmitQuestion($title: String!, $query: String!) {
+  mutation SaveQuestion($title: String!, $query: String!) {
     saveQuestion(title: $title, query: $query) {
       id
       title
