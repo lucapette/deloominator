@@ -2,6 +2,7 @@
 import { sortBy } from "lodash";
 import React, { Component } from "react";
 import { gql, graphql } from "react-apollo";
+import { object } from "prop-types";
 import { Button, Form } from "semantic-ui-react";
 
 class QuestionFormContainer extends Component {
@@ -30,7 +31,14 @@ class QuestionFormContainer extends Component {
 
   handleSave = e => {
     e.preventDefault();
-    this.props.mutate({ variables: { title: this.state.title, query: this.props.currentQuery } });
+    this.props
+      .mutate({ variables: { title: this.state.title, query: this.props.currentQuery } })
+      .then(({ data: { saveQuestion } }) => {
+        this.context.router.history.push(`/q/${saveQuestion.id}`);
+      })
+      .catch(({ error }) => {
+        console.log(error);
+      });
   };
 
   render() {
@@ -81,12 +89,14 @@ const SaveQuestion = gql`
   mutation SaveQuestion($title: String!, $query: String!) {
     saveQuestion(title: $title, query: $query) {
       id
-      title
-      query
     }
   }
 `;
 
 const QuestionForm = graphql(SaveQuestion)(QuestionFormContainer);
+
+QuestionFormContainer.contextTypes = {
+  router: object,
+};
 
 export default QuestionForm;
