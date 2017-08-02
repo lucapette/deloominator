@@ -2,16 +2,19 @@ package graphql
 
 import (
 	gql "github.com/graphql-go/graphql"
-	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 )
 
-func saveQuestion(storage *db.Storage) func(p gql.ResolveParams) (interface{}, error) {
+func saveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
 	return func(p gql.ResolveParams) (interface{}, error) {
-		return nil, nil
+		title := p.Args["title"].(string)
+		query := p.Args["query"].(string)
+
+		return s.InsertQuestion(title, query)
 	}
 }
 
-func mutation(storage *db.Storage) *gql.Object {
+func mutation(s *storage.Storage) *gql.Object {
 	questionType := gql.NewObject(gql.ObjectConfig{
 		Name: "Question",
 		Fields: gql.Fields{
@@ -38,7 +41,7 @@ func mutation(storage *db.Storage) *gql.Object {
 					Type: gql.NewNonNull(gql.String),
 				},
 			},
-			Resolve: saveQuestion(storage),
+			Resolve: saveQuestion(s),
 		},
 	}
 	return gql.NewObject(gql.ObjectConfig{Name: "Mutation", Fields: fields})

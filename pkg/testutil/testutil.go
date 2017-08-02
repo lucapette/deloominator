@@ -19,6 +19,7 @@ import (
 	"github.com/kr/pretty"
 	"github.com/lucapette/deloominator/pkg/config"
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 )
 
 type TestFile struct {
@@ -237,6 +238,18 @@ func CreateDSN(t *testing.T) []string {
 		t.Fatalf("could not get test config: %v", err)
 	}
 	return []string{pgDSN(cfg, randDBName()), mysqlDSN(cfg, randDBName())}
+}
+
+func NewStorage(t *testing.T, source string) *storage.Storage {
+	s, err := storage.NewStorage(source)
+	if err != nil {
+		t.Fatalf("could not create storage: %v", err)
+	}
+	err = s.AutoUpgrade()
+	if err != nil {
+		t.Fatalf("could not auto-upgrade storage: %v", err)
+	}
+	return s
 }
 
 func CreateDataSources(t *testing.T) ([]string, func()) {

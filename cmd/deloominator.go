@@ -9,6 +9,7 @@ import (
 	"github.com/lucapette/deloominator/pkg/api"
 	"github.com/lucapette/deloominator/pkg/config"
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 	flag "github.com/spf13/pflag"
 )
 
@@ -45,9 +46,9 @@ func main() {
 		logrus.Fatalf("cannot create dataSources from %v: %v", cfg.Sources, err)
 	}
 
-	var storage *db.Storage
+	var s *storage.Storage
 	if cfg.Storage != "" {
-		storage, err = db.NewStorage(cfg.Storage)
+		s, err = storage.NewStorage(cfg.Storage)
 		if err != nil {
 			logrus.Printf("cannot create storage from %v: %v", cfg.Storage, err)
 		}
@@ -59,11 +60,11 @@ func main() {
 		api.DataSources(dataSources),
 	}
 
-	if storage != nil {
-		if err := storage.AutoUpgrade(); err != nil {
+	if s != nil {
+		if err := s.AutoUpgrade(); err != nil {
 			logrus.Printf("could not upgrade %s storage: %v", config.BinaryName, err)
 		} else {
-			options = append(options, api.Storage(storage))
+			options = append(options, api.Storage(s))
 		}
 	}
 
@@ -71,9 +72,9 @@ func main() {
 
 	server.Start()
 
-	s := make(chan os.Signal, 1)
-	signal.Notify(s, os.Interrupt, os.Kill)
-	<-s
+	sgn := make(chan os.Signal, 1)
+	signal.Notify(sgn, os.Interrupt, os.Kill)
+	<-sgn
 
 	logrus.WithField("port", cfg.Port).Infof("stopping %s", config.BinaryName)
 

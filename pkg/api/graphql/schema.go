@@ -6,6 +6,7 @@ import (
 	gql "github.com/graphql-go/graphql"
 	"github.com/lucapette/deloominator/pkg/charts"
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 )
 
 type queryError struct {
@@ -63,7 +64,7 @@ func convertToChartTypes(columns []db.Column) (types charts.DataTypes) {
 	return types
 }
 
-func createSchema(dataSources db.DataSources, storage *db.Storage) (schema gql.Schema) {
+func createSchema(dataSources db.DataSources, storage *storage.Storage) (schema gql.Schema) {
 	schemaConfig := gql.SchemaConfig{
 		Query:    query(dataSources),
 		Mutation: mutation(storage),

@@ -7,6 +7,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/lucapette/deloominator/pkg/api/graphql"
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 	"github.com/rs/cors"
 	goji "goji.io"
 	"goji.io/pat"
@@ -16,7 +17,7 @@ type Server struct {
 	debug       bool
 	dataSources db.DataSources
 	port        string
-	storage     *db.Storage
+	storage     *storage.Storage
 }
 
 type Option func(*Server)
@@ -39,7 +40,7 @@ func DataSources(ds db.DataSources) Option {
 	}
 }
 
-func Storage(storage *db.Storage) Option {
+func Storage(storage *storage.Storage) Option {
 	return func(s *Server) {
 		s.storage = storage
 	}

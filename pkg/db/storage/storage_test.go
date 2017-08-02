@@ -1,9 +1,10 @@
-package db_test
+package storage_test
 
 import (
 	"testing"
 
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 
 	"github.com/lucapette/deloominator/pkg/testutil"
 	_ "github.com/mattes/migrate/database/mysql"
@@ -22,10 +23,11 @@ func TestStorage_AutoUpgrade_DBExists(t *testing.T) {
 			}
 			defer ds.Close()
 
-			s, err := db.NewStorage(source)
+			s, err := storage.NewStorage(source)
 			if err != nil {
 				t.Errorf("could not create storage: %v", err)
 			}
+			defer s.Close()
 
 			err = s.AutoUpgrade()
 			if err != nil {
@@ -57,10 +59,11 @@ func TestStorage_AutoUpgrade_DBNotExist(t *testing.T) {
 			}
 			defer ds.Close()
 
-			s, err := db.NewStorage(dsn)
+			s, err := storage.NewStorage(dsn)
 			if err != nil {
 				t.Errorf("could not create storage: %v", err)
 			}
+			defer s.Close()
 
 			err = s.AutoUpgrade()
 			if err != nil {

@@ -5,6 +5,17 @@ import { gql, graphql } from "react-apollo";
 import { Button, Form } from "semantic-ui-react";
 
 class QuestionFormContainer extends Component {
+  state: {
+    title?: string,
+  };
+
+  constructor() {
+    super();
+    this.state = {
+      title: "",
+    };
+  }
+
   dataSourcesOptions = (dataSources: [string]) => {
     return sortBy(dataSources || [], ["name"], ["asc"]).map(s => ({
       name: s.name,
@@ -13,9 +24,13 @@ class QuestionFormContainer extends Component {
     }));
   };
 
+  handleTitleChange = e => {
+    this.setState({ title: e.target.value });
+  };
+
   handleSave = e => {
     e.preventDefault();
-    this.props.mutate({ variables: { title: "nonworkingmutation", query: this.props.currentQuery } });
+    this.props.mutate({ variables: { title: this.state.title, query: this.props.currentQuery } });
   };
 
   render() {
@@ -41,7 +56,12 @@ class QuestionFormContainer extends Component {
           />
         </Form.Group>
         <Form.Group>
-          <Form.Input placeholder="Untitled visualization" width={13} />
+          <Form.Input
+            placeholder="Untitled visualization"
+            onChange={this.handleTitleChange}
+            value={this.state.title}
+            width={13}
+          />
           <Button
             icon="play"
             primary

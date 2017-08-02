@@ -14,12 +14,13 @@ import (
 
 	"github.com/lucapette/deloominator/pkg/api/graphql"
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 	"github.com/lucapette/deloominator/pkg/testutil"
 )
 
 var update = flag.Bool("update", false, "update golden files")
 
-func doRequest(t *testing.T, dataSources db.DataSources, storage *db.Storage, code int, query string) string {
+func doRequest(t *testing.T, dataSources db.DataSources, storage *storage.Storage, code int, query string) string {
 	json, err := json.Marshal(graphql.Payload{Query: query})
 	if err != nil {
 		t.Fatalf(err.Error())

@@ -159,6 +159,12 @@
 			"revisionTime": "2016-06-18T19:32:21Z"
 		},
 		{
+			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
+			"revisionTime": "2017-03-21T23:07:31Z"
+		},
+		{
 			"checksumSHA1": "/iDm+vsu0bUFOgLzkeAXl0cJFXc=",
 			"path": "github.com/spf13/pflag",
 			"revision": "2300d0f8576fe575f71aaa5b9bbe4e1b0dc2eb51",
