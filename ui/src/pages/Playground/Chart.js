@@ -1,11 +1,10 @@
+import { map, zipObject } from "lodash";
 import React, { Component } from "react";
 
-import SimpleBar from "../Charts/SimpleBar";
-import SimpleLine from "../Charts/SimpleLine";
-import GroupedBar from "../Charts/GroupedBar";
-import MultiLine from "../Charts/MultiLine";
-
-import { map, zipObject } from "lodash";
+import SimpleBar from "../../components/charts/SimpleBar";
+import SimpleLine from "../../components/charts/SimpleLine";
+import GroupedBar from "../../components/charts/GroupedBar";
+import MultiLine from "../../components/charts/MultiLine";
 
 const CHARTS = {
   SimpleBar: SimpleBar,
