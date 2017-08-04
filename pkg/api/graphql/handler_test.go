@@ -48,10 +48,10 @@ func loadOrUpdateGoldenFile(t *testing.T, fixture string, dataSource *db.DataSou
 
 	testFile := testutil.NewGoldenFile(t, fixture)
 
-	testFile.Parse(out, dataSource.Name())
+	testFile.Parse(out, dataSource.DBName())
 
 	if *update {
-		testFile.Write(strings.Replace(actual, dataSource.Name(), "{{.}}", -1))
+		testFile.Write(strings.Replace(actual, dataSource.DBName(), "{{.}}", -1))
 	}
 
 	return strings.TrimSuffix(out.String(), "\n")
@@ -96,14 +96,14 @@ func TestGraphQLDataSources(t *testing.T) {
 		found := &graphql.DataSource{}
 		for _, ds := range actual {
 
-			if dataSource.Name() == ds.Name {
+			if dataSource.DBName() == ds.Name {
 				found = &ds
 				break
 			}
 		}
 
 		if found == nil {
-			t.Fatalf("expected to find %s in %v, but did not", dataSource.Name(), actual)
+			t.Fatalf("expected to find %s in %v, but did not", dataSource.DBName(), actual)
 		}
 
 		// this is annoyingly long.
@@ -142,10 +142,10 @@ func TestGraphQLQueryError(t *testing.T) {
 	defer cleanup()
 
 	for _, dataSource := range dataSources {
-		t.Run(dataSource.Driver, func(t *testing.T) {
-			actual := doRequest(t, dataSources, nil, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), `select * from table_that_does_not_exist`))
+		t.Run(dataSource.DriverName(), func(t *testing.T) {
+			actual := doRequest(t, dataSources, nil, 200, fmt.Sprintf(graphQLQuery, dataSource.DBName(), `select * from table_that_does_not_exist`))
 
-			expected := loadOrUpdateGoldenFile(t, fmt.Sprintf("query_error_%s.json", dataSource.Driver), dataSource, actual)
+			expected := loadOrUpdateGoldenFile(t, fmt.Sprintf("query_error_%s.json", dataSource.DriverName()), dataSource, actual)
 
 			if !reflect.DeepEqual(expected, actual) {
 				t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
@@ -191,7 +191,7 @@ func TestGraphQLQuery(t *testing.T) {
 
 		for _, test := range queryTests {
 			t.Run(fmt.Sprintf("%s/%s", dataSource.Driver, test.fixture), func(t *testing.T) {
-				actual := doRequest(t, dataSources, nil, 200, fmt.Sprintf(graphQLQuery, dataSource.Name(), test.query))
+				actual := doRequest(t, dataSources, nil, 200, fmt.Sprintf(graphQLQuery, dataSource.DBName(), test.query))
 
 				expected := strings.TrimSuffix(loadOrUpdateGoldenFile(t, test.fixture, dataSource, actual), "\n")
 

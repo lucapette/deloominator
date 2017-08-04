@@ -12,9 +12,8 @@ import (
 )
 
 type DataSource struct {
-	dialect Dialect
+	Dialect
 	*sql.DB
-	Driver string
 }
 
 type DataSources map[string]*DataSource
@@ -31,7 +30,7 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 			return nil, err
 		}
 
-		dataSources[ds.Name()] = ds
+		dataSources[ds.DBName()] = ds
 	}
 
 	return dataSources, nil
@@ -58,12 +57,12 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		return nil, err
 	}
 
-	return &DataSource{dialect: dialect, DB: db, Driver: url.Scheme}, nil
+	return &DataSource{Dialect: dialect, DB: db}, nil
 }
 
 // Tables returns the names of the available tables in the data source
 func (ds *DataSource) Tables() (names []string, err error) {
-	queryResult, err := ds.Query(ds.dialect.TablesQuery())
+	queryResult, err := ds.Query(ds.TablesQuery())
 	if err != nil {
 		return names, err
 	}
@@ -77,34 +76,29 @@ func (ds *DataSource) Tables() (names []string, err error) {
 	return names, err
 }
 
-// Name returns the database name of the data source
-func (ds *DataSource) Name() string {
-	return ds.dialect.DBName()
-}
-
 func (ds *DataSource) CreateDBIfNotExist() error {
-	if !ds.dialect.IsUnknown(ds.Ping()) {
+	if !ds.IsUnknown(ds.Ping()) {
 		return nil
 	}
 
-	db, err := sql.Open(ds.Driver, strings.Replace(ds.dialect.ConnectionString(), ds.dialect.DBName(), "", 1))
+	db, err := sql.Open(ds.DriverName(), strings.Replace(ds.ConnectionString(), ds.DBName(), "", 1))
 	if err != nil {
 		return err
 	}
 	defer func() {
 		if err := db.Close(); err != nil {
-			logrus.Printf("could not close %s: %v", ds.dialect.ConnectionString(), err)
+			logrus.Printf("could not close %s: %v", ds.ConnectionString(), err)
 		}
 	}()
 
 	logrus.WithFields(logrus.Fields{
-		"storage_name": ds.dialect.DBName(),
+		"storage_name": ds.DBName(),
 	}).Printf("creating storage")
 
-	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", ds.Name()))
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", ds.DBName()))
 	if err == nil {
 		logrus.WithFields(logrus.Fields{
-			"storage_name": ds.dialect.DBName(),
+			"storage_name": ds.DBName(),
 		}).Printf("storage created successfully")
 	}
 
@@ -155,7 +149,7 @@ func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
 
 		cells := make([]Cell, len(columns))
 		for i, res := range columns {
-			value, colType := ds.dialect.ExtractCellInfo(res)
+			value, colType := ds.ExtractCellInfo(res)
 
 			cells[i] = value
 

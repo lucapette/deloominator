@@ -53,11 +53,10 @@ func (pg *Postgres) IsUnknown(e error) bool {
 	return false
 }
 
-func NewPostgresDialect(source string) (*Postgres, error) {
-	u, err := url.Parse(source)
-	if err != nil {
-		return nil, err
-	}
+func (pg *Postgres) DriverName() string {
+	return pg.u.Scheme
+}
 
+func NewPostgresDialect(u *url.URL) (*Postgres, error) {
 	return &Postgres{u: u}, nil
 }

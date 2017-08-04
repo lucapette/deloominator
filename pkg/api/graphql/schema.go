@@ -66,7 +66,7 @@ func convertToChartTypes(columns []db.Column) (types charts.DataTypes) {
 
 func createSchema(dataSources db.DataSources, storage *storage.Storage) (schema gql.Schema) {
 	schemaConfig := gql.SchemaConfig{
-		Query:    query(dataSources),
+		Query:    query(dataSources, storage),
 		Mutation: mutation(storage),
 	}
 

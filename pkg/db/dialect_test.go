@@ -15,10 +15,10 @@ func TestDialectsTables(t *testing.T) {
 	defer cleanup()
 
 	for _, dataSource := range dataSources {
-		t.Run(dataSource.Driver, func(t *testing.T) {
+		t.Run(dataSource.DriverName(), func(t *testing.T) {
 			actual, err := dataSource.Tables()
 			if err != nil {
-				t.Fatalf("could not retrive tables for %s: %v", dataSource.Name(), err)
+				t.Fatalf("could not retrive tables for %s: %v", dataSource.DBName(), err)
 			}
 
 			if !reflect.DeepEqual(actual, expected) {
@@ -50,12 +50,12 @@ func TestDialectsQuery(t *testing.T) {
 	defer cleanup()
 
 	for _, dataSource := range dataSources {
-		t.Run(dataSource.Driver, func(t *testing.T) {
+		t.Run(dataSource.DriverName(), func(t *testing.T) {
 			testutil.LoadData(t, dataSource, "film", expected)
 
 			actual, err := dataSource.Query("select film_id, title, rental_rate, last_update from film")
 			if err != nil {
-				t.Fatalf("could not query %s: %v", dataSource.Name(), err)
+				t.Fatalf("could not query %s: %v", dataSource.DBName(), err)
 			}
 
 			if !reflect.DeepEqual(actual, expected) {

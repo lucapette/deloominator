@@ -50,7 +50,7 @@ func main() {
 	if cfg.Storage != "" {
 		s, err = storage.NewStorage(cfg.Storage)
 		if err != nil {
-			logrus.Printf("cannot create storage from %v: %v", cfg.Storage, err)
+			logrus.Warnf("cannot create storage from %v: %v", cfg.Storage, err)
 		}
 	}
 

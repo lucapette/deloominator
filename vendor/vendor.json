@@ -81,6 +81,30 @@
 			"revisionTime": "2016-12-10T05:15:12Z"
 		},
 		{
+			"checksumSHA1": "LtHnMydvU6Oo9RUNv5TtvrNqkPA=",
+			"path": "github.com/jinzhu/gorm",
+			"revision": "6f64b8610da6d5214e9197ed3c1bf8ecf8983c89",
+			"revisionTime": "2017-08-01T23:05:11Z"
+		},
+		{
+			"checksumSHA1": "eECxSkwh0WmhLwaxHfkvcLOWS08=",
+			"path": "github.com/jinzhu/gorm/dialects/mysql",
+			"revision": "6f64b8610da6d5214e9197ed3c1bf8ecf8983c89",
+			"revisionTime": "2017-08-01T23:05:11Z"
+		},
+		{
+			"checksumSHA1": "QmQW8snORAputB7/1jFXpsOZa8A=",
+			"path": "github.com/jinzhu/gorm/dialects/postgres",
+			"revision": "6f64b8610da6d5214e9197ed3c1bf8ecf8983c89",
+			"revisionTime": "2017-08-01T23:05:11Z"
+		},
+		{
+			"checksumSHA1": "VIp1lZm6joWhlNdwhady8u//qRw=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "1c35d901db3da928c72a72d8458480cc9ade058f",
+			"revisionTime": "2017-01-02T12:52:26Z"
+		},
+		{
 			"checksumSHA1": "gWlw0l2wMBLhmejJCTr/Zywqyk8=",
 			"path": "github.com/kelseyhightower/envconfig",
 			"revision": "70f0258d44cbaa3b6a2581d82f58da01a38e4de4",
@@ -105,46 +129,16 @@
 			"revisionTime": "2017-07-07T05:36:02Z"
 		},
 		{
-			"checksumSHA1": "Gk3jTNQ5uGDUE0WMJFWcYz9PMps=",
-			"path": "github.com/lib/pq/oid",
+			"checksumSHA1": "jaCQF1par6Jl8g+V2Cgp0n/0wSc=",
+			"path": "github.com/lib/pq/hstore",
 			"revision": "dd1fe2071026ce53f36a39112e645b4d4f5793a4",
 			"revisionTime": "2017-07-07T05:36:02Z"
 		},
 		{
-			"checksumSHA1": "uSG4V6AcVQNcll5Vk3HG0eT9+UU=",
-			"path": "github.com/mattes/migrate",
-			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
-			"revisionTime": "2017-06-10T17:25:06Z"
-		},
-		{
-			"checksumSHA1": "6QePtWUFN9x9U/Y6OzcENUUudmM=",
-			"path": "github.com/mattes/migrate/database",
-			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
-			"revisionTime": "2017-06-10T17:25:06Z"
-		},
-		{
-			"checksumSHA1": "5a4JDqeWPUO2jOdytGThkh2QE/k=",
-			"path": "github.com/mattes/migrate/database/mysql",
-			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
-			"revisionTime": "2017-06-10T17:25:06Z"
-		},
-		{
-			"checksumSHA1": "QSLooIeXnzHZElwTfIZoPH4FNH0=",
-			"path": "github.com/mattes/migrate/database/postgres",
-			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
-			"revisionTime": "2017-06-10T17:25:06Z"
-		},
-		{
-			"checksumSHA1": "kIHQkF+Nm0LBPppYbchll3njidY=",
-			"path": "github.com/mattes/migrate/source",
-			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
-			"revisionTime": "2017-06-10T17:25:06Z"
-		},
-		{
-			"checksumSHA1": "k/prxs5UJ3aiz0wEiHVIPfGGR9k=",
-			"path": "github.com/mattes/migrate/source/go-bindata",
-			"revision": "50068870a15f7c56518b5d7652dc799adb79183e",
-			"revisionTime": "2017-06-10T17:25:06Z"
+			"checksumSHA1": "Gk3jTNQ5uGDUE0WMJFWcYz9PMps=",
+			"path": "github.com/lib/pq/oid",
+			"revision": "dd1fe2071026ce53f36a39112e645b4d4f5793a4",
+			"revisionTime": "2017-07-07T05:36:02Z"
 		},
 		{
 			"checksumSHA1": "LjPdvMphElL0GOVNQCsmZMVgWIw=",
@@ -157,12 +151,6 @@
 			"path": "github.com/rs/xhandler",
 			"revision": "ed27b6fd65218132ee50cd95f38474a3d8a2cd12",
 			"revisionTime": "2016-06-18T19:32:21Z"
-		},
-		{
-			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
-			"path": "github.com/satori/go.uuid",
-			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
-			"revisionTime": "2017-03-21T23:07:31Z"
 		},
 		{
 			"checksumSHA1": "/iDm+vsu0bUFOgLzkeAXl0cJFXc=",

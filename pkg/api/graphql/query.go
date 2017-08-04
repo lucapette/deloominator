@@ -2,12 +2,14 @@ package graphql
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/Sirupsen/logrus"
 	gql "github.com/graphql-go/graphql"
 	"github.com/lucapette/deloominator/pkg/charts"
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 )
 
 func resolveDataSources(dbDataSources db.DataSources) func(p gql.ResolveParams) (interface{}, error) {
@@ -15,7 +17,7 @@ func resolveDataSources(dbDataSources db.DataSources) func(p gql.ResolveParams) 
 		var dataSources []*DataSource
 
 		for _, ds := range dbDataSources {
-			logrus.WithField("schema_name", ds.Name()).Info("query metadata")
+			logrus.WithField("schema_name", ds.DBName()).Info("query metadata")
 
 			start := time.Now()
 
@@ -30,15 +32,26 @@ func resolveDataSources(dbDataSources db.DataSources) func(p gql.ResolveParams) 
 			}
 
 			logrus.WithFields(logrus.Fields{
-				"schema_name": ds.Name(),
+				"schema_name": ds.DBName(),
 				"n_tables":    len(names),
 				"spent":       time.Now().Sub(start),
 			}).Info("tables loaded")
 
-			dataSources = append(dataSources, &DataSource{Name: ds.Name(), Tables: ts})
+			dataSources = append(dataSources, &DataSource{Name: ds.DBName(), Tables: ts})
 		}
 
 		return dataSources, nil
+	}
+}
+
+func resolveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
+	return func(p gql.ResolveParams) (interface{}, error) {
+		id, err := strconv.Atoi(p.Args["id"].(string))
+		if err != nil {
+			return nil, err
+		}
+
+		return s.FindQuestion(id)
 	}
 }
 
@@ -85,7 +98,7 @@ func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interfa
 	}
 }
 
-func query(dataSources db.DataSources) *gql.Object {
+func query(dataSources db.DataSources, s *storage.Storage) *gql.Object {
 	queryErrorType := gql.NewObject(gql.ObjectConfig{
 		Name:        "queryError",
 		Description: "An error represents an error message from the data source",
@@ -187,7 +200,7 @@ func query(dataSources db.DataSources) *gql.Object {
 
 	dataSourceType := gql.NewObject(gql.ObjectConfig{
 		Name:        "DataSource",
-		Description: fmt.Sprintf("A DataSource represents a single source of data to analyze"),
+		Description: "A DataSource represents a single source of data to analyze",
 		Fields: gql.Fields{
 			"name": &gql.Field{
 				Type: gql.NewNonNull(gql.String),
@@ -202,6 +215,15 @@ func query(dataSources db.DataSources) *gql.Object {
 		"dataSources": &gql.Field{
 			Type:    gql.NewList(dataSourceType),
 			Resolve: resolveDataSources(dataSources),
+		},
+		"question": &gql.Field{
+			Type: questionType,
+			Args: gql.FieldConfigArgument{
+				"id": &gql.ArgumentConfig{
+					Type: gql.NewNonNull(gql.ID),
+				},
+			},
+			Resolve: resolveQuestion(s),
 		},
 		"query": &gql.Field{
 			Type: queryResultType,

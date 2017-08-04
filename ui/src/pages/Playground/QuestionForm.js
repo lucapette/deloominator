@@ -1,9 +1,9 @@
 //@flow
-import { sortBy } from "lodash";
+import { sortBy, kebabCase } from "lodash";
 import React, { Component } from "react";
 import { gql, graphql } from "react-apollo";
-import { object } from "prop-types";
 import { Button, Form } from "semantic-ui-react";
+import { withRouter } from "react-router";
 
 class QuestionFormContainer extends Component {
   state: {
@@ -33,8 +33,9 @@ class QuestionFormContainer extends Component {
     e.preventDefault();
     this.props
       .mutate({ variables: { title: this.state.title, query: this.props.currentQuery } })
-      .then(({ data: { saveQuestion } }) => {
-        this.context.router.history.push(`/q/${saveQuestion.id}`);
+      .then(({ data: { saveQuestion: { id, title } } }) => {
+        const questionPath = kebabCase(`${id}-${title}`);
+        this.props.history.push(`/questions/${questionPath}`);
       })
       .catch(({ error }) => {
         console.log(error);
@@ -89,14 +90,11 @@ const SaveQuestion = gql`
   mutation SaveQuestion($title: String!, $query: String!) {
     saveQuestion(title: $title, query: $query) {
       id
+      title
     }
   }
 `;
 
-const QuestionForm = graphql(SaveQuestion)(QuestionFormContainer);
-
-QuestionFormContainer.contextTypes = {
-  router: object,
-};
+const QuestionForm = withRouter(graphql(SaveQuestion)(QuestionFormContainer));
 
 export default QuestionForm;

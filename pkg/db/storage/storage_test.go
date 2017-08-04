@@ -7,8 +7,6 @@ import (
 	"github.com/lucapette/deloominator/pkg/db/storage"
 
 	"github.com/lucapette/deloominator/pkg/testutil"
-	_ "github.com/mattes/migrate/database/mysql"
-	_ "github.com/mattes/migrate/database/postgres"
 )
 
 func TestStorage_AutoUpgrade_DBExists(t *testing.T) {
@@ -34,14 +32,12 @@ func TestStorage_AutoUpgrade_DBExists(t *testing.T) {
 				t.Errorf("expected AutoUpgrade to not return error, but did: %v", err)
 			}
 
-			r := ds.QueryRow("SELECT 1 FROM schema_migrations")
-			var result int
-			err = r.Scan(&result)
+			qr, err := ds.Query(ds.TablesQuery())
 			if err != nil {
-				t.Errorf("could not query schema_migrations: %v", err)
+				t.Errorf("could not query tables: %v", err)
 			}
 
-			if result != 1 {
+			if len(qr.Rows) == 0 {
 				t.Fatalf("expected %v to migrate, but did not", source)
 			}
 		})
@@ -70,14 +66,12 @@ func TestStorage_AutoUpgrade_DBNotExist(t *testing.T) {
 				t.Errorf("expected AutoUpgrade to not return error, but did: %v", err)
 			}
 
-			r := ds.QueryRow("SELECT 1 FROM schema_migrations")
-			var result int
-			err = r.Scan(&result)
+			qr, err := ds.Query(ds.TablesQuery())
 			if err != nil {
-				t.Errorf("could not query schema_migrations: %v", err)
+				t.Errorf("could not query tables: %v", err)
 			}
 
-			if result != 1 {
+			if len(qr.Rows) == 0 {
 				t.Fatalf("expected %v to migrate, but did not", dsn)
 			}
 		})

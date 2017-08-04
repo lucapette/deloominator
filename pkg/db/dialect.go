@@ -14,17 +14,18 @@ type Dialect interface {
 	ConnectionString() string
 	DBName() string
 	IsUnknown(error) bool
+	DriverName() string
 }
 
-func NewDialect(url *url.URL) (dialect Dialect, err error) {
-	switch url.Scheme {
+func NewDialect(u *url.URL) (Dialect, error) {
+	switch u.Scheme {
 	case "postgres":
-		return NewPostgresDialect(url.String())
+		return NewPostgresDialect(u)
 	case "mysql":
-		return NewMySQLDialect(url.String())
+		return NewMySQLDialect(u)
 	}
 
-	return dialect, err
+	return nil, nil
 }
 
 func inferType(value string) Type {

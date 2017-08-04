@@ -195,7 +195,7 @@ func LoadDataFromFixture(t *testing.T, ds *db.DataSource, fixture string) {
 	query := NewFixture(t, fixture).Load()
 
 	if _, err := ds.Exec(query); err != nil {
-		t.Fatalf("could not execute query %s on %s: %v", query, ds.Name(), err)
+		t.Fatalf("could not execute query %s on %s: %v", query, ds.DBName(), err)
 	}
 }
 
@@ -228,7 +228,7 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult
 	)
 
 	if _, err := ds.Query(query.String()); err != nil {
-		t.Fatalf("could not execute query %s on db %s: %v", query.String(), ds.Name(), err)
+		t.Fatalf("could not execute query %s on db %s: %v", query.String(), ds.DBName(), err)
 	}
 }
 

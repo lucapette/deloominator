@@ -9,10 +9,8 @@ setup: ## Install all the build and lint dependencies
 	gometalinter --install
 
 embed:
-	go-bindata -prefix "pkg/db/migrations" -o pkg/db/migrations.go -pkg db pkg/db/migrations
 	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
 	gofmt -s -w pkg/api/static.go
-	gofmt -s -w pkg/db/migrations.go
 
 build-api: embed ## Build the API server
 	go build cmd/deloominator.go

@@ -13,6 +13,7 @@ import "./app.css";
 
 import Home from "./pages/Home";
 import Playground from "./pages/Playground";
+import Questions from "./pages/Questions";
 
 const networkInterface = createNetworkInterface({
   uri: "http://localhost:3000/graphql",
@@ -35,11 +36,16 @@ class App extends Component {
               <NavLink to="/playground" className="item" activeClassName="active">
                 Playground
               </NavLink>
+              <NavLink to="/questions" className="item" activeClassName="active">
+                Q&A
+              </NavLink>
             </Container>
           </Menu>
 
           <Route exact path="/" component={Home} />
           <Route path="/playground" component={Playground} />
+          <Route exact path="/questions" component={Questions} />
+          <Route path="/questions/:id" component={Questions} />
         </div>
       </Router>
     );

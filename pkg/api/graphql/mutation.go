@@ -10,26 +10,15 @@ func saveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{}, er
 		title := p.Args["title"].(string)
 		query := p.Args["query"].(string)
 
-		return s.InsertQuestion(title, query)
+		question, err := s.InsertQuestion(title, query)
+		if err != nil {
+			return nil, err
+		}
+		return *question, nil
 	}
 }
 
 func mutation(s *storage.Storage) *gql.Object {
-	questionType := gql.NewObject(gql.ObjectConfig{
-		Name: "Question",
-		Fields: gql.Fields{
-			"id": &gql.Field{
-				Type: gql.String,
-			},
-			"title": &gql.Field{
-				Type: gql.String,
-			},
-			"query": &gql.Field{
-				Type: gql.String,
-			},
-		},
-	})
-
 	fields := gql.Fields{
 		"saveQuestion": &gql.Field{
 			Type: questionType,
