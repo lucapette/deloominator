@@ -4,13 +4,9 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
-	"html/template"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -21,54 +17,6 @@ import (
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/lucapette/deloominator/pkg/db/storage"
 )
-
-type TestFile struct {
-	t    *testing.T
-	name string
-	dir  string
-}
-
-func NewFixture(t *testing.T, name string) *TestFile {
-	return &TestFile{t: t, name: name, dir: "fixtures"}
-}
-
-func NewGoldenFile(t *testing.T, name string) *TestFile {
-	return &TestFile{t: t, name: name, dir: "golden"}
-}
-
-func (tf *TestFile) path() string {
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		tf.t.Fatal("problems recovering caller information")
-	}
-
-	return filepath.Join(filepath.Dir(filename), tf.dir, tf.name)
-}
-
-func (tf *TestFile) Write(content string) {
-	err := ioutil.WriteFile(tf.path(), []byte(content), 0644)
-	if err != nil {
-		tf.t.Fatalf("could not write %s: %v", tf.name, err)
-	}
-}
-
-func (tf *TestFile) Load() string {
-	content, err := ioutil.ReadFile(tf.path())
-	if err != nil {
-		tf.t.Fatalf("could not read file %s: %v", tf.name, err)
-	}
-
-	return string(content)
-}
-
-func (tf *TestFile) Parse(w io.Writer, data string) {
-	tmpl := template.Must(template.New(tf.name).Parse(tf.Load()))
-
-	err := tmpl.Execute(w, data)
-	if err != nil {
-		tf.t.Fatalf("could not execute template %s: %v", tf.name, err)
-	}
-}
 
 func randDBName() string {
 	return fmt.Sprintf("%s_%s", config.BinaryName, strconv.Itoa(int(time.Now().UnixNano()+int64(os.Getpid()))))
@@ -250,6 +198,16 @@ func NewStorage(t *testing.T, source string) *storage.Storage {
 		t.Fatalf("could not auto-upgrade storage: %v", err)
 	}
 	return s
+}
+
+func NewStorages(t *testing.T) (storages []*storage.Storage) {
+	sources := CreateDSN(t)
+
+	for _, dsn := range sources {
+		storages = append(storages, NewStorage(t, dsn))
+	}
+
+	return storages
 }
 
 func CreateDataSources(t *testing.T) ([]string, func()) {

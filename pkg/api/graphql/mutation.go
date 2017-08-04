@@ -33,5 +33,5 @@ func mutation(s *storage.Storage) *gql.Object {
 			Resolve: saveQuestion(s),
 		},
 	}
-	return gql.NewObject(gql.ObjectConfig{Name: "Mutation", Fields: fields})
+	return gql.NewObject(gql.ObjectConfig{Name: "mutation", Fields: fields})
 }
