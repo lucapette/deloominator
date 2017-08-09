@@ -7,7 +7,7 @@ import { withRouter } from "react-router";
 
 class QuestionFormContainer extends Component {
   state = {
-    title: "",
+    title: "Untitled visualization",
   };
 
   dataSourcesOptions = (dataSources: [string]) => {
@@ -59,7 +59,6 @@ class QuestionFormContainer extends Component {
         </Form.Group>
         <Form.Group>
           <Form.Input
-            placeholder="Untitled visualization"
             onChange={this.handleTitleChange}
             value={this.state.title}
             width={13}
