@@ -12,6 +12,7 @@ class Table extends Component {
     rows: Array<Types.Row>,
     columns: Array<Types.Column>,
   };
+  
   render() {
     const { rows, columns } = this.props;
 

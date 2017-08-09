@@ -8,22 +8,15 @@ import QueryResult from "./QueryResult";
 import QuestionForm from "./QuestionForm";
 
 class PlaygroundPage extends Component {
-  state: {
-    selectedDataSource?: string,
-    currentQuery?: string,
-    dataSource?: string,
-    query?: string,
-    showResult: boolean,
-    querySuccess: boolean,
+  state = {
+    selectedDataSource: "",
+    currentQuery: "",
+    dataSource: "",
+    query: "",
+    showResult: false,
+    querySuccess: false,
   };
 
-  constructor() {
-    super();
-    this.state = {
-      showResult: false,
-      querySuccess: false,
-    };
-  }
 
   handleQuerySuccess = value => {
     this.setState({ querySuccess: value });

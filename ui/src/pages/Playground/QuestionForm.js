@@ -6,16 +6,9 @@ import { Button, Form } from "semantic-ui-react";
 import { withRouter } from "react-router";
 
 class QuestionFormContainer extends Component {
-  state: {
-    title?: string,
+  state = {
+    title: "",
   };
-
-  constructor() {
-    super();
-    this.state = {
-      title: "",
-    };
-  }
 
   dataSourcesOptions = (dataSources: [string]) => {
     return sortBy(dataSources || [], ["name"], ["asc"]).map(s => ({
