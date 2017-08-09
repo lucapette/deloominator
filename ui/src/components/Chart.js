@@ -1,10 +1,13 @@
+//@flow
 import { map, zipObject } from "lodash";
 import React, { Component } from "react";
 
-import SimpleBar from "../../components/charts/SimpleBar";
-import SimpleLine from "../../components/charts/SimpleLine";
-import GroupedBar from "../../components/charts/GroupedBar";
-import MultiLine from "../../components/charts/MultiLine";
+import SimpleBar from "./charts/SimpleBar";
+import SimpleLine from "./charts/SimpleLine";
+import GroupedBar from "./charts/GroupedBar";
+import MultiLine from "./charts/MultiLine";
+
+import * as Types from "../types";
 
 const CHARTS = {
   SimpleBar: SimpleBar,
@@ -13,12 +16,19 @@ const CHARTS = {
   MultiLine: MultiLine,
 };
 
-export default class Chart extends Component {
-  onNewView = view => {
+class Chart extends Component {
+  view: Object;
+  props: {
+    name: string,
+    rows: Array<Types.Row>,
+    columns: Array<Types.Column>,
+  };
+
+  onNewView = (view: Object) => {
     this.view = view;
   };
 
-  onClick = e => {
+  onClick = (e: MouseEvent) => {
     e.preventDefault();
     this.view
       .toImageURL("png")
@@ -35,9 +45,9 @@ export default class Chart extends Component {
   };
 
   render() {
-    const { chartName, columns, rows } = this.props.data;
+    const { name, columns, rows } = this.props;
 
-    const Handler = CHARTS[chartName];
+    const Handler = CHARTS[name];
 
     const columnNames = map(columns, "name");
 
@@ -57,3 +67,4 @@ export default class Chart extends Component {
     );
   }
 }
+export default Chart;

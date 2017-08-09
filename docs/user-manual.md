@@ -40,8 +40,6 @@ will show you the following screen:
 
 ![save q&a](/docs/img/save-q-and-a.png)
 
-Here you can add a `description` (you can use markdown) to your `Q&A`.
-
 # Q&A
 
 The `Q&A` section presents the list of the questions users saved in

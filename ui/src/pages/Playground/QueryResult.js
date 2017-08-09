@@ -1,10 +1,10 @@
 //@flow
 import React, { Component } from "react";
 import { gql, graphql } from "react-apollo";
-import { Container, Table, Message, Loader, Segment, Divider } from "semantic-ui-react";
+import { Container, Message, Loader, Segment, Divider } from "semantic-ui-react";
 
-import Chart from "./Chart";
-import RawResults from "./RawResults";
+import Chart from "../../components/Chart";
+import Table from "../../components/Table";
 
 class QueryResultContainer extends Component {
   componentWillUpdate(nextProps, nextState) {
@@ -44,9 +44,9 @@ class QueryResultContainer extends Component {
       return (
         <Container>
           <Segment padded>
-            <Chart data={query} />
+            <Chart name={query.chartName} columns={query.columns} rows={query.rows} />
             <Divider horizontal>Raw data</Divider>
-            <RawResults columns={query.columns} rows={query.rows} />
+            <Table columns={query.columns} rows={query.rows} />
           </Segment>
         </Container>
       );
@@ -55,7 +55,7 @@ class QueryResultContainer extends Component {
     return (
       <Container>
         <Segment padded>
-          <RawResults columns={query.columns} rows={query.rows} />
+          <Table columns={query.columns} rows={query.rows} />
         </Segment>
       </Container>
     );

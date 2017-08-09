@@ -1,11 +1,17 @@
 //@flow
-import { Table, Column, Cell } from "fixed-data-table-2";
+import { Table as FixedTable, Column, Cell } from "fixed-data-table-2";
 import React, { Component } from "react";
 import { Statistic } from "semantic-ui-react";
 
 import "fixed-data-table-2/dist/fixed-data-table.min.css";
 
-export default class RawResults extends Component {
+import * as Types from "../types";
+
+class Table extends Component {
+  props: {
+    rows: Array<Types.Row>,
+    columns: Array<Types.Column>,
+  };
   render() {
     const { rows, columns } = this.props;
 
@@ -17,7 +23,7 @@ export default class RawResults extends Component {
       <div>
         <Statistic size="mini" value={rows.length} label="rows" horizontal />
 
-        <Table rowHeight={50} rowsCount={rows.length} maxHeight={600} width={tableWidth} headerHeight={50}>
+        <FixedTable rowHeight={50} rowsCount={rows.length} maxHeight={600} width={tableWidth} headerHeight={50}>
           {columns.map((column, i) =>
             <Column
               key={i}
@@ -33,8 +39,10 @@ export default class RawResults extends Component {
               width={100}
             />,
           )}
-        </Table>
+        </FixedTable>
       </div>
     );
   }
 }
+
+export default Table;

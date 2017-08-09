@@ -1,6 +1,7 @@
 //@flow
 import React, { Component } from "react";
 import { gql, graphql } from "react-apollo";
+import DocumentTitle from "react-document-title";
 import { Container, Table, Message, Loader, Segment, Divider } from "semantic-ui-react";
 
 class QuestionContainer extends Component {
@@ -21,7 +22,7 @@ class QuestionContainer extends Component {
       return <p>Error!</p>;
     }
 
-    return <Container />;
+    return <DocumentTitle title={question.title} />;
   }
 }
 
