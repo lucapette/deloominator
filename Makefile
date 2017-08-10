@@ -20,8 +20,13 @@ build-ui: ## Build the UI
 
 build: build-ui build-api ## Build a dev version of deloominator
 
-test: embed ## Run all the tests
+test-api: embed ## Run API tests
 	bin/run-test go test $(TEST_OPTIONS) -cover $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
+
+test-ui: ## Run UI tests
+	cd ui && yarn test
+
+test: test-api test-ui ## Run all the tests
 
 lint: embed ## Run all the linters
 	gometalinter --vendor --disable-all \

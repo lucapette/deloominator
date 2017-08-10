@@ -39,7 +39,7 @@
     "start": "webpack-dev-server --progress",
     "build": "webpack --progress -p --config webpack.config.js",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
-    "test": "flow && jest",
+    "test": "jest",
     "test:watch": "jest --watch"
   },
   "optionalDependencies": {
