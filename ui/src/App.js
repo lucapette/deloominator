@@ -16,11 +16,11 @@ import Playground from "./pages/Playground";
 import Questions from "./pages/Questions";
 
 const networkInterface = createNetworkInterface({
-  uri: "http://localhost:3000/graphql",
+  uri: "http://localhost:3000/graphql"
 });
 
 const client = new ApolloClient({
-  networkInterface: networkInterface,
+  networkInterface: networkInterface
 });
 
 class App extends Component {
@@ -42,10 +42,12 @@ class App extends Component {
             </Container>
           </Menu>
 
-          <Route exact path="/" component={Home} />
-          <Route path="/playground" component={Playground} />
-          <Route exact path="/questions" component={Questions} />
-          <Route path="/questions/:question" component={Questions} />
+          <Container>
+            <Route exact path="/" component={Home} />
+            <Route path="/playground" component={Playground} />
+            <Route exact path="/questions" component={Questions} />
+            <Route path="/questions/:question" component={Questions} />
+          </Container>
         </div>
       </Router>
     );
@@ -58,5 +60,5 @@ ReactDOM.render(
   <ApolloProvider client={client}>
     <App />
   </ApolloProvider>,
-  mountNode,
+  mountNode
 );

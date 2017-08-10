@@ -11,7 +11,7 @@ class QueryResultContainer extends Component {
     const { data: { loading, error, query }, handleQuerySuccess } = nextProps;
     if (handleQuerySuccess) {
       handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == "queryError"));
-    }  
+    }
   }
 
   render() {
@@ -87,7 +87,7 @@ const Query = gql`
 `;
 
 const QueryResult = graphql(Query, {
-  options: ({ source, input }) => ({ variables: { source, input } }),
+  options: ({ source, input }) => ({ variables: { source, input } })
 })(QueryResultContainer);
 
 export default QueryResult;

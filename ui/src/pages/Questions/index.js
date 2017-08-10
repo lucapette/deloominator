@@ -2,11 +2,12 @@ import React from "react";
 import { Container } from "semantic-ui-react";
 
 import Question from "./Question";
+import QuestionList from "./QuestionList";
 
 const Questions = ({ match }) => {
   const question = match.params.question;
   if (!question) {
-    return <Container>Welcome to Questions section</Container>;
+    return <QuestionList />;
   }
 
   const [id] = question.split("-");

@@ -55,6 +55,12 @@ func resolveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{},
 	}
 }
 
+func resolveQuestions(s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
+	return func(p gql.ResolveParams) (interface{}, error) {
+		return s.AllQuestions()
+	}
+}
+
 func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interface{}, error) {
 	return func(p gql.ResolveParams) (interface{}, error) {
 		source := p.Args["source"].(string)
@@ -224,6 +230,10 @@ func query(dataSources db.DataSources, s *storage.Storage) *gql.Object {
 				},
 			},
 			Resolve: resolveQuestion(s),
+		},
+		"questions": &gql.Field{
+			Type:    gql.NewList(questionType),
+			Resolve: resolveQuestions(s),
 		},
 		"query": &gql.Field{
 			Type: queryResultType,

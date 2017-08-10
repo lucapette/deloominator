@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import { gql, graphql } from "react-apollo";
 import DocumentTitle from "react-document-title";
-import { Container, Grid } from "semantic-ui-react";
+import { Grid } from "semantic-ui-react";
 
 import QueryResult from "../../components/QueryResult";
 import QuestionForm from "./QuestionForm";
@@ -42,7 +42,7 @@ class PlaygroundPage extends Component {
   render() {
     return (
       <DocumentTitle title="Playground">
-        <Container>
+        <div>
           <Grid.Row>
             <Grid.Column>
               <QuestionForm
@@ -65,8 +65,8 @@ class PlaygroundPage extends Component {
                   input={this.state.query}
                 />}
             </Grid.Column>
-          </Grid.Row>
-        </Container>
+        </Grid.Row>
+        </div>
       </DocumentTitle>
     );
   }

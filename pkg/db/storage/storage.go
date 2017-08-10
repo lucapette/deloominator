@@ -77,6 +77,14 @@ func (s *Storage) FindQuestion(id int) (*Question, error) {
 	return question, nil
 }
 
+func (s *Storage) AllQuestions() (questions []*Question, err error) {
+	if err := s.orm.Order("title").Find(&questions).Error; err != nil {
+		return nil, err
+	}
+
+	return questions, nil
+}
+
 // Close closes the underlining DB connection
 func (s *Storage) Close() {
 	s.dataSource.Close()

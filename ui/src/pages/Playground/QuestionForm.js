@@ -1,9 +1,11 @@
 //@flow
-import { sortBy, kebabCase } from "lodash";
+import { sortBy } from "lodash";
 import React, { Component } from "react";
 import { gql, graphql } from "react-apollo";
-import { Button, Form } from "semantic-ui-react";
 import { withRouter } from "react-router";
+import { Button, Form } from "semantic-ui-react";
+
+import routing from "../../helpers/routing";
 
 class QuestionFormContainer extends Component {
   state = {
@@ -30,10 +32,10 @@ class QuestionFormContainer extends Component {
           title: this.state.title,
           query: this.props.currentQuery,
           dataSource: this.props.selectedDataSource,
-        }
+        },
       })
-      .then(({ data: { saveQuestion: { id, title } } }) => {
-        const questionPath = kebabCase(`${id}-${title}`);
+      .then(({ data: { saveQuestion } }) => {
+        const questionPath = routing.urlFor(saveQuestion, ["id", "title"]);
         this.props.history.push(`/questions/${questionPath}`);
       })
       .catch(({ error }) => {
@@ -64,11 +66,7 @@ class QuestionFormContainer extends Component {
           />
         </Form.Group>
         <Form.Group>
-          <Form.Input
-            onChange={this.handleTitleChange}
-            value={this.state.title}
-            width={13}
-          />
+          <Form.Input onChange={this.handleTitleChange} value={this.state.title} width={13} />
           <Button
             icon="play"
             primary
