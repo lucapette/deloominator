@@ -4,7 +4,7 @@ import { gql, graphql } from "react-apollo";
 import DocumentTitle from "react-document-title";
 import { Container, Grid } from "semantic-ui-react";
 
-import QueryResult from "./QueryResult";
+import QueryResult from "../../components/QueryResult";
 import QuestionForm from "./QuestionForm";
 
 class PlaygroundPage extends Component {

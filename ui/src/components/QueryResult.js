@@ -3,13 +3,15 @@ import React, { Component } from "react";
 import { gql, graphql } from "react-apollo";
 import { Container, Message, Loader, Segment, Divider } from "semantic-ui-react";
 
-import Chart from "../../components/Chart";
-import Table from "../../components/Table";
+import Chart from "./Chart";
+import Table from "./Table";
 
 class QueryResultContainer extends Component {
   componentWillUpdate(nextProps, nextState) {
     const { data: { loading, error, query }, handleQuerySuccess } = nextProps;
-    handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == "queryError"));
+    if (handleQuerySuccess) {
+      handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == "queryError"));
+    }  
   }
 
   render() {

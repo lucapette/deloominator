@@ -25,7 +25,13 @@ class QuestionFormContainer extends Component {
   handleSave = e => {
     e.preventDefault();
     this.props
-      .mutate({ variables: { title: this.state.title, query: this.props.currentQuery } })
+      .mutate({
+        variables: {
+          title: this.state.title,
+          query: this.props.currentQuery,
+          dataSource: this.props.selectedDataSource,
+        }
+      })
       .then(({ data: { saveQuestion: { id, title } } }) => {
         const questionPath = kebabCase(`${id}-${title}`);
         this.props.history.push(`/questions/${questionPath}`);
@@ -79,8 +85,8 @@ class QuestionFormContainer extends Component {
 }
 
 const SaveQuestion = gql`
-  mutation SaveQuestion($title: String!, $query: String!) {
-    saveQuestion(title: $title, query: $query) {
+  mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!) {
+    saveQuestion(title: $title, query: $query, dataSource: $dataSource) {
       id
       title
     }

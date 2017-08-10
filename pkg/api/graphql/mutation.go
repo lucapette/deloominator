@@ -9,8 +9,9 @@ func saveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{}, er
 	return func(p gql.ResolveParams) (interface{}, error) {
 		title := p.Args["title"].(string)
 		query := p.Args["query"].(string)
+		dataSource := p.Args["dataSource"].(string)
 
-		question, err := s.InsertQuestion(title, query)
+		question, err := s.InsertQuestion(title, query, dataSource)
 		if err != nil {
 			return nil, err
 		}
@@ -27,6 +28,9 @@ func mutation(s *storage.Storage) *gql.Object {
 					Type: gql.NewNonNull(gql.String),
 				},
 				"query": &gql.ArgumentConfig{
+					Type: gql.NewNonNull(gql.String),
+				},
+				"dataSource": &gql.ArgumentConfig{
 					Type: gql.NewNonNull(gql.String),
 				},
 			},

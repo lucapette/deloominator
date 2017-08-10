@@ -16,5 +16,8 @@ var questionType = gql.NewObject(gql.ObjectConfig{
 		"query": &gql.Field{
 			Type: gql.String,
 		},
+		"dataSource": &gql.Field{
+			Type: gql.String,
+		},
 	},
 })

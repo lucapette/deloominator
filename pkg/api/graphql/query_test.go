@@ -169,7 +169,8 @@ const Question = `
     question(id: $id) {
       id
       title
-      query
+			query
+			dataSource
     }
   }
 `
@@ -177,7 +178,7 @@ const Question = `
 func TestGraphQL_Question(t *testing.T) {
 	storages := testutil.NewStorages(t)
 	for _, s := range storages {
-		q, err := s.InsertQuestion("the answer is 42", "select * from answer")
+		q, err := s.InsertQuestion("the answer is 42", "select * from answer", "source")
 		if err != nil {
 			t.Fatalf("could not create question: %v", err)
 		}

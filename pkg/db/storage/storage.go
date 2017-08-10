@@ -18,9 +18,10 @@ type Storage struct {
 
 // Question stores q&a
 type Question struct {
-	ID    int    `json:"id"`
-	Title string `json:"title,omitempty"`
-	Query string `json:"query,omitempty"`
+	ID         int    `json:"id"`
+	Title      string `json:"title,omitempty"`
+	Query      string `json:"query,omitempty"`
+	DataSource string `json:"dataSource,omitempty"`
 }
 
 // NewStorage initializes deloominator own storage using source
@@ -56,8 +57,8 @@ func (s *Storage) AutoUpgrade() error {
 	return nil
 }
 
-func (s *Storage) InsertQuestion(title, query string) (*Question, error) {
-	question := &Question{Title: title, Query: query}
+func (s *Storage) InsertQuestion(title, query, dataSource string) (*Question, error) {
+	question := &Question{Title: title, Query: query, DataSource: dataSource}
 
 	if err := s.orm.Create(question).Error; err != nil {
 		return nil, err
@@ -82,4 +83,8 @@ func (s *Storage) Close() {
 	if err := s.orm.Close(); err != nil {
 		logrus.Warnf("could not close orm: %v", err)
 	}
+}
+
+func (s *Storage) String() string {
+	return fmt.Sprintf("%s-%s", s.dataSource.DBName(), s.dataSource.DriverName())
 }
