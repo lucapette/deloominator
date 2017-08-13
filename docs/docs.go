@@ -51,7 +51,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not connect to webdriver: %v", err)
 	}
-	defer wd.Quit()
+	defer func() {
+		if err := wd.Quit(); err != nil {
+			log.Printf("could not quit webdriver: %v", err)
+		}
+	}()
 
 	saveScreenshot(wd, "/playground", "playground.png")
 	saveScreenshot(wd, "/questions", "questions.png")
