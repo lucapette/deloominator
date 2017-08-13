@@ -36,18 +36,20 @@ Running a query in the playground has four possible outcomes:
 which graph to show.
 
 You can name your playground experiment and then hit the `save` button which
-will show you the following screen:
+will show you the saved `q&a`:
 
-![save q&a](/docs/img/save-q-and-a.png)
+![save q&a](/docs/img/question.png)
 
 # Q&A
 
 The `Q&A` section presents the list of the questions users saved in
 `deloominator`. It looks like this:
 
-![q&as](/docs/img/q-and-a-s.png)
+![q&as](/docs/img/questions.png)
 
-Users can search for existing `q&a`, edit and duplicate existing ones.
+Users can search for existing `q&a`, view, edit, and duplicate existing ones.
+
+## Viewing a Q&A
 
 # Dashboards
 
