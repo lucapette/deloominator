@@ -13,29 +13,36 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-func help() {
-	err := config.Help()
-	if err != nil {
-		fmt.Printf("cannot read configuration %v", err)
-	}
+var version = "master"
 
-	os.Exit(1)
+func help() {
+	if err := config.Help(); err != nil {
+		fmt.Printf("cannot read help configuration %v", err)
+		os.Exit(1)
+	}
 }
 
 func main() {
-	helpFlag := flag.Bool("help", false, "show help")
+	helpFlag := flag.BoolP("help", "h", false, "show help")
+	versionFlag := flag.BoolP("version", "v", false, "show version")
 
 	flag.Parse()
 
 	if *helpFlag {
 		help()
+		os.Exit(0)
+	}
+
+	if *versionFlag {
+		fmt.Println(version)
+		os.Exit(0)
 	}
 
 	cfg, err := config.GetConfig()
 	if err != nil {
 		fmt.Printf("cannot read configuration: %v\n", err)
-
 		help()
+		os.Exit(1)
 	}
 
 	logrus.WithField("port", cfg.Port).

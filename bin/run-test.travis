@@ -2,7 +2,7 @@
 
 set -e
 
-export TEST_MYSQLUSER=travis
+export TEST_MYSQLUSER=root
 export TEST_MYSQLPASS=
 export TEST_PGUSER=travis
 export TEST_PGPASS=
