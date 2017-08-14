@@ -9,6 +9,12 @@
 			"revisionTime": "2017-07-28T07:42:14Z"
 		},
 		{
+			"checksumSHA1": "OT4XN9z5k69e2RsMSpwW74B+yk4=",
+			"path": "github.com/blang/semver",
+			"revision": "2ee87856327ba09384cabd113bc6b5d174e9ec0f",
+			"revisionTime": "2017-07-27T06:48:18Z"
+		},
+		{
 			"checksumSHA1": "i3UtE7/Cn57eX1hO5Z0CqY/Eeb4=",
 			"path": "github.com/go-sql-driver/mysql",
 			"revision": "3955978caca48c1658a4bb7a9c6a0f084e326af3",
@@ -157,6 +163,36 @@
 			"path": "github.com/spf13/pflag",
 			"revision": "2300d0f8576fe575f71aaa5b9bbe4e1b0dc2eb51",
 			"revisionTime": "2017-04-18T05:23:14Z"
+		},
+		{
+			"checksumSHA1": "Lf8YP0GnGvyHiLUIkX6JuaU0ffY=",
+			"path": "github.com/tebeka/selenium",
+			"revision": "4adf11e6b4d1766e60690ab8453487eaf898d4cc",
+			"revisionTime": "2017-07-18T16:28:07Z"
+		},
+		{
+			"checksumSHA1": "gjVGcbxJPgXZoFZ0NcL+xwlT7B0=",
+			"path": "github.com/tebeka/selenium/chrome",
+			"revision": "4adf11e6b4d1766e60690ab8453487eaf898d4cc",
+			"revisionTime": "2017-07-18T16:28:07Z"
+		},
+		{
+			"checksumSHA1": "pJzQmkluRgGw+YuIGXRO0Rt341A=",
+			"path": "github.com/tebeka/selenium/firefox",
+			"revision": "4adf11e6b4d1766e60690ab8453487eaf898d4cc",
+			"revisionTime": "2017-07-18T16:28:07Z"
+		},
+		{
+			"checksumSHA1": "ylpVK190UNacSoypkGH6Zm2hDmM=",
+			"path": "github.com/tebeka/selenium/internal/zip",
+			"revision": "4adf11e6b4d1766e60690ab8453487eaf898d4cc",
+			"revisionTime": "2017-07-18T16:28:07Z"
+		},
+		{
+			"checksumSHA1": "wI5u2EBgH8DlRQyGrClS4qxX4RU=",
+			"path": "github.com/tebeka/selenium/log",
+			"revision": "4adf11e6b4d1766e60690ab8453487eaf898d4cc",
+			"revisionTime": "2017-07-18T16:28:07Z"
 		},
 		{
 			"checksumSHA1": "OvrNwcBO+xO4FZ7eMbazho1C3t0=",
