@@ -2,17 +2,18 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"net/url"
+	"sort"
 
-	log "github.com/Sirupsen/logrus"
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
+	"strings"
+
+	"github.com/Sirupsen/logrus"
 )
 
 type DataSource struct {
-	dialect Dialect
-	db      *sql.DB
-	Driver  string
+	Dialect
+	*sql.DB
 }
 
 type DataSources map[string]*DataSource
@@ -25,19 +26,19 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 		if err != nil {
 			return nil, err
 		}
+		if err := ds.Ping(); err != nil {
+			return nil, err
+		}
 
-		dataSources[ds.Name()] = ds
+		dataSources[ds.DBName()] = ds
 	}
 
 	return dataSources, nil
 }
 
-func (dataSources DataSources) Shutdown() {
+func (dataSources DataSources) Close() {
 	for _, ds := range dataSources {
-		err := ds.Close()
-		if err != nil {
-			log.Fatal(err.Error())
-		}
+		ds.Close()
 	}
 }
 
@@ -46,16 +47,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 	if err != nil {
 		return nil, err
 	}
-
-	driver := url.Scheme
-
-	var dialect Dialect
-	switch driver {
-	case "postgres":
-		dialect, err = NewPostgresDialect(source)
-	case "mysql":
-		dialect, err = NewMySQLDialect(source)
-	}
+	dialect, err := NewDialect(url)
 	if err != nil {
 		return nil, err
 	}
@@ -65,29 +57,65 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		return nil, err
 	}
 
-	err = db.Ping()
+	return &DataSource{Dialect: dialect, DB: db}, nil
+}
+
+// Tables returns the names of the available tables in the data source
+func (ds *DataSource) Tables() (names []string, err error) {
+	queryResult, err := ds.Query(ds.TablesQuery())
 	if err != nil {
-		return nil, err
+		return names, err
 	}
-	return &DataSource{dialect: dialect, db: db, Driver: driver}, nil
+
+	names = make([]string, len(queryResult.Rows))
+	for i, r := range queryResult.Rows {
+		names[i] = r[0].Value
+	}
+	sort.Strings(names)
+
+	return names, err
 }
 
-func (ds *DataSource) Tables() (QueryResult, error) {
-	return ds.Query(ds.dialect.TablesQuery())
+func (ds *DataSource) CreateDBIfNotExist() error {
+	if !ds.IsUnknown(ds.Ping()) {
+		return nil
+	}
+
+	db, err := sql.Open(ds.DriverName(), strings.Replace(ds.ConnectionString(), ds.DBName(), "", 1))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			logrus.Printf("could not close %s: %v", ds.ConnectionString(), err)
+		}
+	}()
+
+	logrus.WithFields(logrus.Fields{
+		"storage_name": ds.DBName(),
+	}).Printf("creating storage")
+
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", ds.DBName()))
+	if err == nil {
+		logrus.WithFields(logrus.Fields{
+			"storage_name": ds.DBName(),
+		}).Printf("storage created successfully")
+	}
+
+	return err
 }
 
-func (ds *DataSource) Name() string {
-	return ds.dialect.DBName()
-}
-
-func (ds *DataSource) Close() error {
-	return ds.db.Close()
+// Close closes the connection to the data source
+func (ds *DataSource) Close() {
+	if err := ds.DB.Close(); err != nil {
+		logrus.Printf("could not close data source: %v", err)
+	}
 }
 
 func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
 	// We use a prepare statement here so we can force MySQL binary protocol and
 	// get real types back. See: https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
-	statement, err := ds.db.Prepare(input)
+	statement, err := ds.DB.Prepare(input)
 	if err != nil {
 		return qr, err
 	}
@@ -121,7 +149,7 @@ func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
 
 		cells := make([]Cell, len(columns))
 		for i, res := range columns {
-			value, colType := ds.dialect.ExtractCellInfo(res)
+			value, colType := ds.ExtractCellInfo(res)
 
 			cells[i] = value
 

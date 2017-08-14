@@ -8,9 +8,11 @@ setup: ## Install all the build and lint dependencies
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
 
-build-api: ## Build the API server
+embed:
 	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
 	gofmt -s -w pkg/api/static.go
+
+build-api: embed ## Build the API server
 	go build cmd/deloominator.go
 
 build-ui: ## Build the UI
@@ -18,10 +20,15 @@ build-ui: ## Build the UI
 
 build: build-ui build-api ## Build a dev version of deloominator
 
-test: build-api ## Run all the tests
+test-api: embed ## Run API tests
 	bin/run-test go test $(TEST_OPTIONS) -cover $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
 
-lint: build-api ## Run all the linters
+test-ui: ## Run UI tests
+	cd ui && yarn test
+
+test: test-api test-ui ## Run all the tests
+
+lint: embed ## Run all the linters
 	gometalinter --vendor --disable-all \
 	--enable=vet \
 	--enable=gofmt \

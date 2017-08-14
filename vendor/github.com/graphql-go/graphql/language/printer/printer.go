@@ -29,23 +29,6 @@ func getMapValue(m map[string]interface{}, key string) interface{} {
 	}
 	return valMap
 }
-func getMapSliceValue(m map[string]interface{}, key string) []interface{} {
-	tokens := strings.Split(key, ".")
-	valMap := m
-	for _, token := range tokens {
-		v, ok := valMap[token]
-		if !ok {
-			return []interface{}{}
-		}
-		switch v := v.(type) {
-		case []interface{}:
-			return v
-		default:
-			return []interface{}{}
-		}
-	}
-	return []interface{}{}
-}
 func getMapValueString(m map[string]interface{}, key string) string {
 	tokens := strings.Split(key, ".")
 	valMap := m
@@ -109,13 +92,11 @@ func wrap(start, maybeString, end string) string {
 	}
 	return start + maybeString + end
 }
-
-// Given array, print each item on its own line, wrapped in an indented "{ }" block.
 func block(maybeArray interface{}) string {
-	s := toSliceString(maybeArray)
-	if len(s) == 0 {
-		return "{}"
+	if maybeArray == nil {
+		return ""
 	}
+	s := toSliceString(maybeArray)
 	return indent("{\n"+join(s, "\n")) + "\n}"
 }
 
@@ -455,27 +436,13 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 	"SchemaDefinition": func(p visitor.VisitFuncParams) (string, interface{}) {
 		switch node := p.Node.(type) {
 		case *ast.SchemaDefinition:
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				"schema",
-				join(directives, " "),
-				block(node.OperationTypes),
-			}, " ")
+			operationTypesBlock := block(node.OperationTypes)
+			str := fmt.Sprintf("schema %v", operationTypesBlock)
 			return visitor.ActionUpdate, str
 		case map[string]interface{}:
 			operationTypes := toSliceString(getMapValue(node, "OperationTypes"))
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				"schema",
-				join(directives, " "),
-				block(operationTypes),
-			}, " ")
+			operationTypesBlock := block(operationTypes)
+			str := fmt.Sprintf("schema %v", operationTypesBlock)
 			return visitor.ActionUpdate, str
 		}
 		return visitor.ActionNoChange, nil
@@ -496,27 +463,12 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 	"ScalarDefinition": func(p visitor.VisitFuncParams) (string, interface{}) {
 		switch node := p.Node.(type) {
 		case *ast.ScalarDefinition:
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				"scalar",
-				fmt.Sprintf("%v", node.Name),
-				join(directives, " "),
-			}, " ")
+			name := fmt.Sprintf("%v", node.Name)
+			str := "scalar " + name
 			return visitor.ActionUpdate, str
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				"scalar",
-				name,
-				join(directives, " "),
-			}, " ")
+			str := "scalar " + name
 			return visitor.ActionUpdate, str
 		}
 		return visitor.ActionNoChange, nil
@@ -527,33 +479,13 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 			name := fmt.Sprintf("%v", node.Name)
 			interfaces := toSliceString(node.Interfaces)
 			fields := node.Fields
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				"type",
-				name,
-				wrap("implements ", join(interfaces, ", "), ""),
-				join(directives, " "),
-				block(fields),
-			}, " ")
+			str := "type " + name + " " + wrap("implements ", join(interfaces, ", "), " ") + block(fields)
 			return visitor.ActionUpdate, str
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
 			interfaces := toSliceString(getMapValue(node, "Interfaces"))
 			fields := getMapValue(node, "Fields")
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				"type",
-				name,
-				wrap("implements ", join(interfaces, ", "), ""),
-				join(directives, " "),
-				block(fields),
-			}, " ")
+			str := "type " + name + " " + wrap("implements ", join(interfaces, ", "), " ") + block(fields)
 			return visitor.ActionUpdate, str
 		}
 		return visitor.ActionNoChange, nil
@@ -564,21 +496,13 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 			name := fmt.Sprintf("%v", node.Name)
 			ttype := fmt.Sprintf("%v", node.Type)
 			args := toSliceString(node.Arguments)
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := name + wrap("(", join(args, ", "), ")") + ": " + ttype + wrap(" ", join(directives, " "), "")
+			str := name + wrap("(", join(args, ", "), ")") + ": " + ttype
 			return visitor.ActionUpdate, str
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
 			ttype := getMapValueString(node, "Type")
 			args := toSliceString(getMapValue(node, "Arguments"))
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := name + wrap("(", join(args, ", "), ")") + ": " + ttype + wrap(" ", join(directives, " "), "")
+			str := name + wrap("(", join(args, ", "), ")") + ": " + ttype
 			return visitor.ActionUpdate, str
 		}
 		return visitor.ActionNoChange, nil
@@ -589,30 +513,13 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 			name := fmt.Sprintf("%v", node.Name)
 			ttype := fmt.Sprintf("%v", node.Type)
 			defaultValue := fmt.Sprintf("%v", node.DefaultValue)
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				name + ": " + ttype,
-				wrap("= ", defaultValue, ""),
-				join(directives, " "),
-			}, " ")
-
+			str := name + ": " + ttype + wrap(" = ", defaultValue, "")
 			return visitor.ActionUpdate, str
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
 			ttype := getMapValueString(node, "Type")
 			defaultValue := getMapValueString(node, "DefaultValue")
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				name + ": " + ttype,
-				wrap("= ", defaultValue, ""),
-				join(directives, " "),
-			}, " ")
+			str := name + ": " + ttype + wrap(" = ", defaultValue, "")
 			return visitor.ActionUpdate, str
 		}
 		return visitor.ActionNoChange, nil
@@ -622,30 +529,12 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 		case *ast.InterfaceDefinition:
 			name := fmt.Sprintf("%v", node.Name)
 			fields := node.Fields
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				"interface",
-				name,
-				join(directives, " "),
-				block(fields),
-			}, " ")
+			str := "interface " + name + " " + block(fields)
 			return visitor.ActionUpdate, str
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
 			fields := getMapValue(node, "Fields")
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				"interface",
-				name,
-				join(directives, " "),
-				block(fields),
-			}, " ")
+			str := "interface " + name + " " + block(fields)
 			return visitor.ActionUpdate, str
 		}
 		return visitor.ActionNoChange, nil
@@ -655,30 +544,12 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 		case *ast.UnionDefinition:
 			name := fmt.Sprintf("%v", node.Name)
 			types := toSliceString(node.Types)
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				"union",
-				name,
-				join(directives, " "),
-				"= " + join(types, " | "),
-			}, " ")
+			str := "union " + name + " = " + join(types, " | ")
 			return visitor.ActionUpdate, str
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
 			types := toSliceString(getMapValue(node, "Types"))
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				"union",
-				name,
-				join(directives, " "),
-				"= " + join(types, " | "),
-			}, " ")
+			str := "union " + name + " = " + join(types, " | ")
 			return visitor.ActionUpdate, str
 		}
 		return visitor.ActionNoChange, nil
@@ -688,30 +559,12 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 		case *ast.EnumDefinition:
 			name := fmt.Sprintf("%v", node.Name)
 			values := node.Values
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				"enum",
-				name,
-				join(directives, " "),
-				block(values),
-			}, " ")
+			str := "enum " + name + " " + block(values)
 			return visitor.ActionUpdate, str
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
 			values := getMapValue(node, "Values")
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				"enum",
-				name,
-				join(directives, " "),
-				block(values),
-			}, " ")
+			str := "enum " + name + " " + block(values)
 			return visitor.ActionUpdate, str
 		}
 		return visitor.ActionNoChange, nil
@@ -720,26 +573,10 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 		switch node := p.Node.(type) {
 		case *ast.EnumValueDefinition:
 			name := fmt.Sprintf("%v", node.Name)
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				name,
-				join(directives, " "),
-			}, " ")
-			return visitor.ActionUpdate, str
+			return visitor.ActionUpdate, name
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				name,
-				join(directives, " "),
-			}, " ")
-			return visitor.ActionUpdate, str
+			return visitor.ActionUpdate, name
 		}
 		return visitor.ActionNoChange, nil
 	},
@@ -748,31 +585,11 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 		case *ast.InputObjectDefinition:
 			name := fmt.Sprintf("%v", node.Name)
 			fields := node.Fields
-			directives := []string{}
-			for _, directive := range node.Directives {
-				directives = append(directives, fmt.Sprintf("%v", directive.Name))
-			}
-			str := join([]string{
-				"input",
-				name,
-				join(directives, " "),
-				block(fields),
-			}, " ")
-			return visitor.ActionUpdate, str
+			return visitor.ActionUpdate, "input " + name + " " + block(fields)
 		case map[string]interface{}:
 			name := getMapValueString(node, "Name")
 			fields := getMapValue(node, "Fields")
-			directives := []string{}
-			for _, directive := range getMapSliceValue(node, "Directives") {
-				directives = append(directives, fmt.Sprintf("%v", directive))
-			}
-			str := join([]string{
-				"input",
-				name,
-				join(directives, " "),
-				block(fields),
-			}, " ")
-			return visitor.ActionUpdate, str
+			return visitor.ActionUpdate, "input " + name + " " + block(fields)
 		}
 		return visitor.ActionNoChange, nil
 	},

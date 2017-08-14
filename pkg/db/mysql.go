@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/go-sql-driver/mysql"
@@ -39,8 +40,19 @@ func (my *MySQL) DBName() string {
 	return my.cfg.DBName
 }
 
-func NewMySQLDialect(source string) (*MySQL, error) {
-	config, err := mysql.ParseDSN(strings.Replace(source, "mysql://", "", 1))
+func (my *MySQL) IsUnknown(e error) bool {
+	if err, ok := e.(*mysql.MySQLError); ok {
+		return err.Number == 1049
+	}
+	return false
+}
+
+func (*MySQL) DriverName() string {
+	return "mysql"
+}
+
+func NewMySQLDialect(u *url.URL) (*MySQL, error) {
+	config, err := mysql.ParseDSN(strings.Replace(u.String(), "mysql://", "", 1))
 	if err != nil {
 		return nil, err
 	}

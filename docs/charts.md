@@ -57,7 +57,7 @@ Example:
 SELECT rating, count(*) total FROM film GROUP BY 1
 ```
 
-![simple bar](img/simple-bar.png)
+![simple bar](/docs/img/simple-bar.png)
 
 ### Simple Line
 
@@ -71,7 +71,7 @@ Example:
 SELECT last_update , count(*) total FROM film group by 1
 ```
 
-![simple line](img/simple-line.png)
+![simple line](/docs/img/simple-line.png)
 
 ## Three-column charts
 
@@ -90,7 +90,7 @@ INNER JOIN category c ON fc.category_id = c.category_id
 GROUP BY 1, 2
 ```
 
-![grouped bar](img/grouped-bar.png)
+![grouped bar](/docs/img/grouped-bar.png)
 
 ### Multi Line
 
@@ -108,4 +108,4 @@ WHERE c.name IN ('Sci-Fi', 'Drama', 'Travel', 'Documentary')
 GROUP BY 1, 2
 ```
 
-![multi-line](img/multi-line.png)
+![multi-line](/docs/img/multi-line.png)

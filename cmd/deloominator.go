@@ -5,10 +5,11 @@ import (
 	"os"
 	"os/signal"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/lucapette/deloominator/pkg/api"
 	"github.com/lucapette/deloominator/pkg/config"
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 	flag "github.com/spf13/pflag"
 )
 
@@ -22,7 +23,7 @@ func help() {
 }
 
 func main() {
-	var helpFlag = flag.Bool("help", false, "show help")
+	helpFlag := flag.Bool("help", false, "show help")
 
 	flag.Parse()
 
@@ -37,22 +38,45 @@ func main() {
 		help()
 	}
 
-	log.WithField("port", cfg.Port).
+	logrus.WithField("port", cfg.Port).
 		Infof("starting %s", config.BinaryName)
 
 	dataSources, err := db.NewDataSources(cfg.Sources)
 	if err != nil {
-		log.Fatalf("cannot create DataSources: %v", err)
+		logrus.Fatalf("cannot create dataSources from %v: %v", cfg.Sources, err)
 	}
 
-	api.Start(cfg, dataSources)
+	var s *storage.Storage
+	if cfg.Storage != "" {
+		s, err = storage.NewStorage(cfg.Storage)
+		if err != nil {
+			logrus.Warnf("cannot create storage from %v: %v", cfg.Storage, err)
+		}
+	}
 
-	s := make(chan os.Signal, 1)
-	signal.Notify(s, os.Interrupt, os.Kill)
-	<-s
+	options := []api.Option{
+		api.Port(cfg.Port),
+		api.Debug(cfg.Debug),
+		api.DataSources(dataSources),
+	}
 
-	log.WithField("port", cfg.Port).
-		Infof("stopping %s", config.BinaryName)
+	if s != nil {
+		if err := s.AutoUpgrade(); err != nil {
+			logrus.Printf("could not upgrade %s storage: %v", config.BinaryName, err)
+		} else {
+			options = append(options, api.Storage(s))
+		}
+	}
 
-	dataSources.Shutdown()
+	server := api.NewServer(options)
+
+	server.Start()
+
+	sgn := make(chan os.Signal, 1)
+	signal.Notify(sgn, os.Interrupt, os.Kill)
+	<-sgn
+
+	logrus.WithField("port", cfg.Port).Infof("stopping %s", config.BinaryName)
+
+	dataSources.Close()
 }

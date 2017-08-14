@@ -83,56 +83,40 @@ var QueryDocumentKeys = KeyMap{
 	"List":    []string{"Type"},
 	"NonNull": []string{"Type"},
 
-	"SchemaDefinition": []string{
-		"Directives",
-		"OperationTypes",
-	},
+	"SchemaDefinition":        []string{"OperationTypes"},
 	"OperationTypeDefinition": []string{"Type"},
 
-	"ScalarDefinition": []string{
-		"Name",
-		"Directives",
-	},
+	"ScalarDefinition": []string{"Name"},
 	"ObjectDefinition": []string{
 		"Name",
 		"Interfaces",
-		"Directives",
 		"Fields",
 	},
 	"FieldDefinition": []string{
 		"Name",
 		"Arguments",
 		"Type",
-		"Directives",
 	},
 	"InputValueDefinition": []string{
 		"Name",
 		"Type",
 		"DefaultValue",
-		"Directives",
 	},
 	"InterfaceDefinition": []string{
 		"Name",
-		"Directives",
 		"Fields",
 	},
 	"UnionDefinition": []string{
 		"Name",
-		"Directives",
 		"Types",
 	},
 	"EnumDefinition": []string{
 		"Name",
-		"Directives",
 		"Values",
 	},
-	"EnumValueDefinition": []string{
-		"Name",
-		"Directives",
-	},
+	"EnumValueDefinition": []string{"Name"},
 	"InputObjectDefinition": []string{
 		"Name",
-		"Directives",
 		"Fields",
 	},
 
@@ -388,13 +372,10 @@ Loop:
 				nodeIn = node
 			}
 			parentConcrete, _ := parent.(ast.Node)
-			// ancestorsConcrete slice may contain nil values
 			ancestorsConcrete := []ast.Node{}
 			for _, ancestor := range ancestors {
 				if ancestorConcrete, ok := ancestor.(ast.Node); ok {
 					ancestorsConcrete = append(ancestorsConcrete, ancestorConcrete)
-				} else {
-					ancestorsConcrete = append(ancestorsConcrete, nil)
 				}
 			}
 

@@ -36,7 +36,6 @@ var _ TypeSystemDefinition = (*DirectiveDefinition)(nil)
 type SchemaDefinition struct {
 	Kind           string
 	Loc            *Location
-	Directives     []*Directive
 	OperationTypes []*OperationTypeDefinition
 }
 
@@ -47,7 +46,6 @@ func NewSchemaDefinition(def *SchemaDefinition) *SchemaDefinition {
 	return &SchemaDefinition{
 		Kind:           kinds.SchemaDefinition,
 		Loc:            def.Loc,
-		Directives:     def.Directives,
 		OperationTypes: def.OperationTypes,
 	}
 }
@@ -102,10 +100,9 @@ func (def *OperationTypeDefinition) GetLoc() *Location {
 
 // ScalarDefinition implements Node, Definition
 type ScalarDefinition struct {
-	Kind       string
-	Loc        *Location
-	Name       *Name
-	Directives []*Directive
+	Kind string
+	Loc  *Location
+	Name *Name
 }
 
 func NewScalarDefinition(def *ScalarDefinition) *ScalarDefinition {
@@ -113,10 +110,9 @@ func NewScalarDefinition(def *ScalarDefinition) *ScalarDefinition {
 		def = &ScalarDefinition{}
 	}
 	return &ScalarDefinition{
-		Kind:       kinds.ScalarDefinition,
-		Loc:        def.Loc,
-		Name:       def.Name,
-		Directives: def.Directives,
+		Kind: kinds.ScalarDefinition,
+		Loc:  def.Loc,
+		Name: def.Name,
 	}
 }
 
@@ -150,7 +146,6 @@ type ObjectDefinition struct {
 	Loc        *Location
 	Name       *Name
 	Interfaces []*Named
-	Directives []*Directive
 	Fields     []*FieldDefinition
 }
 
@@ -163,7 +158,6 @@ func NewObjectDefinition(def *ObjectDefinition) *ObjectDefinition {
 		Loc:        def.Loc,
 		Name:       def.Name,
 		Interfaces: def.Interfaces,
-		Directives: def.Directives,
 		Fields:     def.Fields,
 	}
 }
@@ -194,12 +188,11 @@ func (def *ObjectDefinition) GetOperation() string {
 
 // FieldDefinition implements Node
 type FieldDefinition struct {
-	Kind       string
-	Loc        *Location
-	Name       *Name
-	Arguments  []*InputValueDefinition
-	Type       Type
-	Directives []*Directive
+	Kind      string
+	Loc       *Location
+	Name      *Name
+	Arguments []*InputValueDefinition
+	Type      Type
 }
 
 func NewFieldDefinition(def *FieldDefinition) *FieldDefinition {
@@ -207,12 +200,11 @@ func NewFieldDefinition(def *FieldDefinition) *FieldDefinition {
 		def = &FieldDefinition{}
 	}
 	return &FieldDefinition{
-		Kind:       kinds.FieldDefinition,
-		Loc:        def.Loc,
-		Name:       def.Name,
-		Arguments:  def.Arguments,
-		Type:       def.Type,
-		Directives: def.Directives,
+		Kind:      kinds.FieldDefinition,
+		Loc:       def.Loc,
+		Name:      def.Name,
+		Arguments: def.Arguments,
+		Type:      def.Type,
 	}
 }
 
@@ -231,7 +223,6 @@ type InputValueDefinition struct {
 	Name         *Name
 	Type         Type
 	DefaultValue Value
-	Directives   []*Directive
 }
 
 func NewInputValueDefinition(def *InputValueDefinition) *InputValueDefinition {
@@ -244,7 +235,6 @@ func NewInputValueDefinition(def *InputValueDefinition) *InputValueDefinition {
 		Name:         def.Name,
 		Type:         def.Type,
 		DefaultValue: def.DefaultValue,
-		Directives:   def.Directives,
 	}
 }
 
@@ -258,11 +248,10 @@ func (def *InputValueDefinition) GetLoc() *Location {
 
 // InterfaceDefinition implements Node, Definition
 type InterfaceDefinition struct {
-	Kind       string
-	Loc        *Location
-	Name       *Name
-	Directives []*Directive
-	Fields     []*FieldDefinition
+	Kind   string
+	Loc    *Location
+	Name   *Name
+	Fields []*FieldDefinition
 }
 
 func NewInterfaceDefinition(def *InterfaceDefinition) *InterfaceDefinition {
@@ -270,11 +259,10 @@ func NewInterfaceDefinition(def *InterfaceDefinition) *InterfaceDefinition {
 		def = &InterfaceDefinition{}
 	}
 	return &InterfaceDefinition{
-		Kind:       kinds.InterfaceDefinition,
-		Loc:        def.Loc,
-		Name:       def.Name,
-		Directives: def.Directives,
-		Fields:     def.Fields,
+		Kind:   kinds.InterfaceDefinition,
+		Loc:    def.Loc,
+		Name:   def.Name,
+		Fields: def.Fields,
 	}
 }
 
@@ -304,11 +292,10 @@ func (def *InterfaceDefinition) GetOperation() string {
 
 // UnionDefinition implements Node, Definition
 type UnionDefinition struct {
-	Kind       string
-	Loc        *Location
-	Name       *Name
-	Directives []*Directive
-	Types      []*Named
+	Kind  string
+	Loc   *Location
+	Name  *Name
+	Types []*Named
 }
 
 func NewUnionDefinition(def *UnionDefinition) *UnionDefinition {
@@ -316,11 +303,10 @@ func NewUnionDefinition(def *UnionDefinition) *UnionDefinition {
 		def = &UnionDefinition{}
 	}
 	return &UnionDefinition{
-		Kind:       kinds.UnionDefinition,
-		Loc:        def.Loc,
-		Name:       def.Name,
-		Directives: def.Directives,
-		Types:      def.Types,
+		Kind:  kinds.UnionDefinition,
+		Loc:   def.Loc,
+		Name:  def.Name,
+		Types: def.Types,
 	}
 }
 
@@ -350,11 +336,10 @@ func (def *UnionDefinition) GetOperation() string {
 
 // EnumDefinition implements Node, Definition
 type EnumDefinition struct {
-	Kind       string
-	Loc        *Location
-	Name       *Name
-	Directives []*Directive
-	Values     []*EnumValueDefinition
+	Kind   string
+	Loc    *Location
+	Name   *Name
+	Values []*EnumValueDefinition
 }
 
 func NewEnumDefinition(def *EnumDefinition) *EnumDefinition {
@@ -362,11 +347,10 @@ func NewEnumDefinition(def *EnumDefinition) *EnumDefinition {
 		def = &EnumDefinition{}
 	}
 	return &EnumDefinition{
-		Kind:       kinds.EnumDefinition,
-		Loc:        def.Loc,
-		Name:       def.Name,
-		Directives: def.Directives,
-		Values:     def.Values,
+		Kind:   kinds.EnumDefinition,
+		Loc:    def.Loc,
+		Name:   def.Name,
+		Values: def.Values,
 	}
 }
 
@@ -396,10 +380,9 @@ func (def *EnumDefinition) GetOperation() string {
 
 // EnumValueDefinition implements Node, Definition
 type EnumValueDefinition struct {
-	Kind       string
-	Loc        *Location
-	Name       *Name
-	Directives []*Directive
+	Kind string
+	Loc  *Location
+	Name *Name
 }
 
 func NewEnumValueDefinition(def *EnumValueDefinition) *EnumValueDefinition {
@@ -407,10 +390,9 @@ func NewEnumValueDefinition(def *EnumValueDefinition) *EnumValueDefinition {
 		def = &EnumValueDefinition{}
 	}
 	return &EnumValueDefinition{
-		Kind:       kinds.EnumValueDefinition,
-		Loc:        def.Loc,
-		Name:       def.Name,
-		Directives: def.Directives,
+		Kind: kinds.EnumValueDefinition,
+		Loc:  def.Loc,
+		Name: def.Name,
 	}
 }
 
@@ -424,11 +406,10 @@ func (def *EnumValueDefinition) GetLoc() *Location {
 
 // InputObjectDefinition implements Node, Definition
 type InputObjectDefinition struct {
-	Kind       string
-	Loc        *Location
-	Name       *Name
-	Directives []*Directive
-	Fields     []*InputValueDefinition
+	Kind   string
+	Loc    *Location
+	Name   *Name
+	Fields []*InputValueDefinition
 }
 
 func NewInputObjectDefinition(def *InputObjectDefinition) *InputObjectDefinition {
@@ -436,11 +417,10 @@ func NewInputObjectDefinition(def *InputObjectDefinition) *InputObjectDefinition
 		def = &InputObjectDefinition{}
 	}
 	return &InputObjectDefinition{
-		Kind:       kinds.InputObjectDefinition,
-		Loc:        def.Loc,
-		Name:       def.Name,
-		Directives: def.Directives,
-		Fields:     def.Fields,
+		Kind:   kinds.InputObjectDefinition,
+		Loc:    def.Loc,
+		Name:   def.Name,
+		Fields: def.Fields,
 	}
 }
 

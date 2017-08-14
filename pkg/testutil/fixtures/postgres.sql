@@ -4,10 +4,7 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-DROP DATABASE IF EXISTS {{.Name}};
-CREATE DATABASE {{.Name}};
-
-\c {{.Name}}
+\c {{.}}
 
 CREATE TYPE mpaa_rating AS ENUM (
     'G',
@@ -16,7 +13,6 @@ CREATE TYPE mpaa_rating AS ENUM (
     'R',
     'NC-17'
 );
-
 
 CREATE SEQUENCE customer_customer_id_seq
     START WITH 1
@@ -65,7 +61,6 @@ CREATE TABLE category (
     name character varying(25) NOT NULL,
     last_update timestamp without time zone DEFAULT now() NOT NULL
 );
-
 
 CREATE SEQUENCE film_film_id_seq
     START WITH 1
@@ -141,13 +136,11 @@ CREATE SEQUENCE country_country_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
 CREATE TABLE country (
     country_id integer DEFAULT nextval('country_country_id_seq'::regclass) NOT NULL,
     country character varying(50) NOT NULL,
     last_update timestamp without time zone DEFAULT now() NOT NULL
 );
-
 
 CREATE SEQUENCE inventory_inventory_id_seq
     START WITH 1

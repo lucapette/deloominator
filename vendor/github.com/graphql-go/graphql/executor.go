@@ -24,72 +24,40 @@ type ExecuteParams struct {
 }
 
 func Execute(p ExecuteParams) (result *Result) {
-	// Use background context if no context was provided
-	ctx := p.Context
-	if ctx == nil {
-		ctx = context.Background()
+	result = &Result{}
+
+	exeContext, err := buildExecutionContext(BuildExecutionCtxParams{
+		Schema:        p.Schema,
+		Root:          p.Root,
+		AST:           p.AST,
+		OperationName: p.OperationName,
+		Args:          p.Args,
+		Errors:        nil,
+		Result:        result,
+		Context:       p.Context,
+	})
+
+	if err != nil {
+		result.Errors = append(result.Errors, gqlerrors.FormatError(err))
+		return
 	}
 
-	resultChannel := make(chan *Result)
-
-	go func(out chan<- *Result, done <-chan struct{}) {
-		result := &Result{}
-
-		exeContext, err := buildExecutionContext(BuildExecutionCtxParams{
-			Schema:        p.Schema,
-			Root:          p.Root,
-			AST:           p.AST,
-			OperationName: p.OperationName,
-			Args:          p.Args,
-			Errors:        nil,
-			Result:        result,
-			Context:       p.Context,
-		})
-
-		if err != nil {
-			result.Errors = append(result.Errors, gqlerrors.FormatError(err))
-			select {
-			case out <- result:
-			case <-done:
+	defer func() {
+		if r := recover(); r != nil {
+			var err error
+			if r, ok := r.(error); ok {
+				err = gqlerrors.FormatError(r)
 			}
-			return
+			exeContext.Errors = append(exeContext.Errors, gqlerrors.FormatError(err))
+			result.Errors = exeContext.Errors
 		}
+	}()
 
-		defer func() {
-			if r := recover(); r != nil {
-				var err error
-				if r, ok := r.(error); ok {
-					err = gqlerrors.FormatError(r)
-				}
-				exeContext.Errors = append(exeContext.Errors, gqlerrors.FormatError(err))
-				result.Errors = exeContext.Errors
-				select {
-				case out <- result:
-				case <-done:
-				}
-			}
-		}()
-
-		result = executeOperation(ExecuteOperationParams{
-			ExecutionContext: exeContext,
-			Root:             p.Root,
-			Operation:        exeContext.Operation,
-		})
-		select {
-		case out <- result:
-		case <-done:
-		}
-
-	}(resultChannel, ctx.Done())
-
-	select {
-	case <-ctx.Done():
-		result = &Result{}
-		result.Errors = append(result.Errors, gqlerrors.FormatError(ctx.Err()))
-	case r := <-resultChannel:
-		result = r
-	}
-	return
+	return executeOperation(ExecuteOperationParams{
+		ExecutionContext: exeContext,
+		Root:             p.Root,
+		Operation:        exeContext.Operation,
+	})
 }
 
 type BuildExecutionCtxParams struct {
@@ -696,9 +664,7 @@ func completeAbstractValue(eCtx *ExecutionContext, returnType Abstract, fieldAST
 	}
 
 	err := invariant(runtimeType != nil,
-		fmt.Sprintf(`Abstract type %v must resolve to an Object type at runtime `+
-			`for field %v.%v with value "%v", received "%v".`,
-			returnType, info.ParentType, info.FieldName, result, runtimeType),
+		fmt.Sprintf(`Could not determine runtime type of value "%v" for field %v.%v.`, result, info.ParentType, info.FieldName),
 	)
 	if err != nil {
 		panic(err)

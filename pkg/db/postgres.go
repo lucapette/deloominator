@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 type Postgres struct {
@@ -27,7 +29,7 @@ func (pg *Postgres) ExtractCellInfo(data interface{}) (cell Cell, colType Type) 
 		cell = Cell{Value: value}
 		colType = inferType(value)
 	case time.Time:
-		cell = Cell{Value: data.(time.Time).Format(TimeFormat)}
+		cell = Cell{Value: data.(time.Time).Format(timeFormat)}
 		colType = Time
 	default:
 		cell = Cell{Value: fmt.Sprint(data)}
@@ -44,11 +46,17 @@ func (pg *Postgres) DBName() string {
 	return pg.u.Path[1:]
 }
 
-func NewPostgresDialect(source string) (*Postgres, error) {
-	u, err := url.Parse(source)
-	if err != nil {
-		return nil, err
+func (pg *Postgres) IsUnknown(e error) bool {
+	if err, ok := e.(*pq.Error); ok {
+		return err.Code == "3D000"
 	}
+	return false
+}
 
+func (pg *Postgres) DriverName() string {
+	return pg.u.Scheme
+}
+
+func NewPostgresDialect(u *url.URL) (*Postgres, error) {
 	return &Postgres{u: u}, nil
 }
