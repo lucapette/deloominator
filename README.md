@@ -29,8 +29,18 @@ The latest version of our documentation is available [here](/docs).
 
 ## Quick start
 
-Once you [installed](#installation-guide) `deloominator`, you can find a list of
-available options by running the following command:
+Once you [installed](#installation-guide) `deloominator`, you can launch the
+application from a terminal emulator. `deloominator` needs at least one data
+source to work with. The following command:
+
+```sh
+$ export DELOOMINATOR_SOURCES=postgres://localhost/example?sslmode=disable 
+$ deloominator
+```
+
+will automatically launch the application in the browser so that you can start
+playing around with it. You can find a list of available options by running the
+following command:
 
 ```sh
 $ deloominator --help
@@ -38,14 +48,7 @@ $ deloominator --help
 
 `deloominator` uses only environment variables for configuration. The easiest
 way to learn how to configure and run `deloominator` is reading our
-[run.example](/bin/run.example).
-
-If you're using postgres with default settings, something like:
-
-```sh
-$ export DELOOMINATOR_SOURCES=postgres://localhost/example?sslmode=disable 
-$ deloominator # it will automatically launch the application in the browser
-```
+[run.example](/bin/run.example). 
 
 ## User Manual
 
