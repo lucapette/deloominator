@@ -1,0 +1,15 @@
+build:
+  main: ./cmd/deloominator.go
+  goos:
+    - windows
+    - darwin
+    - linux
+  goarch:
+    - amd64
+  hooks:
+    pre: make embed build-ui
+brew:
+  github:
+    owner: lucapette
+    name: homebrew-tap
+  homepage: https://github.com/lucapette/deloominator
