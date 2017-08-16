@@ -40,6 +40,13 @@ $ deloominator --help
 way to learn how to configure and run `deloominator` is reading our
 [run.example](/bin/run.example).
 
+If you're using postgres with default settings, something like:
+
+```sh
+$ export DELOOMINATOR_SOURCES=postgres://localhost/example?sslmode=disable 
+$ deloominator # it will automatically launch the application in the browser
+```
+
 ## User Manual
 
 Please refer to our [user manual](/docs/user-manual.md) to learn more about
@@ -49,7 +56,7 @@ the moment.
 
 ## Demo
 
-Coming soon
+Coming soon!
 
 # Installation guide
 
