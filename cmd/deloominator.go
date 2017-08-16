@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"os/signal"
 
 	"github.com/Sirupsen/logrus"
@@ -20,6 +22,17 @@ func help() {
 		fmt.Printf("cannot read help configuration %v", err)
 		os.Exit(1)
 	}
+}
+
+func openPage(port int) (err error) {
+	url := fmt.Sprintf("http://localhost:%v", port)
+
+	if _, err := exec.Command("which", "open").Output(); err != nil {
+		return err
+	}
+
+	_, err = exec.Command("open", url).Output()
+	return err
 }
 
 func main() {
@@ -78,6 +91,12 @@ func main() {
 	server := api.NewServer(options)
 
 	server.Start()
+
+	if !cfg.SkipOpen {
+		if err := openPage(cfg.Port); err != nil {
+			log.Printf("could not open application: %v", err)
+		}
+	}
 
 	sgn := make(chan os.Signal, 1)
 	signal.Notify(sgn, os.Interrupt, os.Kill)

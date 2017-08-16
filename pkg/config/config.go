@@ -5,16 +5,22 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+// BinaryName is the name of the program
 const BinaryName = "deloominator"
 
+// Config represents the available options `deloominator` can read from the
+// environment
 type Config struct {
 	Port      int      `default:"3000"`
 	Sources   []string `envconfig:"data_sources" required:"true"`
 	Storage   string   `envconfig:"storage"`
 	LogFormat string   `default:"JSON" split_words:"true"`
 	Debug     bool     `default:"false"`
+	SkipOpen  bool     `default:"false"`
 }
 
+// GetConfig reads the configuration from the environment and populates a Config
+// structure
 func GetConfig() (*Config, error) {
 	cfg := Config{}
 	err := envconfig.Process(BinaryName, &cfg)
