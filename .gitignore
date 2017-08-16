@@ -7,3 +7,4 @@ ui/dist/App.js
 ui/dist/App.js.map
 pkg/db/migrations.go
 .vscode
+dist/
