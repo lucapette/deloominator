@@ -16,7 +16,7 @@ type Config struct {
 	Storage   string   `envconfig:"storage"`
 	LogFormat string   `default:"JSON" split_words:"true"`
 	Debug     bool     `default:"false"`
-	SkipOpen  bool     `default:"false"`
+	SkipOpen  bool     `default:"false" split_words:"true"`
 }
 
 // GetConfig reads the configuration from the environment and populates a Config
