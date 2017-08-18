@@ -45,6 +45,7 @@ class QuestionFormContainer extends Component {
 
   render() {
     const {
+      saveEnabled,
       handleDataSourcesChange,
       handleRunClick,
       handleQueryChange,
@@ -74,7 +75,8 @@ class QuestionFormContainer extends Component {
             disabled={!(selectedDataSource && currentQuery)}
             onClick={handleRunClick}
           />
-          <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={this.handleSave} />
+          {saveEnabled &&
+            <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={this.handleSave} />}
         </Form.Group>
         <Form.TextArea placeholder="Write your query here" value={currentQuery} onChange={handleQueryChange} />
       </Form>

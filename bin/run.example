@@ -3,6 +3,7 @@
 set -e
 
 export DELOOMINATOR_DEBUG=true
+export DELOOMINATOR_SKIP_OPEN=true
 export DELOOMINATOR_LOG_FORMAT=TEXT
 
 export DELOOMINATOR_STORAGE=postgres://localhost/deloominator?sslmode=disable

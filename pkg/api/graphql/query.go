@@ -104,7 +104,26 @@ func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interfa
 	}
 }
 
+func resolveSettings(s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
+	return func(p gql.ResolveParams) (interface{}, error) {
+		return settings{
+			IsReadOnly: s == nil,
+		}, nil
+	}
+}
+
 func query(dataSources db.DataSources, s *storage.Storage) *gql.Object {
+	settingsType := gql.NewObject(gql.ObjectConfig{
+		Name:        "settings",
+		Description: "Settings represents the current deloominator",
+		Fields: gql.Fields{
+			"isReadOnly": &gql.Field{
+				Description: "Readonly server value",
+				Type:        gql.Boolean,
+			},
+		},
+	})
+
 	queryErrorType := gql.NewObject(gql.ObjectConfig{
 		Name:        "queryError",
 		Description: "An error represents an error message from the data source",
@@ -218,6 +237,10 @@ func query(dataSources db.DataSources, s *storage.Storage) *gql.Object {
 	})
 
 	fields := gql.Fields{
+		"settings": &gql.Field{
+			Type:    settingsType,
+			Resolve: resolveSettings(s),
+		},
 		"dataSources": &gql.Field{
 			Type:    gql.NewList(dataSourceType),
 			Resolve: resolveDataSources(dataSources),

@@ -17,7 +17,6 @@ class PlaygroundPage extends Component {
     querySuccess: false,
   };
 
-
   handleQuerySuccess = value => {
     this.setState({ querySuccess: value });
   };
@@ -40,12 +39,15 @@ class PlaygroundPage extends Component {
   };
 
   render() {
+    const { settings } = this.props;
+
     return (
       <DocumentTitle title="Playground">
         <div>
           <Grid.Row>
             <Grid.Column>
               <QuestionForm
+                saveEnabled={!settings.isReadOnly}
                 dataSources={this.props.data.dataSources}
                 handleDataSourcesChange={this.handleDataSourcesChange}
                 handleQueryChange={this.handleQueryChange}
@@ -65,7 +67,7 @@ class PlaygroundPage extends Component {
                   input={this.state.query}
                 />}
             </Grid.Column>
-        </Grid.Row>
+          </Grid.Row>
         </div>
       </DocumentTitle>
     );
