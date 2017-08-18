@@ -32,6 +32,10 @@ type results struct {
 	ChartName string   `json:"chartName"`
 }
 
+type settings struct {
+	IsReadOnly bool `json:"isReadOnly"`
+}
+
 type Table struct {
 	Name string `json:"name"`
 }

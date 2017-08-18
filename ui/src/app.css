@@ -1,0 +1,17 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.content {
+  flex-grow: 1;
+}
+
+.ui.segment.footer {
+  padding-bottom: 0;
+}
+
+.read-only {
+  text-align: center;
+}

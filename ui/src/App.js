@@ -1,8 +1,8 @@
 //@flow
 import React, { Component } from "react";
-import { ApolloClient, ApolloProvider, createNetworkInterface } from "react-apollo";
+import { ApolloClient, ApolloProvider, createNetworkInterface, graphql, gql } from "react-apollo";
 import ReactDOM from "react-dom";
-import { Container, Menu, Grid } from "semantic-ui-react";
+import { Container, Menu, Grid, Loader } from "semantic-ui-react";
 
 import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
 
@@ -26,25 +26,37 @@ const client = new ApolloClient({
   networkInterface: networkInterface,
 });
 
-class App extends Component {
-  render() {
-    return (
-      <Router>
-        <div>
-          <NavMenu />
-          <Container>
-            <Route exact path="/" component={Home} />
-            <Route path="/playground" component={Playground} />
-            <Route exact path="/questions" component={Questions} />
-            <Route path="/questions/:question" component={Questions} />
-          </Container>
-
-          <Footer />
-        </div>
-      </Router>
-    );
+const SettingsQuery = gql`
+  {
+    settings {
+      isReadOnly
+    }
   }
-}
+`;
+
+const App = graphql(SettingsQuery)(({ data: { loading, error, settings } }) => {
+  if (loading) {
+    return <Loader active />;
+  }
+  return (
+    <Router>
+      <div className="page">
+        <NavMenu />
+        <Container className="content">
+          <Route path="/" exact component={Home} />
+          <Route path="/playground" component={() => <Playground settings={settings} />} />
+          <Route path="/questions" exact component={routeProps => <Questions {...routeProps} settings={settings} />} />
+          <Route
+            path="/questions/:question"
+            component={routeProps => <Questions {...routeProps} settings={settings} />}
+          />
+        </Container>
+
+        <Footer settings={settings} />
+      </div>
+    </Router>
+  );
+});
 
 const mountNode = document.getElementById("root");
 
