@@ -31,6 +31,9 @@ func (pg *Postgres) ExtractCellInfo(data interface{}) (cell Cell, colType Type) 
 	case time.Time:
 		cell = Cell{Value: data.(time.Time).Format(timeFormat)}
 		colType = Time
+	case nil:
+		cell = Cell{}
+		colType = UnknownType
 	default:
 		cell = Cell{Value: fmt.Sprint(data)}
 		colType = UnknownType

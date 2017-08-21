@@ -25,6 +25,9 @@ func (my *MySQL) ExtractCellInfo(data interface{}) (cell Cell, colType Type) {
 		value := string(data.([]uint8))
 		cell = Cell{Value: value}
 		colType = inferType(value)
+	case nil:
+		cell = Cell{}
+		colType = UnknownType
 	default:
 		cell = Cell{Value: fmt.Sprint(t)}
 		colType = UnknownType
