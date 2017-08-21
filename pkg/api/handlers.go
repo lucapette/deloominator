@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/felixge/httpsnoop"
 	"goji.io/pat"
 )
 
@@ -42,17 +42,14 @@ func debugHandler(inner http.Handler) http.Handler {
 
 func logHandler(inner http.Handler) http.Handler {
 	mw := func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
-		proxyWriter := wrapWriter(w)
-
-		inner.ServeHTTP(proxyWriter, r)
+		m := httpsnoop.CaptureMetrics(inner, w, r)
 
 		logrus.WithFields(logrus.Fields{
-			"spent":  time.Now().Sub(start),
-			"path":   r.URL.Path,
-			"method": r.Method,
-			"status": proxyWriter.status(),
+			"duration": m.Duration,
+			"path":     r.URL.Path,
+			"method":   r.Method,
+			"status":   m.Code,
+			"written":  m.Written,
 		}).Info("request completed")
 	}
 	return http.HandlerFunc(mw)

@@ -15,6 +15,12 @@
 			"revisionTime": "2017-07-27T06:48:18Z"
 		},
 		{
+			"checksumSHA1": "Fanvk5Tua0lSCtgEB+Ji0lZD1B8=",
+			"path": "github.com/felixge/httpsnoop",
+			"revision": "eadd4fad6aac69ae62379194fe0219f3dbc80fd3",
+			"revisionTime": "2017-06-29T01:04:42Z"
+		},
+		{
 			"checksumSHA1": "i3UtE7/Cn57eX1hO5Z0CqY/Eeb4=",
 			"path": "github.com/go-sql-driver/mysql",
 			"revision": "3955978caca48c1658a4bb7a9c6a0f084e326af3",
