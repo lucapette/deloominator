@@ -1,4 +1,4 @@
-SOURCE_FILES?=$$(go list ./... | grep -v '/deloominator/vendor/')
+SOURCE_FILES?=$$(go list ./...)
 TEST_PATTERN?=.
 TEST_OPTIONS?=
 

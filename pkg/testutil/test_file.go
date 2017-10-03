@@ -20,11 +20,13 @@ type TestFile struct {
 
 // NewFixture returns a TestFile from a given fixture
 func NewFixture(t *testing.T, fixture string) *TestFile {
+	t.Helper()
 	return &TestFile{t: t, name: fixture, dir: "fixtures"}
 }
 
 // NewGoldenFile returns a TestFile from a given golden name file
 func NewGoldenFile(t *testing.T, name string) *TestFile {
+	t.Helper()
 	return &TestFile{t: t, name: name, dir: "golden"}
 }
 
@@ -46,6 +48,7 @@ func (tf *TestFile) Write(content string) {
 
 // Load returns the content of a TestFile
 func (tf *TestFile) Load() string {
+	tf.t.Helper()
 	content, err := ioutil.ReadFile(tf.path())
 	if err != nil {
 		tf.t.Fatalf("could not read file %s: %v", tf.name, err)
@@ -56,6 +59,7 @@ func (tf *TestFile) Load() string {
 
 // Parse parses the content of a TestFile
 func (tf *TestFile) Parse(w io.Writer, data string) {
+	tf.t.Helper()
 	tmpl := template.Must(template.New(tf.name).Parse(tf.Load()))
 
 	err := tmpl.Execute(w, data)
@@ -65,6 +69,7 @@ func (tf *TestFile) Parse(w io.Writer, data string) {
 }
 
 func (tf *TestFile) ParseOrUpdate(update bool, data, actual string) string {
+	tf.t.Helper()
 	out := &bytes.Buffer{}
 
 	tf.Parse(out, data)

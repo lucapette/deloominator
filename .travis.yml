@@ -1,6 +1,6 @@
 language: go
 go:
-   - 1.8
+   - 1.9
    - master
 before_script:
    - cp bin/run-test{.travis,}
