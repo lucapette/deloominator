@@ -19,7 +19,7 @@ list of prerequisites to build and test the project:
 
 - Build:
   - `make`
-  - [Go 1.8+](http://golang.org/doc/install)
+  - [Go 1.9+](http://golang.org/doc/install)
   - [Node.js](https://nodejs.org/en/)
   - [Yarn](https://yarnpkg.com/en/)
 - Test:
@@ -141,13 +141,13 @@ is a technique to handle fixture files used in assertion. It works this way:
 - You store complex output you expect (like a JSON response for example) in a
   file and use it to compare it to the actual outcome of a test
 - You add a command line flag that updates your golden file so that it is easy
-  to get a test passing when behaviour changes
+  to get a test passing when behavior changes
 
 You can find an example of it [here](/pkg/api/graphql_test.go).
 
 ### Use testutil
 
-The [testutil](pkg/testutil) package contains a number of utitilies for testing
+The [testutil](pkg/testutil) package contains a number of utilities for testing
 our Go code. In the spirit of [Advanced testing with
 Go](https://speakerdeck.com/mitchellh/advanced-testing-with-go), we follow these
 guidelines:

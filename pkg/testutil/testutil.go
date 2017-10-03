@@ -140,6 +140,7 @@ func setupMySQL(t *testing.T) (string, func()) {
 }
 
 func LoadDataFromFixture(t *testing.T, ds *db.DataSource, fixture string) {
+	t.Helper()
 	query := NewFixture(t, fixture).Load()
 
 	if _, err := ds.Exec(query); err != nil {
@@ -148,6 +149,7 @@ func LoadDataFromFixture(t *testing.T, ds *db.DataSource, fixture string) {
 }
 
 func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult) {
+	t.Helper()
 	query := &bytes.Buffer{}
 
 	columns := make([]string, len(data.Columns))
@@ -181,6 +183,7 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult
 }
 
 func CreateDSN(t *testing.T) []string {
+	t.Helper()
 	cfg, err := getTestConfig()
 	if err != nil {
 		t.Fatalf("could not get test config: %v", err)
@@ -189,6 +192,7 @@ func CreateDSN(t *testing.T) []string {
 }
 
 func NewStorage(t *testing.T, source string) *storage.Storage {
+	t.Helper()
 	s, err := storage.NewStorage(source)
 	if err != nil {
 		t.Fatalf("could not create storage: %v", err)
@@ -201,6 +205,7 @@ func NewStorage(t *testing.T, source string) *storage.Storage {
 }
 
 func NewStorages(t *testing.T) (storages []*storage.Storage) {
+	t.Helper()
 	sources := CreateDSN(t)
 
 	for _, dsn := range sources {
@@ -211,6 +216,7 @@ func NewStorages(t *testing.T) (storages []*storage.Storage) {
 }
 
 func CreateDataSources(t *testing.T) ([]string, func()) {
+	t.Helper()
 	cfg, err := getTestConfig()
 	if err != nil {
 		t.Fatalf("could not get test config: %v", err)
@@ -225,6 +231,7 @@ func CreateDataSources(t *testing.T) ([]string, func()) {
 }
 
 func SetupDataSources(t *testing.T) (db.DataSources, func()) {
+	t.Helper()
 	dsnPG, cleanupPG := setupPG(t)
 	dsnMySQL, cleanupMySQL := setupMySQL(t)
 
