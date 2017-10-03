@@ -20,7 +20,10 @@ func debugHandler(inner http.Handler) http.Handler {
 
 		b, err := ioutil.ReadAll(reader)
 		if err != nil {
-			logrus.Fatalf("cannot read request: %v", err)
+			logrus.WithFields(logrus.Fields{
+				"path":   r.URL.Path,
+				"method": r.Method,
+			}).Fatalf("cannot read request: %v", err)
 		}
 
 		entry := logrus.WithFields(logrus.Fields{
@@ -32,7 +35,7 @@ func debugHandler(inner http.Handler) http.Handler {
 			entry = entry.WithField(k, v)
 		}
 
-		entry.Info("incoming request")
+		entry.Print("incoming request")
 
 		r.Body = ioutil.NopCloser(buf)
 		inner.ServeHTTP(w, r)
@@ -55,18 +58,23 @@ func logHandler(inner http.Handler) http.Handler {
 	return http.HandlerFunc(mw)
 }
 
-func uiHandler(w http.ResponseWriter, request *http.Request) {
+func uiHandler(w http.ResponseWriter, r *http.Request) {
 	asset, err := Asset("ui/dist/index.html")
 
 	if err != nil {
-		logrus.Printf("cannot load index: %v", err)
+		logrus.WithFields(logrus.Fields{
+			"path":   r.URL.Path,
+			"method": r.Method,
+		}).Printf("cannot load index: %v", err)
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	_, err = w.Write(asset)
 
-	if err != nil {
-		logrus.Printf("cannot write: %v", err)
+	if _, err = w.Write(asset); err != nil {
+		logrus.WithFields(logrus.Fields{
+			"path":   r.URL.Path,
+			"method": r.Method,
+		}).Printf("cannot write asset: %v", err)
 	}
 }
 
@@ -76,7 +84,10 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 
 	asset, err := Asset(strings.Join([]string{"ui", "dist", fmt.Sprintf("%s.%s", name, ext)}, "/"))
 	if err != nil {
-		logrus.Println(err)
+		logrus.WithFields(logrus.Fields{
+			"path":   r.URL.Path,
+			"method": r.Method,
+		}).Printf("cannot get asset: %v", err)
 	}
 
 	switch ext {
@@ -87,6 +98,9 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err = w.Write(asset); err != nil {
-		logrus.Printf("cannot write: %v", err)
+		logrus.WithFields(logrus.Fields{
+			"path":   r.URL.Path,
+			"method": r.Method,
+		}).Printf("cannot write asset: %v", err)
 	}
 }

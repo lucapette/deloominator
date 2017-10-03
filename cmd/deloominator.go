@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/lucapette/deloominator/pkg/api"
@@ -65,6 +67,7 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("cannot create dataSources from %v: %v", cfg.Sources, err)
 	}
+	defer dataSources.Close()
 
 	var s *storage.Storage
 	if cfg.Storage != "" {
@@ -81,6 +84,7 @@ func main() {
 	}
 
 	if s != nil {
+		defer s.Close()
 		if err := s.AutoUpgrade(); err != nil {
 			logrus.Printf("could not upgrade %s storage: %v", config.BinaryName, err)
 		} else {
@@ -88,9 +92,12 @@ func main() {
 		}
 	}
 
-	server := api.NewServer(options)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
+	server := api.NewServer(options)
 	server.Start()
+	defer server.Stop(ctx)
 
 	if !cfg.SkipOpen {
 		if err := openPage(cfg.Port); err != nil {
@@ -102,7 +109,7 @@ func main() {
 	signal.Notify(sgn, os.Interrupt, os.Kill)
 	<-sgn
 
-	logrus.WithField("port", cfg.Port).Infof("stopping %s", config.BinaryName)
-
-	dataSources.Close()
+	logrus.WithFields(logrus.Fields{
+		"port": cfg.Port,
+	}).Print("shutdown")
 }

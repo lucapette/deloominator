@@ -49,7 +49,6 @@ func Handler(dataSources db.DataSources, storage *storage.Storage) func(w http.R
 		}
 
 		_, err = w.Write(rJSON)
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}

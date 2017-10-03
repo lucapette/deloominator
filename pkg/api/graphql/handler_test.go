@@ -40,7 +40,7 @@ func (ts *testServer) do(query string, variables vars) string {
 
 	resp, err := ioutil.ReadAll(w.Body)
 	if err != nil {
-		ts.tt.Fatalf("could not read request: %v", err)
+		ts.tt.Fatalf("could not read response: %v", err)
 	}
 	return string(resp)
 }

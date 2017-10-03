@@ -17,35 +17,15 @@ const CHARTS = {
 };
 
 class Chart extends Component {
-  view: Object;
   props: {
     name: string,
     rows: Array<Types.Row>,
     columns: Array<Types.Column>,
-  };
-
-  onNewView = (view: Object) => {
-    this.view = view;
-  };
-
-  onClick = (e: MouseEvent) => {
-    e.preventDefault();
-    this.view
-      .toImageURL("png")
-      .then(url => {
-        let link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("target", "_blank");
-        link.setAttribute("download", "chart.png");
-        link.dispatchEvent(new MouseEvent("click"));
-      })
-      .catch(function(error) {
-        /* error handling */
-      });
+    onNewView: Object => void,
   };
 
   render() {
-    const { name, columns, rows } = this.props;
+    const { name, columns, rows, onNewView } = this.props;
 
     const Handler = CHARTS[name];
 
@@ -59,12 +39,10 @@ class Chart extends Component {
 
     return (
       <div>
-        <Handler values={values} onNewView={this.onNewView} />
-        <a href="" onClick={this.onClick}>
-          Download as PNG
-        </a>
+        <Handler values={values} onNewView={onNewView} />
       </div>
     );
   }
 }
+
 export default Chart;

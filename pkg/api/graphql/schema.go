@@ -13,6 +13,10 @@ type queryError struct {
 	Message string `json:"message"`
 }
 
+type csv struct {
+	Data string `json:"data"`
+}
+
 type cell struct {
 	Value string `json:"value"`
 }

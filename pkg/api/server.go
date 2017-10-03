@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
@@ -14,6 +15,7 @@ import (
 )
 
 type Server struct {
+	srv         *http.Server
 	debug       bool
 	dataSources db.DataSources
 	port        string
@@ -75,11 +77,25 @@ func (s *Server) Start() {
 
 	router.HandleFunc(pat.Post("/graphql"), graphql.Handler(s.dataSources, s.storage))
 	router.HandleFunc(pat.Get("/:name.:ext"), assetsHandler)
+	router.HandleFunc(pat.Post("/export/:format"), exportHandler(s.dataSources))
 	router.HandleFunc(pat.Get("/*"), uiHandler)
 
+	s.srv = &http.Server{Addr: s.port, Handler: router}
+
 	go func() {
-		if err := http.ListenAndServe(s.port, router); err != nil {
-			logrus.Fatalf("cannot start server: %v", err)
+		if err := s.srv.ListenAndServe(); err != nil {
+			if err == http.ErrServerClosed {
+				logrus.Printf("server closed")
+			} else {
+				logrus.Fatalf("cannot start server: %v", err)
+			}
 		}
 	}()
+}
+
+// Stop shuts down the running API server
+func (s *Server) Stop(ctx context.Context) {
+	if err := s.srv.Shutdown(ctx); err != nil {
+		logrus.Warnf("could not shutdown server: %v", err)
+	}
 }

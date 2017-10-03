@@ -87,7 +87,10 @@ func (ds *DataSource) CreateDBIfNotExist() error {
 	}
 	defer func() {
 		if err := db.Close(); err != nil {
-			logrus.Printf("could not close %s: %v", ds.ConnectionString(), err)
+			logrus.WithFields(logrus.Fields{
+				"storage_name": ds.DBName(),
+				"err":          err.Error(),
+			}).Print("could not close")
 		}
 	}()
 
@@ -107,8 +110,15 @@ func (ds *DataSource) CreateDBIfNotExist() error {
 
 // Close closes the connection to the data source
 func (ds *DataSource) Close() {
+	logrus.WithFields(logrus.Fields{
+		"storage_name": ds.DBName(),
+	}).Print("closing db connection")
+
 	if err := ds.DB.Close(); err != nil {
-		logrus.Printf("could not close data source: %v", err)
+		logrus.WithFields(logrus.Fields{
+			"storage_name": ds.DBName(),
+			"err":          err.Error(),
+		}).Print("could not close")
 	}
 }
 
