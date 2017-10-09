@@ -87,9 +87,13 @@ func (s *Storage) AllQuestions() (questions []*Question, err error) {
 
 // Close closes the underlining DB connection
 func (s *Storage) Close() {
-	s.dataSource.Close()
-	if err := s.orm.Close(); err != nil {
-		logrus.Warnf("could not close orm: %v", err)
+	if s.dataSource != nil {
+		s.dataSource.Close()
+	}
+	if s.orm != nil {
+		if err := s.orm.Close(); err != nil {
+			logrus.Warnf("could not close orm: %v", err)
+		}
 	}
 }
 
