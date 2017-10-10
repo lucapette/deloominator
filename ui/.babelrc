@@ -1,5 +1,5 @@
 {
-  "presets": [["es2015", { "modules": false }], "react"],
+  "presets": [["env", { "modules": false }], "react"],
   "env": {
     "test": {
       "plugins": ["transform-class-properties", "transform-flow-strip-types", "transform-es2015-modules-commonjs"]
