@@ -16,7 +16,7 @@ build-api: embed ## Build the API server
 	go build cmd/deloominator.go
 
 build-ui: ## Build the UI
-	cd ui && yarn build
+	cd ui && npm run build
 
 build: build-ui build-api ## Build a dev version of deloominator
 
@@ -24,7 +24,7 @@ test-api: embed ## Run API tests
 	bin/run-test go test $(TEST_OPTIONS) -cover $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
 
 test-ui: ## Run UI tests
-	cd ui && yarn test
+	cd ui && npm run test
 
 test: test-api test-ui ## Run all the tests
 
@@ -39,7 +39,7 @@ run-api: build-api ## Run the API server
 	bin/run deloominator
 
 run-ui: ## Run the UI application
-	cd ui && yarn start
+	cd ui && npm run start
 
 # For now, it doesn't make sense to build the UI on travis as there
 # no tests that rely on that.

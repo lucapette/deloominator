@@ -21,7 +21,7 @@ list of prerequisites to build and test the project:
   - `make`
   - [Go 1.9+](http://golang.org/doc/install)
   - [Node.js](https://nodejs.org/en/)
-  - [Yarn](https://yarnpkg.com/en/)
+  - [npm](https://www.npmjs.com/)
 - Test:
   - [PostgreSQL](https://www.postgresql.org/)
   - [MySQL](https://www.mysql.com/)

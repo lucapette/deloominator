@@ -6,12 +6,11 @@ before_script:
    - cp bin/run-test{.travis,}
    - psql -c 'create database travis;' -U postgres
    - nvm install 8
-   - npm install -g yarn
    - npm install -g webpack
-   - cd ui && yarn install && cd ..
+   - cd ui && npm install && cd ..
 cache:
   directories:
-  - $HOME/.yarn-cache
+  - ui/node_modules
 services:
   - mysql
   - postgresql
