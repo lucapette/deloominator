@@ -1,7 +1,7 @@
 //@flow
 import React, { Component } from "react";
 import { gql, graphql } from "react-apollo";
-import { Button, Container, Message, Loader, Segment, Divider } from "semantic-ui-react";
+import { Button, Container, Message, Loader, Divider } from "semantic-ui-react";
 
 import Chart from "./Chart";
 import Table from "./Table";
@@ -90,26 +90,22 @@ class QueryResultContainer extends Component {
     if (query.chartName !== "UnknownChart") {
       return (
         <Container>
-          <Segment padded>
-            <Button.Group basic floated="right">
-              <Button onClick={this.exportPNG}>PNG</Button>
-              <Button onClick={this.exportCSV}>CSV</Button>
-            </Button.Group>
-            <Chart name={query.chartName} columns={query.columns} rows={query.rows} onNewView={this.onNewView} />
-            <Divider section horizontal>
-              Raw data
-            </Divider>
-            <Table columns={query.columns} rows={query.rows} />
-          </Segment>
+          <Chart name={query.chartName} columns={query.columns} rows={query.rows} onNewView={this.onNewView} />
+          <Button.Group basic>
+            <Button onClick={this.exportPNG}>PNG</Button>
+            <Button onClick={this.exportCSV}>CSV</Button>
+          </Button.Group>
+          <Divider section horizontal>
+            Raw data
+          </Divider>
+          <Table columns={query.columns} rows={query.rows} />
         </Container>
       );
     }
 
     return (
       <Container>
-        <Segment padded>
-          <Table columns={query.columns} rows={query.rows} />
-        </Segment>
+        <Table columns={query.columns} rows={query.rows} />
       </Container>
     );
   }

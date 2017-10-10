@@ -4,7 +4,7 @@ import { Container, Menu } from "semantic-ui-react";
 
 const NavMenu = () => {
   return (
-    <Menu>
+    <Menu pointing secondary>
       <Container>
         <NavLink exact to="/" className="item" activeClassName="active">
           Home
