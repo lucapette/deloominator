@@ -34,7 +34,7 @@ class PlaygroundPage extends Component {
     });
   };
 
-  handleQueryChange = (e, { value }) => {
+  handleQueryChange = value => {
     this.setState({ currentQuery: value });
   };
 
@@ -60,12 +60,13 @@ class PlaygroundPage extends Component {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              {this.state.showResult &&
+              {this.state.showResult && (
                 <QueryResult
                   handleQuerySuccess={this.handleQuerySuccess}
                   source={this.state.dataSource}
                   input={this.state.query}
-                />}
+                />
+              )}
             </Grid.Column>
           </Grid.Row>
         </div>

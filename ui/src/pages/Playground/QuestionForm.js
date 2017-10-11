@@ -5,6 +5,7 @@ import { gql, graphql } from "react-apollo";
 import { withRouter } from "react-router";
 import { Button, Form } from "semantic-ui-react";
 
+import Editor from "../../components/Editor";
 import routing from "../../helpers/routing";
 
 class QuestionFormContainer extends Component {
@@ -75,10 +76,13 @@ class QuestionFormContainer extends Component {
             disabled={!(selectedDataSource && currentQuery)}
             onClick={handleRunClick}
           />
-          {saveEnabled &&
-            <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={this.handleSave} />}
+          {saveEnabled && (
+            <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={this.handleSave} />
+          )}
         </Form.Group>
-        <Form.TextArea placeholder="Write your query here" value={currentQuery} onChange={handleQueryChange} />
+        <Form.Group>
+          <Editor code={currentQuery} onChange={handleQueryChange} />
+        </Form.Group>
       </Form>
     );
   }
