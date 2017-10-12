@@ -56,6 +56,13 @@ Variables are evaluated by `deloominator` right before query execution.
 Questions that contain variables come with additional UI elements to
 interactively control the value of variables before query execution.
 
+Here is an example for `{today}`:
+
+![today](/docs/img/today.png)
+
+Some query variables require user input (like `{start_date}`), those have a
+sensible default to get you started when writing a query.
+
 # Q&A
 
 The `Q&A` section presents the list of the questions users saved in
