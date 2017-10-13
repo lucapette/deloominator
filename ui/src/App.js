@@ -1,6 +1,14 @@
 //@flow
 import React, { Component } from "react";
-import { ApolloClient, ApolloProvider, createNetworkInterface, graphql, gql } from "react-apollo";
+import {
+  ApolloClient,
+  ApolloProvider,
+  createNetworkInterface,
+  graphql,
+  gql,
+  IntrospectionFragmentMatcher,
+} from "react-apollo";
+import {} from "react-apollo";
 import ReactDOM from "react-dom";
 import { Container, Menu, Grid, Loader } from "semantic-ui-react";
 
@@ -18,11 +26,26 @@ import Home from "./pages/Home";
 import Playground from "./pages/Playground";
 import Questions from "./pages/Questions";
 
+const fm = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData: {
+    __schema: {
+      types: [
+        {
+          kind: "UNION",
+          name: "QueryResult",
+          possibleTypes: [{ name: "queryError" }, { name: "results" }],
+        },
+      ],
+    },
+  },
+});
+
 const networkInterface = createNetworkInterface({
   uri: "http://localhost:3000/graphql",
 });
 
 const client = new ApolloClient({
+  fragmentMatcher: fm,
   networkInterface: networkInterface,
 });
 
