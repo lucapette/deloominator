@@ -9,10 +9,10 @@ import (
 	"github.com/tebeka/selenium/chrome"
 )
 
-// A little experiment in documentation automation The plan is to make it part
+// A little experiment in documentation automation. The plan is to make it part
 // of the build and automate screenshot creation. Right now, it is hard to run
-// and I would not consider it as an "official" part of deloominator as it is
-// not ready yet.
+// and it is not to be considered as an "official" part of deloominator code
+// base.
 
 func saveScreenshot(wd selenium.WebDriver, path string, filename string) {
 	if err := wd.Get("http://localhost:3000" + path); err != nil {

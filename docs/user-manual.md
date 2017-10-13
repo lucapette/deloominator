@@ -8,6 +8,7 @@ Each of the following document sections represents a section of the
 application. Each section has a corresponding menu item in the top navigation:
 
 - [Playground](#playground)
+  - [Editor](#editor)
 - [Q&A](#q&a)
 - [Dashboards](#dashboards)
 - [Reports](#reports)
@@ -35,10 +36,32 @@ Running a query in the playground has four possible outcomes:
 `deloominator` uses a simple [algorithm](/docs/charts.md#algorithm) to determine
 which graph to show.
 
-You can name your playground experiment and then hit the `save` button which
-will show you the saved `q&a`:
+You can give a name to your experiment and then hit the `save` button which will
+show you the saved `q&a`:
 
 ![save q&a](/docs/img/question.png)
+
+## Editor
+
+In `deloominator` editor, you can use _"query variables"_. A query variable is a
+word surrounded by `{` and `}`. By default, the following variables are
+predefined:
+
+- `{start_date}`
+- `{end_date}`
+- `{today}`
+- `{yesterday}`
+
+Variables are evaluated by `deloominator` right before query execution.
+Questions that contain variables come with additional UI elements to
+interactively control the value of variables before query execution.
+
+Here is an example for `{today}`:
+
+![today](/docs/img/today.png)
+
+Some query variables require user input (like `{start_date}`), those have a
+sensible default to get you started when writing a query.
 
 # Q&A
 
