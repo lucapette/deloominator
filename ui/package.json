@@ -18,7 +18,7 @@
     "codemirror": "^5.30.0",
     "css-loader": "^0.28.0",
     "file-loader": "^1.1.5",
-    "fixed-data-table-2": "^0.8.1",
+    "fixed-data-table-2": "^0.8.8",
     "flow-bin": "^0.46.0",
     "flow-typed": "^2.0.0",
     "flowtype-loader": "^0.2.2",
