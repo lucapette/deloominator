@@ -1,9 +1,9 @@
-import { kebabCase } from "lodash";
+import {kebabCase} from 'lodash';
 
 const routing = {
-  urlFor: (obj, keys = ["id"]) => {
+  urlFor: (obj, keys = ['id']) => {
     const values = keys.map(k => obj[k]);
-    return kebabCase(values.join("-"));
+    return kebabCase(values.join('-'));
   },
 };
 

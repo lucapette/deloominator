@@ -36,6 +36,7 @@ lint: embed ## Run all the linters
 	--enable=gofmt \
 	--enable=errcheck \
 	./...
+	cd ui && npm run prettier:check
 
 run-api: build-api ## Run the API server
 	bin/run deloominator

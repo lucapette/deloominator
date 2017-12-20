@@ -1,14 +1,14 @@
 //@flow
-import React, { Component } from "react";
-import { gql, graphql } from "react-apollo";
-import DocumentTitle from "react-document-title";
-import { Container, Message, Loader, Grid, Header } from "semantic-ui-react";
+import React, {Component} from 'react';
+import {gql, graphql} from 'react-apollo';
+import DocumentTitle from 'react-document-title';
+import {Container, Message, Loader, Grid, Header} from 'semantic-ui-react';
 
-import QueryResult from "../../components/QueryResult";
+import QueryResult from '../../components/QueryResult';
 
 class QuestionContainer extends Component {
   render() {
-    const { data: { loading, error, question } } = this.props;
+    const {data: {loading, error, question}} = this.props;
 
     if (loading) {
       return (
@@ -27,9 +27,7 @@ class QuestionContainer extends Component {
     return (
       <DocumentTitle title={question.title}>
         <Container>
-          <Header as="h1">
-            {question.title}
-          </Header>
+          <Header as="h1">{question.title}</Header>
           <Grid.Row>
             <Grid.Column>
               <QueryResult source={question.dataSource} input={question.query} />
@@ -53,7 +51,7 @@ const Query = gql`
 `;
 
 const Question = graphql(Query, {
-  options: ({ id }) => ({ variables: { id } }),
+  options: ({id}) => ({variables: {id}}),
 })(QuestionContainer);
 
 export default Question;

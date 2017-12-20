@@ -1,5 +1,5 @@
 //@flow
-import React, { Component } from "react";
+import React, {Component} from 'react';
 import {
   ApolloClient,
   ApolloProvider,
@@ -7,33 +7,33 @@ import {
   graphql,
   gql,
   IntrospectionFragmentMatcher,
-} from "react-apollo";
-import {} from "react-apollo";
-import ReactDOM from "react-dom";
-import { Container, Menu, Grid, Loader } from "semantic-ui-react";
+} from 'react-apollo';
+import {} from 'react-apollo';
+import ReactDOM from 'react-dom';
+import {Container, Menu, Grid, Loader} from 'semantic-ui-react';
 
-import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
+import {BrowserRouter as Router, Route, NavLink} from 'react-router-dom';
 
-import "semantic-ui-css/semantic.min.css";
-import "semantic-ui-css/semantic.min.js";
+import 'semantic-ui-css/semantic.min.css';
+import 'semantic-ui-css/semantic.min.js';
 
-import "./app.css";
+import './app.css';
 
-import NavMenu from "./layout/NavMenu";
-import Footer from "./layout/Footer";
+import NavMenu from './layout/NavMenu';
+import Footer from './layout/Footer';
 
-import Home from "./pages/Home";
-import Playground from "./pages/Playground";
-import Questions from "./pages/Questions";
+import Home from './pages/Home';
+import Playground from './pages/Playground';
+import Questions from './pages/Questions';
 
 const fm = new IntrospectionFragmentMatcher({
   introspectionQueryResultData: {
     __schema: {
       types: [
         {
-          kind: "UNION",
-          name: "QueryResult",
-          possibleTypes: [{ name: "queryError" }, { name: "results" }],
+          kind: 'UNION',
+          name: 'QueryResult',
+          possibleTypes: [{name: 'queryError'}, {name: 'results'}],
         },
       ],
     },
@@ -41,7 +41,7 @@ const fm = new IntrospectionFragmentMatcher({
 });
 
 const networkInterface = createNetworkInterface({
-  uri: "http://localhost:3000/graphql",
+  uri: 'http://localhost:3000/graphql',
 });
 
 const client = new ApolloClient({
@@ -57,7 +57,7 @@ const SettingsQuery = gql`
   }
 `;
 
-const App = graphql(SettingsQuery)(({ data: { loading, error, settings } }) => {
+const App = graphql(SettingsQuery)(({data: {loading, error, settings}}) => {
   if (loading) {
     return <Loader active />;
   }
@@ -81,11 +81,11 @@ const App = graphql(SettingsQuery)(({ data: { loading, error, settings } }) => {
   );
 });
 
-const mountNode = document.getElementById("root");
+const mountNode = document.getElementById('root');
 
 ReactDOM.render(
   <ApolloProvider client={client}>
     <App />
   </ApolloProvider>,
-  mountNode,
+  mountNode
 );

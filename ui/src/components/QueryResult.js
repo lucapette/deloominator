@@ -1,18 +1,18 @@
 //@flow
-import React, { Component } from "react";
-import { gql, graphql } from "react-apollo";
-import { Button, Container, Message, Loader, Divider } from "semantic-ui-react";
+import React, {Component} from 'react';
+import {gql, graphql} from 'react-apollo';
+import {Button, Container, Message, Loader, Divider} from 'semantic-ui-react';
 
-import Chart from "./Chart";
-import Table from "./Table";
+import Chart from './Chart';
+import Table from './Table';
 
 class QueryResultContainer extends Component {
   view: Object;
 
   componentWillUpdate(nextProps, nextState) {
-    const { data: { loading, error, query }, handleQuerySuccess } = nextProps;
+    const {data: {loading, error, query}, handleQuerySuccess} = nextProps;
     if (handleQuerySuccess) {
-      handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == "queryError"));
+      handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == 'queryError'));
     }
   }
 
@@ -22,13 +22,13 @@ class QueryResultContainer extends Component {
 
   exportCSV = (e: MouseEvent) => {
     e.preventDefault();
-    const { source, input } = this.props;
+    const {source, input} = this.props;
     console.log(this.props);
 
-    fetch("http://localhost:3000/export/csv", {
-      method: "POST",
+    fetch('http://localhost:3000/export/csv', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         Source: source,
@@ -38,9 +38,9 @@ class QueryResultContainer extends Component {
       .then(response => response.blob())
       .then(blob => {
         const url = window.URL.createObjectURL(blob);
-        let a = document.createElement("a");
+        let a = document.createElement('a');
         a.href = url;
-        a.download = "chart.csv";
+        a.download = 'chart.csv';
         a.click();
       });
   };
@@ -48,13 +48,13 @@ class QueryResultContainer extends Component {
   exportPNG = (e: MouseEvent) => {
     e.preventDefault();
     this.view
-      .toImageURL("png")
+      .toImageURL('png')
       .then(url => {
-        let link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("target", "_blank");
-        link.setAttribute("download", "chart.png");
-        link.dispatchEvent(new MouseEvent("click"));
+        let link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('target', '_blank');
+        link.setAttribute('download', 'chart.png');
+        link.dispatchEvent(new MouseEvent('click'));
       })
       .catch(function(error) {
         /* error handling */
@@ -62,7 +62,7 @@ class QueryResultContainer extends Component {
   };
 
   render() {
-    const { data: { loading, error, query }, handleQuerySuccess } = this.props;
+    const {data: {loading, error, query}, handleQuerySuccess} = this.props;
 
     if (loading) {
       return (
@@ -78,7 +78,7 @@ class QueryResultContainer extends Component {
       return <p>Error!</p>;
     }
 
-    if (query.__typename == "queryError") {
+    if (query.__typename == 'queryError') {
       return (
         <Message negative>
           <Message.Header>There is a problem with your query.</Message.Header>
@@ -87,7 +87,7 @@ class QueryResultContainer extends Component {
       );
     }
 
-    if (query.chartName !== "UnknownChart") {
+    if (query.chartName !== 'UnknownChart') {
       return (
         <Container>
           <Chart name={query.chartName} columns={query.columns} rows={query.rows} onNewView={this.onNewView} />
@@ -134,7 +134,7 @@ const Query = gql`
 `;
 
 const QueryResult = graphql(Query, {
-  options: ({ source, input }) => ({ variables: { source, input } }),
+  options: ({source, input}) => ({variables: {source, input}}),
 })(QueryResultContainer);
 
 export default QueryResult;

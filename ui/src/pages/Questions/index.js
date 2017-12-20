@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 
-import Question from "./Question";
-import QuestionList from "./QuestionList";
+import Question from './Question';
+import QuestionList from './QuestionList';
 
-const Questions = ({ settings, match }) => {
+const Questions = ({settings, match}) => {
   const question = match.params.question;
   if (question) {
-    const [id] = question.split("-");
+    const [id] = question.split('-');
 
     return <Question id={id} />;
   }

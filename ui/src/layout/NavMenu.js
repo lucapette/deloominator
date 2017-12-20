@@ -1,6 +1,6 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import { Container, Menu } from "semantic-ui-react";
+import React from 'react';
+import {NavLink} from 'react-router-dom';
+import {Container, Menu} from 'semantic-ui-react';
 
 const NavMenu = () => {
   return (
