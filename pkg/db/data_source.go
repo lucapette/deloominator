@@ -24,13 +24,27 @@ func NewDataSources(sources []string) (dataSources DataSources, err error) {
 	for _, source := range sources {
 		ds, err := NewDataSource(source)
 		if err != nil {
-			return nil, err
+			logrus.WithFields(logrus.Fields{
+				"source": source,
+				"err":    err.Error(),
+			}).Print("datasource not available")
+
+			continue
 		}
 		if err := ds.Ping(); err != nil {
-			return nil, err
+			logrus.WithFields(logrus.Fields{
+				"source": source,
+				"err":    err.Error(),
+			}).Print("datasource not available")
+
+			continue
 		}
 
 		dataSources[ds.DBName()] = ds
+	}
+
+	if len(dataSources) == 0 {
+		return dataSources, fmt.Errorf("no datasource available")
 	}
 
 	return dataSources, nil
