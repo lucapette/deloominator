@@ -9,11 +9,13 @@ import (
 	"strings"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/lucapette/deloominator/pkg/query"
 )
 
 type DataSource struct {
 	Dialect
 	*sql.DB
+	*query.Evaler
 }
 
 type DataSources map[string]*DataSource
@@ -71,7 +73,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 		return nil, err
 	}
 
-	return &DataSource{Dialect: dialect, DB: db}, nil
+	return &DataSource{Dialect: dialect, DB: db, Evaler: query.NewEvaler()}, nil
 }
 
 // Tables returns the names of the available tables in the data source
@@ -139,7 +141,12 @@ func (ds *DataSource) Close() {
 func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
 	// We use a prepare statement here so we can force MySQL binary protocol and
 	// get real types back. See: https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
-	statement, err := ds.DB.Prepare(input)
+	query, err := ds.Eval(input)
+	if err != nil {
+		return qr, err
+	}
+
+	statement, err := ds.DB.Prepare(query)
 	if err != nil {
 		return qr, err
 	}
