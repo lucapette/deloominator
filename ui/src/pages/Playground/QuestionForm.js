@@ -1,20 +1,20 @@
 //@flow
-import { sortBy } from "lodash";
-import React, { Component } from "react";
-import { gql, graphql } from "react-apollo";
-import { withRouter } from "react-router";
-import { Button, Form } from "semantic-ui-react";
+import {sortBy} from 'lodash';
+import React, {Component} from 'react';
+import {gql, graphql} from 'react-apollo';
+import {withRouter} from 'react-router';
+import {Button, Form} from 'semantic-ui-react';
 
-import Editor from "../../components/Editor";
-import routing from "../../helpers/routing";
+import Editor from '../../components/Editor';
+import routing from '../../helpers/routing';
 
 class QuestionFormContainer extends Component {
   state = {
-    title: "Untitled visualization",
+    title: 'Untitled visualization',
   };
 
   dataSourcesOptions = (dataSources: [string]) => {
-    return sortBy(dataSources || [], ["name"], ["asc"]).map(s => ({
+    return sortBy(dataSources || [], ['name'], ['asc']).map(s => ({
       name: s.name,
       text: s.name,
       value: s.name,
@@ -22,7 +22,7 @@ class QuestionFormContainer extends Component {
   };
 
   handleTitleChange = e => {
-    this.setState({ title: e.target.value });
+    this.setState({title: e.target.value});
   };
 
   handleSave = e => {
@@ -35,11 +35,11 @@ class QuestionFormContainer extends Component {
           dataSource: this.props.selectedDataSource,
         },
       })
-      .then(({ data: { saveQuestion } }) => {
-        const questionPath = routing.urlFor(saveQuestion, ["id", "title"]);
+      .then(({data: {saveQuestion}}) => {
+        const questionPath = routing.urlFor(saveQuestion, ['id', 'title']);
         this.props.history.push(`/questions/${questionPath}`);
       })
-      .catch(({ error }) => {
+      .catch(({error}) => {
         console.log(error);
       });
   };

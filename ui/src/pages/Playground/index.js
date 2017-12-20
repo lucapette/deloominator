@@ -1,28 +1,28 @@
 //@flow
-import React, { Component } from "react";
-import { gql, graphql } from "react-apollo";
-import DocumentTitle from "react-document-title";
-import { Grid } from "semantic-ui-react";
+import React, {Component} from 'react';
+import {gql, graphql} from 'react-apollo';
+import DocumentTitle from 'react-document-title';
+import {Grid} from 'semantic-ui-react';
 
-import QueryResult from "../../components/QueryResult";
-import QuestionForm from "./QuestionForm";
+import QueryResult from '../../components/QueryResult';
+import QuestionForm from './QuestionForm';
 
 class PlaygroundPage extends Component {
   state = {
-    selectedDataSource: "",
-    currentQuery: "",
-    dataSource: "",
-    query: "",
+    selectedDataSource: '',
+    currentQuery: '',
+    dataSource: '',
+    query: '',
     showResult: false,
     querySuccess: false,
   };
 
   handleQuerySuccess = value => {
-    this.setState({ querySuccess: value });
+    this.setState({querySuccess: value});
   };
 
-  handleDataSourcesChange = (e, { value }) => {
-    this.setState({ selectedDataSource: value });
+  handleDataSourcesChange = (e, {value}) => {
+    this.setState({selectedDataSource: value});
   };
 
   handleRunClick = e => {
@@ -35,11 +35,11 @@ class PlaygroundPage extends Component {
   };
 
   handleQueryChange = value => {
-    this.setState({ currentQuery: value });
+    this.setState({currentQuery: value});
   };
 
   render() {
-    const { settings } = this.props;
+    const {settings} = this.props;
 
     return (
       <DocumentTitle title="Playground">

@@ -22,6 +22,7 @@
     "flow-bin": "^0.46.0",
     "flow-typed": "^2.0.0",
     "flowtype-loader": "^0.2.2",
+    "prettier": "^1.9.2",
     "react": "^16.2.0",
     "react-apollo": "^1.0.0",
     "react-codemirror": "^1.0.0",
@@ -45,7 +46,9 @@
     "build": "webpack --progress -p --config webpack.config.js",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "prettier:write": "node ./scripts/prettier.js write",
+    "prettier:check": "node ./scripts/prettier.js"
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.0",

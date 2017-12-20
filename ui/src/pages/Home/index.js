@@ -1,6 +1,6 @@
 //@flow
-import React, { Component } from "react";
-import DocumentTitle from "react-document-title";
+import React, {Component} from 'react';
+import DocumentTitle from 'react-document-title';
 
 export default class Home extends Component {
   render() {

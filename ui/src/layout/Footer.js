@@ -1,7 +1,7 @@
-import React from "react";
-import { Container, Segment, List, Message, Divider } from "semantic-ui-react";
+import React from 'react';
+import {Container, Segment, List, Message, Divider} from 'semantic-ui-react';
 
-const Footer = ({ settings }) => {
+const Footer = ({settings}) => {
   return (
     <div className="footer">
       <Segment attached>
