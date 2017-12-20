@@ -6,12 +6,14 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/felixge/httpsnoop"
+	"github.com/gobuffalo/packr"
 	"goji.io/pat"
 )
+
+var box = packr.NewBox("../../ui/dist")
 
 func debugHandler(inner http.Handler) http.Handler {
 	mw := func(w http.ResponseWriter, r *http.Request) {
@@ -59,18 +61,11 @@ func logHandler(inner http.Handler) http.Handler {
 }
 
 func uiHandler(w http.ResponseWriter, r *http.Request) {
-	asset, err := Asset("ui/dist/index.html")
-
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"path":   r.URL.Path,
-			"method": r.Method,
-		}).Printf("cannot load index: %v", err)
-	}
+	asset := box.Bytes("index.html")
 
 	w.Header().Set("Content-Type", "text/html")
 
-	if _, err = w.Write(asset); err != nil {
+	if _, err := w.Write(asset); err != nil {
 		logrus.WithFields(logrus.Fields{
 			"path":   r.URL.Path,
 			"method": r.Method,
@@ -82,13 +77,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	name := pat.Param(r, "name")
 	ext := pat.Param(r, "ext")
 
-	asset, err := Asset(strings.Join([]string{"ui", "dist", fmt.Sprintf("%s.%s", name, ext)}, "/"))
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"path":   r.URL.Path,
-			"method": r.Method,
-		}).Printf("cannot get asset: %v", err)
-	}
+	asset := box.Bytes(fmt.Sprintf("%s.%s", name, ext))
 
 	switch ext {
 	case "js":
@@ -97,7 +86,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 	}
 
-	if _, err = w.Write(asset); err != nil {
+	if _, err := w.Write(asset); err != nil {
 		logrus.WithFields(logrus.Fields{
 			"path":   r.URL.Path,
 			"method": r.Method,
