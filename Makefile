@@ -5,14 +5,13 @@ TEST_OPTIONS?=
 setup: ## Install all the build and lint dependencies
 	go get -u --insecure github.com/golang/dep/cmd/dep
 	go get -u golang.org/x/tools/cmd/stringer
-	go get -u github.com/jteeuwen/go-bindata/...
+	go get -u github.com/gobuffalo/packr/...
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
 	dep ensure
 
 embed:
-	go-bindata -o pkg/api/static.go -pkg api ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
-	gofmt -s -w pkg/api/static.go
+	packr
 
 build-api: embed ## Build the API server
 	go build cmd/deloominator.go

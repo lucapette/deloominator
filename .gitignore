@@ -6,5 +6,6 @@ pkg/api/static.go
 ui/dist/App.js
 ui/dist/App.js.map
 pkg/db/migrations.go
+pkg/api/api-packr.go
 .vscode
 dist/
