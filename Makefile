@@ -31,6 +31,7 @@ test: test-api test-ui ## Run all the tests
 
 lint: embed ## Run all the linters
 	gometalinter --vendor --disable-all \
+	-e packr \
 	--enable=vet \
 	--enable=gofmt \
 	--enable=errcheck \
