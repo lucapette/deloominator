@@ -18,14 +18,23 @@ func endOfDay() time.Time {
 	return now.Truncate(time.Hour).Add(d).Add(24*time.Hour - time.Nanosecond)
 }
 
+var defaults = Variables{
+	"{timestamp}": endOfDay().Format(time.RFC3339),
+	"{today}":     endOfDay().Format(time.RFC3339),
+	"{yesterday}": endOfDay().Add(-24*time.Hour - time.Nanosecond).Format(time.RFC3339),
+}
+
 // NewEvaler returns an empty query variables map
-func NewEvaler() *Evaler {
-	return &Evaler{
-		Variables: Variables{
-			"{today}":     endOfDay().Format(time.RFC3339),
-			"{yesterday}": endOfDay().Add(-24*time.Hour - time.Nanosecond).Format(time.RFC3339),
-		},
+func NewEvaler(vars Variables) *Evaler {
+	merged := make(Variables, len(defaults))
+	for k, v := range defaults {
+		merged[k] = v
 	}
+
+	for k, v := range vars {
+		merged[k] = v
+	}
+	return &Evaler{Variables: merged}
 }
 
 // Eval takes a query and evaluates it using vars

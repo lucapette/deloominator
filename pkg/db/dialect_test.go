@@ -53,7 +53,7 @@ func TestDialectsQuery(t *testing.T) {
 		t.Run(dataSource.DriverName(), func(t *testing.T) {
 			testutil.LoadData(t, dataSource, "film", expected)
 
-			actual, err := dataSource.Query("select film_id, title, rental_rate, last_update from film")
+			actual, err := dataSource.Query(db.Input{Query: "select film_id, title, rental_rate, last_update from film"})
 			if err != nil {
 				t.Fatalf("could not query %s: %v", dataSource.DBName(), err)
 			}

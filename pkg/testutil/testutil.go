@@ -177,7 +177,7 @@ func LoadData(t *testing.T, ds *db.DataSource, table string, data db.QueryResult
 		strings.Join(rows, ","),
 	)
 
-	if _, err := ds.Query(query.String()); err != nil {
+	if _, err := ds.Query(db.Input{Query: query.String()}); err != nil {
 		t.Fatalf("could not execute query %s on db %s: %v", query.String(), ds.DBName(), err)
 	}
 }

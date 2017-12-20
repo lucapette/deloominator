@@ -43,7 +43,7 @@ func exportHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *ht
 			return
 		}
 
-		qr, err := dataSources[payload.Source].Query(payload.Query)
+		qr, err := dataSources[payload.Source].Query(db.Input{Query: payload.Query})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
