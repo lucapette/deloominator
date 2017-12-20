@@ -13,10 +13,11 @@ const Footer = ({ settings }) => {
           </List>
         </Container>
       </Segment>
-      {settings.isReadOnly &&
+      {settings.isReadOnly && (
         <Message attached="bottom" color="orange" className="read-only">
           <p>Running in read-only mode. Learn more here!</p>
-        </Message>}
+        </Message>
+      )}
     </div>
   );
 };

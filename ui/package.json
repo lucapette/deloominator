@@ -22,11 +22,11 @@
     "flow-bin": "^0.46.0",
     "flow-typed": "^2.0.0",
     "flowtype-loader": "^0.2.2",
-    "react": "^16.0.0",
+    "react": "^16.2.0",
     "react-apollo": "^1.0.0",
     "react-codemirror": "^1.0.0",
     "react-document-title": "^2.0.2",
-    "react-dom": "^16.0.0",
+    "react-dom": "^16.2.0",
     "react-router-dom": "^4.0.0",
     "react-vega": "^3.1.1",
     "react-vega-lite": "^1.0.1",
@@ -41,7 +41,7 @@
     "webpack-dev-server": "^2.6.1"
   },
   "scripts": {
-    "start": "webpack-dev-server --progress",
+    "start": "webpack-dev-server --progress --port 8080",
     "build": "webpack --progress -p --config webpack.config.js",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "jest",
