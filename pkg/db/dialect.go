@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"net/url"
 	"strconv"
 	"time"
@@ -23,9 +24,9 @@ func NewDialect(u *url.URL) (Dialect, error) {
 		return NewPostgresDialect(u)
 	case "mysql":
 		return NewMySQLDialect(u)
+	default:
+		return nil, fmt.Errorf("unknown scheme")
 	}
-
-	return nil, nil
 }
 
 func inferType(value string) Type {
