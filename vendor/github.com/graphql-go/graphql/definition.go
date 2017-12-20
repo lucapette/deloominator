@@ -1,12 +1,12 @@
 package graphql
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"regexp"
 
 	"github.com/graphql-go/graphql/language/ast"
-	"golang.org/x/net/context"
 )
 
 // Type interface for all of the possible kinds of GraphQL types
@@ -120,6 +120,9 @@ var _ Output = (*NonNull)(nil)
 // Composite interface for types that may describe the parent context of a selection set.
 type Composite interface {
 	Name() string
+	Description() string
+	String() string
+	Error() error
 }
 
 var _ Composite = (*Object)(nil)
@@ -395,6 +398,7 @@ type ObjectConfig struct {
 	IsTypeOf    IsTypeOfFn  `json:"isTypeOf"`
 	Description string      `json:"description"`
 }
+
 type FieldsThunk func() Fields
 
 func NewObject(config ObjectConfig) *Object {
@@ -503,19 +507,26 @@ func defineInterfaces(ttype *Object, interfaces []*Interface) ([]*Interface, err
 	return ifaces, nil
 }
 
-func defineFieldMap(ttype Named, fields Fields) (FieldDefinitionMap, error) {
+func defineFieldMap(ttype Named, fields interface{}) (FieldDefinitionMap, error) {
+	var fieldMap Fields
+	switch fields.(type) {
+	case Fields:
+		fieldMap = fields.(Fields)
+	case FieldsThunk:
+		fieldMap = fields.(FieldsThunk)()
+	}
 
 	resultFieldMap := FieldDefinitionMap{}
 
 	err := invariant(
-		len(fields) > 0,
+		len(fieldMap) > 0,
 		fmt.Sprintf(`%v fields must be an object with field names as keys or a function which return such an object.`, ttype),
 	)
 	if err != nil {
 		return resultFieldMap, err
 	}
 
-	for fieldName, field := range fields {
+	for fieldName, field := range fieldMap {
 		if field == nil {
 			continue
 		}
@@ -985,17 +996,27 @@ func (gt *Enum) Values() []*EnumValueDefinition {
 	return gt.values
 }
 func (gt *Enum) Serialize(value interface{}) interface{} {
-	if enumValue, ok := gt.getValueLookup()[value]; ok {
+	v := value
+	if reflect.ValueOf(v).Kind() == reflect.Ptr {
+		v = reflect.Indirect(reflect.ValueOf(v)).Interface()
+	}
+	if enumValue, ok := gt.getValueLookup()[v]; ok {
 		return enumValue.Name
 	}
 	return nil
 }
 func (gt *Enum) ParseValue(value interface{}) interface{} {
-	valueStr, ok := value.(string)
-	if !ok {
+	var v string
+
+	switch value := value.(type) {
+	case string:
+		v = value
+	case *string:
+		v = *value
+	default:
 		return nil
 	}
-	if enumValue, ok := gt.getNameLookup()[valueStr]; ok {
+	if enumValue, ok := gt.getNameLookup()[v]; ok {
 		return enumValue.Value
 	}
 	return nil
@@ -1067,8 +1088,8 @@ type InputObject struct {
 
 	typeConfig InputObjectConfig
 	fields     InputObjectFieldMap
-
-	err error
+	init       bool
+	err        error
 }
 type InputObjectFieldConfig struct {
 	Type         Input       `json:"type"`
@@ -1116,7 +1137,7 @@ func NewInputObject(config InputObjectConfig) *InputObject {
 	gt.PrivateName = config.Name
 	gt.PrivateDescription = config.Description
 	gt.typeConfig = config
-	gt.fields = gt.defineFieldMap()
+	//gt.fields = gt.defineFieldMap()
 	return gt
 }
 
@@ -1162,9 +1183,14 @@ func (gt *InputObject) defineFieldMap() InputObjectFieldMap {
 		field.DefaultValue = fieldConfig.DefaultValue
 		resultFieldMap[fieldName] = field
 	}
+	gt.init = true
 	return resultFieldMap
 }
+
 func (gt *InputObject) Fields() InputObjectFieldMap {
+	if !gt.init {
+		gt.fields = gt.defineFieldMap()
+	}
 	return gt.fields
 }
 func (gt *InputObject) Name() string {
@@ -1249,8 +1275,7 @@ func (gl *List) Error() error {
 //
 // Note: the enforcement of non-nullability occurs within the executor.
 type NonNull struct {
-	PrivateName string `json:"name"` // added to conform with introspection for NonNull.Name = nil
-	OfType      Type   `json:"ofType"`
+	OfType Type `json:"ofType"`
 
 	err error
 }

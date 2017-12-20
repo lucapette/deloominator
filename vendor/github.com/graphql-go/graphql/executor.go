@@ -1,6 +1,7 @@
 package graphql
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/graphql-go/graphql/language/ast"
-	"golang.org/x/net/context"
 )
 
 type ExecuteParams struct {
@@ -24,40 +24,72 @@ type ExecuteParams struct {
 }
 
 func Execute(p ExecuteParams) (result *Result) {
-	result = &Result{}
-
-	exeContext, err := buildExecutionContext(BuildExecutionCtxParams{
-		Schema:        p.Schema,
-		Root:          p.Root,
-		AST:           p.AST,
-		OperationName: p.OperationName,
-		Args:          p.Args,
-		Errors:        nil,
-		Result:        result,
-		Context:       p.Context,
-	})
-
-	if err != nil {
-		result.Errors = append(result.Errors, gqlerrors.FormatError(err))
-		return
+	// Use background context if no context was provided
+	ctx := p.Context
+	if ctx == nil {
+		ctx = context.Background()
 	}
 
-	defer func() {
-		if r := recover(); r != nil {
-			var err error
-			if r, ok := r.(error); ok {
-				err = gqlerrors.FormatError(r)
-			}
-			exeContext.Errors = append(exeContext.Errors, gqlerrors.FormatError(err))
-			result.Errors = exeContext.Errors
-		}
-	}()
+	resultChannel := make(chan *Result)
 
-	return executeOperation(ExecuteOperationParams{
-		ExecutionContext: exeContext,
-		Root:             p.Root,
-		Operation:        exeContext.Operation,
-	})
+	go func(out chan<- *Result, done <-chan struct{}) {
+		result := &Result{}
+
+		exeContext, err := buildExecutionContext(BuildExecutionCtxParams{
+			Schema:        p.Schema,
+			Root:          p.Root,
+			AST:           p.AST,
+			OperationName: p.OperationName,
+			Args:          p.Args,
+			Errors:        nil,
+			Result:        result,
+			Context:       p.Context,
+		})
+
+		if err != nil {
+			result.Errors = append(result.Errors, gqlerrors.FormatError(err))
+			select {
+			case out <- result:
+			case <-done:
+			}
+			return
+		}
+
+		defer func() {
+			if r := recover(); r != nil {
+				var err error
+				if r, ok := r.(error); ok {
+					err = gqlerrors.FormatError(r)
+				}
+				exeContext.Errors = append(exeContext.Errors, gqlerrors.FormatError(err))
+				result.Errors = exeContext.Errors
+				select {
+				case out <- result:
+				case <-done:
+				}
+			}
+		}()
+
+		result = executeOperation(ExecuteOperationParams{
+			ExecutionContext: exeContext,
+			Root:             p.Root,
+			Operation:        exeContext.Operation,
+		})
+		select {
+		case out <- result:
+		case <-done:
+		}
+
+	}(resultChannel, ctx.Done())
+
+	select {
+	case <-ctx.Done():
+		result = &Result{}
+		result.Errors = append(result.Errors, gqlerrors.FormatError(ctx.Err()))
+	case r := <-resultChannel:
+		result = r
+	}
+	return
 }
 
 type BuildExecutionCtxParams struct {
@@ -515,7 +547,7 @@ func resolveField(eCtx *ExecutionContext, parentType *Object, source interface{}
 	returnType = fieldDef.Type
 	resolveFn := fieldDef.Resolve
 	if resolveFn == nil {
-		resolveFn = defaultResolveFn
+		resolveFn = DefaultResolveFn
 	}
 
 	// Build a map of arguments from the field.arguments AST, using the
@@ -664,7 +696,9 @@ func completeAbstractValue(eCtx *ExecutionContext, returnType Abstract, fieldAST
 	}
 
 	err := invariant(runtimeType != nil,
-		fmt.Sprintf(`Could not determine runtime type of value "%v" for field %v.%v.`, result, info.ParentType, info.FieldName),
+		fmt.Sprintf(`Abstract type %v must resolve to an Object type at runtime `+
+			`for field %v.%v with value "%v", received "%v".`,
+			returnType, info.ParentType, info.FieldName, result, runtimeType),
 	)
 	if err != nil {
 		panic(err)
@@ -790,7 +824,7 @@ func defaultResolveTypeFn(p ResolveTypeParams, abstractType Abstract) *Object {
 // which takes the property of the source object of the same name as the field
 // and returns it as the result, or if it's a function, returns the result
 // of calling that function.
-func defaultResolveFn(p ResolveParams) (interface{}, error) {
+func DefaultResolveFn(p ResolveParams) (interface{}, error) {
 	// try to resolve p.Source as a struct first
 	sourceVal := reflect.ValueOf(p.Source)
 	if sourceVal.IsValid() && sourceVal.Type().Kind() == reflect.Ptr {

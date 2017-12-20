@@ -317,17 +317,38 @@ func isValidInputValue(value interface{}, ttype Input) (bool, []string) {
 
 // Returns true if a value is null, undefined, or NaN.
 func isNullish(value interface{}) bool {
-	if value, ok := value.(string); ok {
-		return value == ""
+	if value, ok := value.(*string); ok {
+		if value == nil {
+			return true
+		}
+		return *value == ""
 	}
 	if value, ok := value.(int); ok {
 		return math.IsNaN(float64(value))
 	}
+	if value, ok := value.(*int); ok {
+		if value == nil {
+			return true
+		}
+		return math.IsNaN(float64(*value))
+	}
 	if value, ok := value.(float32); ok {
 		return math.IsNaN(float64(value))
 	}
+	if value, ok := value.(*float32); ok {
+		if value == nil {
+			return true
+		}
+		return math.IsNaN(float64(*value))
+	}
 	if value, ok := value.(float64); ok {
 		return math.IsNaN(value)
+	}
+	if value, ok := value.(*float64); ok {
+		if value == nil {
+			return true
+		}
+		return math.IsNaN(*value)
 	}
 	return value == nil
 }
@@ -407,10 +428,14 @@ func valueFromAST(valueAST ast.Value, ttype Input, variables map[string]interfac
 		obj := map[string]interface{}{}
 		for fieldName, field := range ttype.Fields() {
 			fieldAST, ok := fieldASTs[fieldName]
+			fieldValue := field.DefaultValue
 			if !ok || fieldAST == nil {
-				continue
+				if fieldValue == nil {
+					continue
+				}
+			} else {
+				fieldValue = valueFromAST(fieldAST.Value, field.Type, variables)
 			}
-			fieldValue := valueFromAST(fieldAST.Value, field.Type, variables)
 			if isNullish(fieldValue) {
 				fieldValue = field.DefaultValue
 			}

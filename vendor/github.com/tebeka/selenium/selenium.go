@@ -8,9 +8,6 @@ import (
 	"github.com/tebeka/selenium/log"
 )
 
-// Version specifies the semantic version (SemVer) of this driver.
-const Version = "0.9.3"
-
 // TODO(minusnine): make an enum type called FindMethod.
 
 // Methods by which to find elements.
@@ -138,7 +135,7 @@ type Proxy struct {
 	// The following are used when Type is set to Manual.
 	//
 	// Note that in Firefox, connections to localhost are not proxied by default,
-	// even if a proxy is set. This can be overrided via a preference setting.
+	// even if a proxy is set. This can be overridden via a preference setting.
 	FTP           string `json:"ftpProxy,omitempty"`
 	HTTP          string `json:"httpProxy,omitempty"`
 	SSL           string `json:"sslProxy,omitempty"`
@@ -358,6 +355,15 @@ type WebDriver interface {
 	// ExecuteScriptAsyncRaw asynchronously executes a script but does not
 	// perform JSON decoding.
 	ExecuteScriptAsyncRaw(script string, args []interface{}) ([]byte, error)
+
+	// WaitWithTimeoutAndInterval waits for the condition to evaluate to true.
+	WaitWithTimeoutAndInterval(condition Condition, timeout, interval time.Duration) error
+
+	// WaitWithTimeout works like WaitWithTimeoutAndInterval, but with default polling interval.
+	WaitWithTimeout(condition Condition, timeout time.Duration) error
+
+	//Wait works like WaitWithTimeoutAndInterval, but using the default timeout and polling interval.
+	Wait(condition Condition) error
 }
 
 // WebElement defines method supported by web elements.

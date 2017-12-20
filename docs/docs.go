@@ -38,7 +38,7 @@ func saveScreenshot(wd selenium.WebDriver, path string, filename string) {
 func main() {
 	chromeOptions := chrome.Capabilities{
 		MobileEmulation: &chrome.MobileEmulation{
-			DeviceMetrics: chrome.DeviceMetrics{Width: 1200, Height: 1400},
+			DeviceMetrics: &chrome.DeviceMetrics{Width: 1200, Height: 1400},
 		},
 	}
 	capabilities := selenium.Capabilities{

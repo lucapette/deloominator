@@ -93,19 +93,21 @@ Using Geckodriver without Selenium usually has the above known issues as well.
 
 ### ChromeDriver
 
-1. ChromeDriver has not yet implemented the nascent W3C standard. So far, this
-	 only means that `GetCookie` is not available for Chrome.
-
-### HTMLUnit
-
-1. [Enabling Javscript support in HTMLUnit using Selenium WebDriver 3.4 seems
-   broken](https://github.com/tebeka/selenium/issues/61), with the root cause
-   not yet diagnosed.
+1. Various [window-related commands are failing with
+	 v62+](https://bugs.chromium.org/p/chromedriver/issues/detail?id=1918).
+2. GetCookies can [return an incorrect expiration date in
+	 v62+](https://bugs.chromium.org/p/chromedriver/issues/detail?id=1949).
+3. DeleteCookie [doesn't work in
+	 v62+](https://bugs.chromium.org/p/chromedriver/issues/detail?id=1950).
 
 ## Breaking Changes
 
 There are a number of upcoming changes that break backward compatibility in an
 effort to improve and adapt the existing API. They are listed here:
+
+### 22 August 2017
+
+The `Version` constant was removed as it is unused.
 
 ### 18 April 2017
 
@@ -115,9 +117,15 @@ a more idiomatic type.
 
 ## Hacking
 
-Patches are encouraged through GitHub pull requests. Please ensure that a test
-is added for anything more than a trivial change and that the existing tests
-pass.
+Patches are encouraged through GitHub pull requests. Please ensure that: 
+
+1. A test is added for anything more than a trivial change and that the
+   existing tests pass. See below for instructions on setting up your test
+   environment.
+2. Please ensure that gofmt has been run on the changed files before
+   committing. Install a pre-commit hook with the following command:
+
+       $ ln -s ../../misc/git/pre-commit .git/hooks/pre-commit
 
 See [the issue tracker][issues] for features that need implementing.
 
@@ -135,9 +143,6 @@ WebDriver JARs:
 You only have to do this once initially and later when version numbers in
 init.go change.
 
-Ensure that the `chromium` binary is in your path. If the binary is named
-differently, run the tests with the flags `--chrome_binary=<binary name>`.
-
 ### Testing Locally
 
 Run the tests:
@@ -147,15 +152,13 @@ Run the tests:
 * There is one top-level test for each of:
     1. Chromium and ChromeDriver.
     2. A new version of Firefox and Selenium 3.
-    3. An old version of Firefox and Selenium 2.
-    4. HTMLUnit, a Java-based lightweight headless browser implementation.
-    5. A new version of Firefox directly against Geckodriver.
+    3. HTMLUnit, a Java-based lightweight headless browser implementation.
+    4. A new version of Firefox directly against Geckodriver.
     
   There are subtests that are shared between both top-level tests.
 
 * To run only one of the top-level tests, pass one of:
 
-    * `-test.run=TestFirefoxSelenium2`
     * `-test.run=TestFirefoxSelenium3`,
     * `-test.run=TestFirefoxGeckoDriver`,
     * `-test.run=TestHTMLUnit`, or
@@ -191,6 +194,18 @@ For debugging Docker directly, run the following commands:
 
     $ docker build -t go-selenium testing/
     $ docker run --volume=${GOPATH?}:/code --workdir=/code/src/github.com/tebeka/selenium -it go-selenium bash
+
+### Testing With Sauce Labs
+
+Tests can be run using a browser located in the cloud via Sauce Labs.
+
+To run the tests under Sauce, run:
+
+    $ go test --test.run=TestSauce --experimental_enable_sauce \
+      --sauce_user_name=minusnine --sauce_access_key=[access key goes here]
+
+Test results can be viewed through the [Sauce Labs
+Dashboard](https://saucelabs.com/beta/dashboard/tests).
 
 ## License
 

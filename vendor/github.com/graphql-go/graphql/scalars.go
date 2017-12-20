@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"time"
 
 	"github.com/graphql-go/graphql/language/ast"
 )
@@ -25,52 +26,78 @@ func coerceInt(value interface{}) interface{} {
 			return nil
 		}
 		return value
+	case *int:
+		return coerceInt(*value)
 	case int8:
 		return int(value)
+	case *int8:
+		return int(*value)
 	case int16:
 		return int(value)
+	case *int16:
+		return int(*value)
 	case int32:
 		return int(value)
+	case *int32:
+		return int(*value)
 	case int64:
 		if value < int64(math.MinInt32) || value > int64(math.MaxInt32) {
 			return nil
 		}
 		return int(value)
+	case *int64:
+		return coerceInt(*value)
 	case uint:
 		if value > math.MaxInt32 {
 			return nil
 		}
 		return int(value)
+	case *uint:
+		return coerceInt(*value)
 	case uint8:
 		return int(value)
+	case *uint8:
+		return int(*value)
 	case uint16:
 		return int(value)
+	case *uint16:
+		return int(*value)
 	case uint32:
 		if value > uint32(math.MaxInt32) {
 			return nil
 		}
 		return int(value)
+	case *uint32:
+		return coerceInt(*value)
 	case uint64:
 		if value > uint64(math.MaxInt32) {
 			return nil
 		}
 		return int(value)
+	case *uint64:
+		return coerceInt(*value)
 	case float32:
 		if value < float32(math.MinInt32) || value > float32(math.MaxInt32) {
 			return nil
 		}
 		return int(value)
+	case *float32:
+		return coerceInt(*value)
 	case float64:
 		if value < float64(math.MinInt32) || value > float64(math.MaxInt32) {
 			return nil
 		}
 		return int(value)
+	case *float64:
+		return coerceInt(*value)
 	case string:
 		val, err := strconv.ParseFloat(value, 0)
 		if err != nil {
 			return nil
 		}
 		return coerceInt(val)
+	case *string:
+		return coerceInt(*value)
 	}
 
 	// If the value cannot be transformed into an int, return nil instead of '0'
@@ -103,18 +130,28 @@ func coerceFloat(value interface{}) interface{} {
 			return 1.0
 		}
 		return 0.0
+	case *bool:
+		return coerceFloat(*value)
 	case int:
 		return float64(value)
+	case *int32:
+		return coerceFloat(*value)
 	case float32:
 		return value
+	case *float32:
+		return coerceFloat(*value)
 	case float64:
 		return value
+	case *float64:
+		return coerceFloat(*value)
 	case string:
 		val, err := strconv.ParseFloat(value, 0)
 		if err != nil {
 			return nil
 		}
 		return val
+	case *string:
+		return coerceFloat(*value)
 	}
 	return 0.0
 }
@@ -143,6 +180,9 @@ var Float = NewScalar(ScalarConfig{
 })
 
 func coerceString(value interface{}) interface{} {
+	if v, ok := value.(*string); ok {
+		return *v
+	}
 	return fmt.Sprintf("%v", value)
 }
 
@@ -167,27 +207,37 @@ func coerceBool(value interface{}) interface{} {
 	switch value := value.(type) {
 	case bool:
 		return value
+	case *bool:
+		return *value
 	case string:
 		switch value {
 		case "", "false":
 			return false
 		}
 		return true
+	case *string:
+		return coerceBool(*value)
 	case float64:
 		if value != 0 {
 			return true
 		}
 		return false
+	case *float64:
+		return coerceBool(*value)
 	case float32:
 		if value != 0 {
 			return true
 		}
 		return false
+	case *float32:
+		return coerceBool(*value)
 	case int:
 		if value != 0 {
 			return true
 		}
 		return false
+	case *int:
+		return coerceBool(*value)
 	}
 	return false
 }
@@ -221,6 +271,56 @@ var ID = NewScalar(ScalarConfig{
 		switch valueAST := valueAST.(type) {
 		case *ast.IntValue:
 			return valueAST.Value
+		case *ast.StringValue:
+			return valueAST.Value
+		}
+		return nil
+	},
+})
+
+func serializeDateTime(value interface{}) interface{} {
+	switch value := value.(type) {
+	case time.Time:
+		buff, err := value.MarshalText()
+		if err != nil {
+			return nil
+		}
+
+		return string(buff)
+	case *time.Time:
+		return serializeDateTime(*value)
+	default:
+		return nil
+	}
+}
+
+func unserializeDateTime(value interface{}) interface{} {
+	switch value := value.(type) {
+	case []byte:
+		t := time.Time{}
+		err := t.UnmarshalText(value)
+		if err != nil {
+			return nil
+		}
+
+		return t
+	case string:
+		return unserializeDateTime([]byte(value))
+	case *string:
+		return unserializeDateTime([]byte(*value))
+	default:
+		return nil
+	}
+}
+
+var DateTime = NewScalar(ScalarConfig{
+	Name: "DateTime",
+	Description: "The `DateTime` scalar type represents a DateTime." +
+		" The DateTime is serialized as an RFC 3339 quoted string",
+	Serialize:  serializeDateTime,
+	ParseValue: unserializeDateTime,
+	ParseLiteral: func(valueAST ast.Value) interface{} {
+		switch valueAST := valueAST.(type) {
 		case *ast.StringValue:
 			return valueAST.Value
 		}

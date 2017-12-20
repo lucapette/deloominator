@@ -62,7 +62,7 @@ For more complex examples, refer to the [examples/](https://github.com/graphql-g
 
 ### Origin and Current Direction
 
-This project was originally a port of [v0.4.3](https://github.com/graphql/graphql-js/releases/tag/v0.4.3) of [graphql-js](https://github.com/graphql/graphql-js) (excluding the Validator), which was based on the July 2015 GraphQL specification. `graphql` is currently several versions behind `graphql-js`, however future efforts will be guided directly by the [latest formal GraphQL specification](https://github.com/facebook/graphql/releases) (currently: [October 2015](https://github.com/facebook/graphql/releases/tag/October2015)).
+This project was originally a port of [v0.4.3](https://github.com/graphql/graphql-js/releases/tag/v0.4.3) of [graphql-js](https://github.com/graphql/graphql-js) (excluding the Validator), which was based on the July 2015 GraphQL specification. `graphql-go` is currently on [v0.6.0](https://github.com/graphql/graphql-js/releases/tag/v0.6.0) of `graphql-js` which is based on the [April 2016](https://github.com/facebook/graphql/releases/tag/April2016) GraphQL specification. However future efforts will be guided directly by the [latest formal GraphQL specification](https://github.com/facebook/graphql/releases) (currently: [October 2016](https://github.com/facebook/graphql/releases/tag/October2016)).
 
 ### Third Party Libraries
 | Name          | Author        | Description  |
@@ -70,6 +70,7 @@ This project was originally a port of [v0.4.3](https://github.com/graphql/graphq
 | [graphql-go-handler](https://github.com/graphql-go/graphql-go-handler) | [Hafiz Ismail](https://github.com/sogko) | Middleware to handle GraphQL queries through HTTP requests. |
 | [graphql-relay-go](https://github.com/graphql-go/graphql-relay-go) | [Hafiz Ismail](https://github.com/sogko) | Lib to construct a graphql-go server supporting react-relay. |
 | [golang-relay-starter-kit](https://github.com/sogko/golang-relay-starter-kit) | [Hafiz Ismail](https://github.com/sogko) | Barebones starting point for a Relay application with Golang GraphQL server. |
+| [dataloader](https://github.com/nicksrandall/dataloader) | [Nick Randall](https://github.com/nicksrandall) | [DataLoader](https://github.com/facebook/dataloader) implementation in Go. |
 
 ### Blog Posts
 - [Golang + GraphQL + Relay](http://wehavefaces.net/)
@@ -84,7 +85,7 @@ This project was originally a port of [v0.4.3](https://github.com/graphql/graphq
 - [x] Executor
 - [x] Validator
 - [ ] Examples
-  - [ ] Basic Usage (see: [PR-#21](https://github.com/graphql-go/graphql/pull/21)) 
+  - [x] Basic Usage
   - [ ] React/Relay
 - [ ] Alpha Release (v0.1)
 

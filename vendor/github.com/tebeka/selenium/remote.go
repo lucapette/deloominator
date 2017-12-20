@@ -90,12 +90,28 @@ type serverReply struct {
 	Error
 }
 
-// Error contains information about a failure of a command.
+// Error contains information about a failure of a command. See the table of
+// these strings at https://www.w3.org/TR/webdriver/#handling-errors .
+//
+// This error type is only returned by servers that implement the W3C
+// specification.
 type Error struct {
-	Err        string `json:"error"`
-	Message    string `json:"message"`
+	// Err contains a general error string provided by the server.
+	Err string `json:"error"`
+	// Message is a detailed, human-readable message specific to the failure.
+	Message string `json:"message"`
+	// Stacktrace may contain the server-side stacktrace where the error occurred.
 	Stacktrace string `json:"stacktrace"`
+	// HTTPCode is the HTTP status code returned by the server.
+	HTTPCode int
+	// LegacyCode is the "Response Status Code" defined in the legacy Selenium
+	// WebDriver JSON wire protocol. This code is only produced by older
+	// Selenium WebDriver versions, Chromedriver, and InternetExplorerDriver.
+	LegacyCode int
 }
+
+// TODO(minusnine): Make Stacktrace more descriptive. Selenium emits a list of
+// objects that enumerate various fields. This is not standard, though.
 
 // Error implements the error interface.
 func (e *Error) Error() string {
@@ -157,6 +173,7 @@ func (wd *remoteWD) execute(method, url string, data []byte) (json.RawMessage, e
 	if len(reply.Value) > 0 {
 		respErr := new(Error)
 		if err := json.Unmarshal(reply.Value, respErr); err == nil && respErr.Err != "" {
+			respErr.HTTPCode = response.StatusCode
 			return nil, respErr
 		}
 	}
@@ -175,7 +192,12 @@ func (wd *remoteWD) execute(method, url string, data []byte) (json.RawMessage, e
 		if err := json.Unmarshal(reply.Value, longMsg); err != nil {
 			return nil, errors.New(shortMsg)
 		}
-		return nil, fmt.Errorf("%s: %s", shortMsg, longMsg.Message)
+		return nil, &Error{
+			Err:        shortMsg,
+			Message:    longMsg.Message,
+			HTTPCode:   response.StatusCode,
+			LegacyCode: reply.Status,
+		}
 	}
 
 	return buf, nil
@@ -611,10 +633,10 @@ func (wd *remoteWD) find(by, value, suffix, url string) ([]byte, error) {
 	if wd.w3cCompatible {
 		switch by {
 		case ByID:
-			by = "css selector"
+			by = ByCSSSelector
 			value = "#" + value
 		case ByName:
-			by = "css selector"
+			by = ByCSSSelector
 			value = fmt.Sprintf("input[name=%q]", value)
 		}
 	}
@@ -881,6 +903,18 @@ func (c cookie) sanitize() Cookie {
 }
 
 func (wd *remoteWD) GetCookie(name string) (Cookie, error) {
+	if wd.browser == "chrome" {
+		cs, err := wd.GetCookies()
+		if err != nil {
+			return Cookie{}, err
+		}
+		for _, c := range cs {
+			if c.Name == name {
+				return c, nil
+			}
+		}
+		return Cookie{}, errors.New("cookie not found")
+	}
 	url := wd.requestURL("/session/%s/cookie/%s", wd.id, name)
 	data, err := wd.execute("GET", url, nil)
 	if err != nil {
@@ -983,9 +1017,8 @@ func (wd *remoteWD) ButtonUp() error {
 func (wd *remoteWD) SendModifier(modifier string, isDown bool) error {
 	if isDown {
 		return wd.KeyDown(modifier)
-	} else {
-		return wd.KeyUp(modifier)
 	}
+	return wd.KeyUp(modifier)
 }
 
 func (wd *remoteWD) keyAction(action, keys string) error {
@@ -1122,6 +1155,46 @@ func (wd *remoteWD) Screenshot() ([]byte, error) {
 	buf := []byte(data)
 	decoder := base64.NewDecoder(base64.StdEncoding, bytes.NewBuffer(buf))
 	return ioutil.ReadAll(decoder)
+}
+
+// Condition is an alias for a type that is passed as an argument
+// for selenium.Wait(cond Condition) (error) function.
+type Condition func(wd WebDriver) (bool, error)
+
+const (
+	// DefaultWaitInterval is the default polling interval for selenium.Wait
+	// function.
+	DefaultWaitInterval = 100 * time.Millisecond
+
+	// DefaultWaitTimeout is the default timeout for selenium.Wait function.
+	DefaultWaitTimeout = 60 * time.Second
+)
+
+func (wd *remoteWD) WaitWithTimeoutAndInterval(condition Condition, timeout, interval time.Duration) error {
+	startTime := time.Now()
+
+	for {
+		done, err := condition(wd)
+		if err != nil {
+			return err
+		}
+		if done {
+			return nil
+		}
+
+		if elapsed := time.Since(startTime); elapsed > timeout {
+			return fmt.Errorf("timeout after %v", elapsed)
+		}
+		time.Sleep(interval)
+	}
+}
+
+func (wd *remoteWD) WaitWithTimeout(condition Condition, timeout time.Duration) error {
+	return wd.WaitWithTimeoutAndInterval(condition, timeout, DefaultWaitInterval)
+}
+
+func (wd *remoteWD) Wait(condition Condition) error {
+	return wd.WaitWithTimeoutAndInterval(condition, DefaultWaitTimeout, DefaultWaitInterval)
 }
 
 func (wd *remoteWD) Log(typ log.Type) ([]log.Message, error) {

@@ -14,16 +14,26 @@ type SchemaConfig struct {
 
 type TypeMap map[string]Type
 
-//Schema Definition
-//A Schema is created by supplying the root types of each type of operation,
-//query, mutation (optional) and subscription (optional). A schema definition is then supplied to the
-//validator and executor.
-//Example:
-//    myAppSchema, err := NewSchema(SchemaConfig({
-//      Query: MyAppQueryRootType,
-//      Mutation: MyAppMutationRootType,
-//      Subscription: MyAppSubscriptionRootType,
-//    });
+// Schema Definition
+// A Schema is created by supplying the root types of each type of operation,
+// query, mutation (optional) and subscription (optional). A schema definition is then supplied to the
+// validator and executor.
+// Example:
+//     myAppSchema, err := NewSchema(SchemaConfig({
+//       Query: MyAppQueryRootType,
+//       Mutation: MyAppMutationRootType,
+//       Subscription: MyAppSubscriptionRootType,
+//     });
+// Note: If an array of `directives` are provided to GraphQLSchema, that will be
+// the exact list of directives represented and allowed. If `directives` is not
+// provided then a default set of the specified directives (e.g. @include and
+// @skip) will be used. If you wish to provide *additional* directives to these
+// specified directives, you must explicitly declare them. Example:
+//
+//     const MyAppSchema = new GraphQLSchema({
+//       ...
+//       directives: specifiedDirectives.concat([ myCustomDirective ]),
+//     })
 type Schema struct {
 	typeMap    TypeMap
 	directives []*Directive
@@ -57,13 +67,10 @@ func NewSchema(config SchemaConfig) (Schema, error) {
 	schema.mutationType = config.Mutation
 	schema.subscriptionType = config.Subscription
 
-	// Provide `@include() and `@skip()` directives by default.
+	// Provide specified directives (e.g. @include and @skip) by default.
 	schema.directives = config.Directives
 	if len(schema.directives) == 0 {
-		schema.directives = []*Directive{
-			IncludeDirective,
-			SkipDirective,
-		}
+		schema.directives = SpecifiedDirectives
 	}
 	// Ensure directive definitions are error-free
 	for _, dir := range schema.directives {
@@ -84,8 +91,8 @@ func NewSchema(config SchemaConfig) (Schema, error) {
 	if schema.SubscriptionType() != nil {
 		initialTypes = append(initialTypes, schema.SubscriptionType())
 	}
-	if schemaType != nil {
-		initialTypes = append(initialTypes, schemaType)
+	if SchemaType != nil {
+		initialTypes = append(initialTypes, SchemaType)
 	}
 
 	for _, ttype := range config.Types {
@@ -135,6 +142,57 @@ func NewSchema(config SchemaConfig) (Schema, error) {
 	}
 
 	return schema, nil
+}
+
+//Added Check implementation of interfaces at runtime..
+//Add Implementations at Runtime..
+func (gq *Schema) AddImplementation() error {
+
+	// Keep track of all implementations by interface name.
+	if gq.implementations == nil {
+		gq.implementations = map[string][]*Object{}
+	}
+	for _, ttype := range gq.typeMap {
+		if ttype, ok := ttype.(*Object); ok {
+			for _, iface := range ttype.Interfaces() {
+				impls, ok := gq.implementations[iface.Name()]
+				if impls == nil || !ok {
+					impls = []*Object{}
+				}
+				impls = append(impls, ttype)
+				gq.implementations[iface.Name()] = impls
+			}
+		}
+	}
+
+	// Enforce correct interface implementations
+	for _, ttype := range gq.typeMap {
+		if ttype, ok := ttype.(*Object); ok {
+			for _, iface := range ttype.Interfaces() {
+				err := assertObjectImplementsInterface(gq, ttype, iface)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+//Edited. To check add Types at RunTime..
+//Append Runtime schema to typeMap
+func (gq *Schema) AppendType(objectType Type) error {
+	if objectType.Error() != nil {
+		return objectType.Error()
+	}
+	var err error
+	gq.typeMap, err = typeMapReducer(gq, gq.typeMap, objectType)
+	if err != nil {
+		return err
+	}
+	//Now Add interface implementation..
+	return gq.AddImplementation()
 }
 
 func (gq *Schema) QueryType() *Object {
@@ -453,10 +511,8 @@ func isEqualType(typeA Type, typeB Type) bool {
 	return false
 }
 
-/**
- * Provided a type and a super type, return true if the first type is either
- * equal or a subset of the second super type (covariant).
- */
+// isTypeSubTypeOf Provided a type and a super type, return true if the first type is either
+// equal or a subset of the second super type (covariant).
 func isTypeSubTypeOf(schema *Schema, maybeSubType Type, superType Type) bool {
 	// Equivalent type is a valid subtype
 	if maybeSubType == superType {
