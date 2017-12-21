@@ -30,7 +30,7 @@ class QuestionContainer extends Component {
           <Header as="h1">{question.title}</Header>
           <Grid.Row>
             <Grid.Column>
-              <QueryResult source={question.dataSource} input={question.query} />
+              <QueryResult source={question.dataSource} query={question.query} />
             </Grid.Column>
           </Grid.Row>
         </Container>

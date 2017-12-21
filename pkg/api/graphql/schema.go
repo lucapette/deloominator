@@ -34,6 +34,7 @@ type results struct {
 	Columns   []column `json:"columns"`
 	Rows      []row    `json:"rows"`
 	ChartName string   `json:"chartName"`
+	Variables string   `json:"variables"`
 }
 
 type settings struct {

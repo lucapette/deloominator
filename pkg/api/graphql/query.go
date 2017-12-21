@@ -64,14 +64,19 @@ func resolveQuestions(s *storage.Storage) func(p gql.ResolveParams) (interface{}
 func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interface{}, error) {
 	return func(p gql.ResolveParams) (interface{}, error) {
 		source := p.Args["source"].(string)
-		input := p.Args["input"].(string)
+		query := p.Args["query"].(string)
+		variables, ok := p.Args["variables"].(string)
+		if !ok {
+			variables = ""
+		}
 
 		logrus.WithFields(logrus.Fields{
-			"source": source,
-			"input":  input,
+			"source":    source,
+			"query":     query,
+			"variables": variables,
 		}).Infof("Query requested")
 
-		qr, err := dataSources[source].Query(db.Input{Query: input})
+		qr, err := dataSources[source].Query(db.Input{Query: query})
 
 		if err != nil {
 			return queryError{Message: err.Error()}, nil
@@ -100,6 +105,7 @@ func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interfa
 			ChartName: detectedChart.String(),
 			Columns:   columns,
 			Rows:      rows,
+			Variables: variables,
 		}, nil
 	}
 }
@@ -183,6 +189,10 @@ func query(dataSources db.DataSources, s *storage.Storage) *gql.Object {
 				Description: "Detected chart name",
 				Type:        gql.String,
 			},
+			"variables": &gql.Field{
+				Description: "query variables",
+				Type:        gql.String,
+			},
 			"columns": &gql.Field{
 				Description: "Columns of the returned results",
 				Type:        gql.NewList(columnType),
@@ -264,8 +274,11 @@ func query(dataSources db.DataSources, s *storage.Storage) *gql.Object {
 				"source": &gql.ArgumentConfig{
 					Type: gql.NewNonNull(gql.String),
 				},
-				"input": &gql.ArgumentConfig{
+				"query": &gql.ArgumentConfig{
 					Type: gql.NewNonNull(gql.String),
+				},
+				"variables": &gql.ArgumentConfig{
+					Type: gql.String,
 				},
 			},
 			Resolve: resolveQuery(dataSources),

@@ -64,7 +64,7 @@ class PlaygroundPage extends Component {
                 <QueryResult
                   handleQuerySuccess={this.handleQuerySuccess}
                   source={this.state.dataSource}
-                  input={this.state.query}
+                  query={this.state.query}
                 />
               )}
             </Grid.Column>

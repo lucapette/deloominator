@@ -22,8 +22,7 @@ class QueryResultContainer extends Component {
 
   exportCSV = (e: MouseEvent) => {
     e.preventDefault();
-    const {source, input} = this.props;
-    console.log(this.props);
+    const {source, query} = this.props;
 
     fetch('http://localhost:3000/export/csv', {
       method: 'POST',
@@ -32,7 +31,7 @@ class QueryResultContainer extends Component {
       },
       body: JSON.stringify({
         Source: source,
-        Query: input,
+        Query: query,
       }),
     })
       .then(response => response.blob())
@@ -112,8 +111,8 @@ class QueryResultContainer extends Component {
 }
 
 const Query = gql`
-  query Query($source: String!, $input: String!) {
-    query(source: $source, input: $input) {
+  query Query($source: String!, $query: String!, $variables: String) {
+    query(source: $source, query: $query, variables: $variables) {
       ... on results {
         chartName
         columns {
@@ -125,6 +124,7 @@ const Query = gql`
             value
           }
         }
+        variables
       }
       ... on queryError {
         message
@@ -134,7 +134,7 @@ const Query = gql`
 `;
 
 const QueryResult = graphql(Query, {
-  options: ({source, input}) => ({variables: {source, input}}),
+  options: ({source, query}) => ({variables: {source, query}}),
 })(QueryResultContainer);
 
 export default QueryResult;
