@@ -17,7 +17,7 @@ const defaultOptions = {
 const config = {
   default: {
     patterns: ['**/*.js'],
-    ignore: ['**/node_modules/**'],
+    ignore: ['**/node_modules/**', 'dist/**'],
     options: {
       trailingComma: 'es5',
     },
