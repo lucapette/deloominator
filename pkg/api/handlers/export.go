@@ -1,4 +1,4 @@
-package api
+package handlers
 
 import (
 	"bytes"
@@ -19,7 +19,8 @@ type QueryPayload struct {
 	Query  string `json:"query"`
 }
 
-func exportHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *http.Request) {
+// Export returns an handler that exports data in CSV format
+func Export(dataSources db.DataSources) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		format := pat.Param(r, "format")
 

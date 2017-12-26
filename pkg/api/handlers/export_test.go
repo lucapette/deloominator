@@ -1,4 +1,4 @@
-package api_test
+package handlers_test
 
 import (
 	"bytes"
@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/lucapette/deloominator/pkg/api"
+	"github.com/lucapette/deloominator/pkg/api/handlers"
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/lucapette/deloominator/pkg/testutil"
 )
@@ -59,7 +60,7 @@ func TestExportCSV(t *testing.T) {
 			t.Run(dataSource.Dialect.DriverName()+"-"+tc.name, func(t *testing.T) {
 				testFile := testutil.NewGoldenFile(t, tc.golden)
 				expected := testFile.Load()
-				json, err := json.Marshal(api.QueryPayload{
+				json, err := json.Marshal(handlers.QueryPayload{
 					Source: dataSourceName,
 					Query:  tc.query,
 				})
