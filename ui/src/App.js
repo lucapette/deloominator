@@ -87,5 +87,5 @@ ReactDOM.render(
   <ApolloProvider client={client}>
     <App />
   </ApolloProvider>,
-  mountNode
+  mountNode,
 );
