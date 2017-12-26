@@ -37,11 +37,7 @@ class Chart extends Component {
       return zipObject(columnNames, cells);
     });
 
-    return (
-      <div>
-        <Handler values={values} onNewView={onNewView} />
-      </div>
-    );
+    return <Handler values={values} onNewView={onNewView} />;
   }
 }
 

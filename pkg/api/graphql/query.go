@@ -76,7 +76,7 @@ func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interfa
 			"variables": variables,
 		}).Infof("Query requested")
 
-		qr, err := dataSources[source].Query(db.Input{Query: query})
+		qr, err := dataSources[source].Query(db.Input{Query: query, Variables: variables})
 
 		if err != nil {
 			return queryError{Message: err.Error()}, nil

@@ -14,7 +14,7 @@ import (
 	"github.com/lucapette/deloominator/pkg/db"
 )
 
-type ExportPayload struct {
+type QueryPayload struct {
 	Source string `json:"source"`
 	Query  string `json:"query"`
 }
@@ -35,8 +35,7 @@ func exportHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *ht
 			return
 		}
 
-		payload := ExportPayload{}
-
+		payload := QueryPayload{}
 		err = json.Unmarshal(query, &payload)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)

@@ -4,6 +4,7 @@ import {gql, graphql} from 'react-apollo';
 import DocumentTitle from 'react-document-title';
 import {Grid} from 'semantic-ui-react';
 
+import ApiClient from '../../services/ApiClient';
 import QueryResult from '../../components/QueryResult';
 import QuestionForm from './QuestionForm';
 
@@ -15,6 +16,7 @@ class PlaygroundPage extends Component {
     query: '',
     showResult: false,
     querySuccess: false,
+    variables: {},
   };
 
   handleQuerySuccess = value => {
@@ -34,8 +36,25 @@ class PlaygroundPage extends Component {
     });
   };
 
-  handleQueryChange = value => {
-    this.setState({currentQuery: value});
+  handleQueryChange = query => {
+    // TODO Use settings endpoint to contruct a regex and run the endpoint only
+    // for known variables
+
+    ApiClient.post('query/evaluate', {query: query})
+      .then(response => response.json())
+      .then(variables => {
+        this.setState({variables});
+      });
+
+    this.setState({currentQuery: query});
+  };
+
+  handleVariableChange = (key, value) => {
+    let variables = Object.assign({}, this.state.variables);
+
+    variables[key] = value;
+
+    this.setState({variables});
   };
 
   render() {
@@ -55,6 +74,8 @@ class PlaygroundPage extends Component {
                 selectedDataSource={this.state.selectedDataSource}
                 currentQuery={this.state.currentQuery}
                 querySuccess={this.state.querySuccess}
+                variables={this.state.variables}
+                handleVariableChange={this.handleVariableChange}
               />
             </Grid.Column>
           </Grid.Row>
@@ -65,6 +86,7 @@ class PlaygroundPage extends Component {
                   handleQuerySuccess={this.handleQuerySuccess}
                   source={this.state.dataSource}
                   query={this.state.query}
+                  variables={this.state.variables}
                 />
               )}
             </Grid.Column>

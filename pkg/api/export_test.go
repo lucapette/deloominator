@@ -59,7 +59,7 @@ func TestExportCSV(t *testing.T) {
 			t.Run(dataSource.Dialect.DriverName()+"-"+tc.name, func(t *testing.T) {
 				testFile := testutil.NewGoldenFile(t, tc.golden)
 				expected := testFile.Load()
-				json, err := json.Marshal(api.ExportPayload{
+				json, err := json.Marshal(api.QueryPayload{
 					Source: dataSourceName,
 					Query:  tc.query,
 				})

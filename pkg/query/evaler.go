@@ -15,7 +15,7 @@ type Evaler struct {
 func endOfDay() time.Time {
 	now := time.Now().UTC()
 	d := time.Duration(-now.Hour()) * time.Hour
-	return now.Truncate(time.Hour).Add(d).Add(24*time.Hour - time.Nanosecond)
+	return now.Truncate(time.Hour).Add(d).Add(24*time.Hour - time.Second)
 }
 
 var defaults = Variables{
@@ -24,7 +24,6 @@ var defaults = Variables{
 	"{yesterday}": endOfDay().Add(-24*time.Hour - time.Nanosecond).Format(time.RFC3339),
 }
 
-// NewEvaler returns an empty query variables map
 func NewEvaler(vars Variables) *Evaler {
 	merged := make(Variables, len(defaults))
 	for k, v := range defaults {
@@ -45,4 +44,18 @@ func (e *Evaler) Eval(query string) (string, error) {
 		query = reg.ReplaceAllString(query, "'"+value+"'")
 	}
 	return query, nil
+}
+
+// ExtractVariables extracts variables from a query
+func ExtractVariables(query string) (variables Variables) {
+	variables = make(Variables, 1)
+	for key, value := range defaults {
+		reg := regexp.MustCompile(key)
+
+		if match := reg.FindString(query); len(match) > 0 {
+			variables[key] = value
+		}
+
+	}
+	return variables
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -10,6 +11,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/felixge/httpsnoop"
 	"github.com/gobuffalo/packr"
+	"github.com/lucapette/deloominator/pkg/query"
 	"goji.io/pat"
 )
 
@@ -91,5 +93,35 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 			"path":   r.URL.Path,
 			"method": r.Method,
 		}).Printf("cannot write asset: %v", err)
+	}
+}
+
+func queryEvaluatorHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	q, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	payload := QueryPayload{}
+	err = json.Unmarshal(q, &payload)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	variables := query.ExtractVariables(payload.Query)
+	json, err := json.Marshal(variables)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	_, err = w.Write(json)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 }

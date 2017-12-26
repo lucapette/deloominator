@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"sort"
@@ -145,7 +146,16 @@ func (ds *DataSource) Close() {
 func (ds *DataSource) Query(input Input) (qr QueryResult, err error) {
 	// We use a prepare statement here so we can force MySQL binary protocol and
 	// get real types back. See: https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
-	evaler := query.NewEvaler(query.Variables{})
+
+	variables := make(query.Variables)
+	if len(input.Variables) > 0 {
+		err = json.Unmarshal([]byte(input.Variables), &variables)
+		if err != nil {
+			return qr, err
+		}
+	}
+
+	evaler := query.NewEvaler(variables)
 	query, err := evaler.Eval(input.Query)
 	if err != nil {
 		return qr, err

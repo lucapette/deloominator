@@ -3,6 +3,8 @@ import React, {Component} from 'react';
 import {gql, graphql} from 'react-apollo';
 import {Button, Container, Message, Loader, Divider} from 'semantic-ui-react';
 
+import ApiClient from '../services/ApiClient';
+
 import Chart from './Chart';
 import Table from './Table';
 
@@ -24,16 +26,7 @@ class QueryResultContainer extends Component {
     e.preventDefault();
     const {source, query} = this.props;
 
-    fetch('http://localhost:3000/export/csv', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        Source: source,
-        Query: query,
-      }),
-    })
+    ApiClient.post('export/csv', {Source: source, Query: query})
       .then(response => response.blob())
       .then(blob => {
         const url = window.URL.createObjectURL(blob);
@@ -134,7 +127,7 @@ const Query = gql`
 `;
 
 const QueryResult = graphql(Query, {
-  options: ({source, query}) => ({variables: {source, query}}),
+  options: ({source, query, variables}) => ({variables: {source, query, variables: JSON.stringify(variables)}}),
 })(QueryResultContainer);
 
 export default QueryResult;

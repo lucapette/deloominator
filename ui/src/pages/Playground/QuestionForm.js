@@ -6,6 +6,7 @@ import {withRouter} from 'react-router';
 import {Button, Form} from 'semantic-ui-react';
 
 import Editor from '../../components/Editor';
+import QueryVariables from '../../components/QueryVariables';
 import routing from '../../helpers/routing';
 
 class QuestionFormContainer extends Component {
@@ -54,6 +55,7 @@ class QuestionFormContainer extends Component {
       selectedDataSource,
       currentQuery,
       querySuccess,
+      handleVariableChange,
     } = this.props;
 
     return (
@@ -80,6 +82,12 @@ class QuestionFormContainer extends Component {
             <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={this.handleSave} />
           )}
         </Form.Group>
+        {Object.keys(this.props.variables).length > 0 && (
+          <Form.Group>
+            <QueryVariables variables={this.props.variables} handleVariableChange={handleVariableChange} />
+          </Form.Group>
+        )}
+
         <Form.Group>
           <Editor code={currentQuery} onChange={handleQueryChange} />
         </Form.Group>

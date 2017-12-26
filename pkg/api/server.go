@@ -78,6 +78,7 @@ func (s *Server) Start() {
 	router.HandleFunc(pat.Post("/graphql"), graphql.Handler(s.dataSources, s.storage))
 	router.HandleFunc(pat.Get("/:name.:ext"), assetsHandler)
 	router.HandleFunc(pat.Post("/export/:format"), exportHandler(s.dataSources))
+	router.HandleFunc(pat.Post("/query/evaluate"), queryEvaluatorHandler)
 	router.HandleFunc(pat.Get("/*"), uiHandler)
 
 	s.srv = &http.Server{Addr: s.port, Handler: router}
