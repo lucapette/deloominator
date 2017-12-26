@@ -13,21 +13,21 @@ setup: ## Install all the build and lint dependencies
 embed:
 	packr
 
-build-api: embed ## Build the API server
+build-server: embed ## Build the API server
 	go build cmd/deloominator.go
 
 build-ui: ## Build the UI
 	cd ui && npm run build
 
-build: build-ui build-api ## Build a dev version of deloominator
+build: build-ui build-server ## Build a dev version of deloominator
 
-test-api: embed ## Run API tests
+test-server: embed ## Run API tests
 	bin/run-test go test $(TEST_OPTIONS) -cover $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=30s
 
 test-ui: ## Run UI tests
 	cd ui && npm run test
 
-test: test-api test-ui ## Run all the tests
+test: test-server test-ui ## Run all the tests
 
 lint: embed ## Run all the linters
 	gometalinter --vendor --disable-all \
@@ -38,18 +38,18 @@ lint: embed ## Run all the linters
 	./...
 	cd ui && npm run prettier:check
 
-run-api: build-api ## Run the API server
+run-server: build-server ## Run the API server
 	bin/run deloominator
 
 run-ui: ## Run the UI application
 	cd ui && npm run start
 
-# For now, it doesn't make sense to build the UI on travis as there
-# no tests that rely on that.
+# For now, it does not make sense to build the UI on CI as there no tests that
+# rely on that.
 stub-ui:
 	touch ui/dist/index.html ui/dist/App.js ui/dist/App.js.map
 
-ci: stub-ui build-api lint test ## Run all the tests and code checks
+ci: stub-ui build-server lint test ## Run all the tests and code checks
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:

@@ -68,7 +68,7 @@ since `build` is the default target. Both components have their own building
 target:
 
 ```sh
-$ make build-api # builds the API server
+$ make build-server # builds the API server
 $ make build-ui # builds the UI application
 ```
 
@@ -84,13 +84,13 @@ If you're working with only one of the components, you can use a more
 specialized command:
 
 ```sh
-$ make run-api # runs the API server
+$ make run-server # runs the API server
 $ make run-ui # runs the UI application
 ```
 
-Please *note* that `make run-api` relies on a small bash script called
+Please *note* that `make run-server` relies on a small bash script called
 `bin/run`. There is an example file [here](bin/run.example). You can create your
-own script with the following command
+own script with the following command:
 
 ```sh
 cp bin/run{.example,}
@@ -130,6 +130,18 @@ specific feature and want immediate feedback:
 
 ```sh
 $ make test TEST_OPTIONS=-v TEST_PATTERN=TheAnswerIsFortyTwo
+```
+
+Moreover, you can run tests only for the server:
+
+```sh
+$ make test-server
+```
+
+or the frontend tests:
+
+```sh
+$ make test-ui
 ```
 
 ### Golden files
