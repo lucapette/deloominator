@@ -42,7 +42,7 @@ class PlaygroundPage extends Component {
 
     ApiClient.post('query/evaluate', {query: query})
       .then(response => response.json())
-      .then(variables => {
+      .then(({variables}) => {
         this.setState({variables});
       });
 

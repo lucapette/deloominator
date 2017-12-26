@@ -2,7 +2,6 @@ package handlers_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"flag"
 	"io/ioutil"
@@ -10,7 +9,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lucapette/deloominator/pkg/api"
 	"github.com/lucapette/deloominator/pkg/api/handlers"
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/lucapette/deloominator/pkg/testutil"
@@ -35,16 +33,8 @@ func TestExportCSV(t *testing.T) {
 	dataSources, cleanup := testutil.SetupDataSources(t)
 	defer cleanup()
 
-	options := []api.Option{
-		api.Port(3000),
-		api.DataSources(dataSources),
-	}
-	server := api.NewServer(options)
-	server.Start()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	defer server.Stop(ctx)
+	cleanupSrv := testutil.SetupServer(dataSources)
+	defer cleanupSrv()
 
 	tests := []struct {
 		name   string

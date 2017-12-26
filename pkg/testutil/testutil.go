@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"bytes"
+	"context"
 	"database/sql"
 	"fmt"
 	"io/ioutil"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/kr/pretty"
+	"github.com/lucapette/deloominator/pkg/api"
 	"github.com/lucapette/deloominator/pkg/config"
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/lucapette/deloominator/pkg/db/storage"
@@ -246,6 +248,22 @@ func SetupDataSources(t *testing.T) (db.DataSources, func()) {
 		dataSources.Close()
 		cleanupPG()
 		cleanupMySQL()
+	}
+}
+
+// SetupServer starts a test server and returns its cleanup function
+func SetupServer(ds db.DataSources) func() {
+	options := []api.Option{
+		api.Port(3000),
+		api.DataSources(ds),
+	}
+	server := api.NewServer(options)
+	server.Start()
+
+	return func() {
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		server.Stop(ctx)
 	}
 }
 
