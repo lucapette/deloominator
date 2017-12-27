@@ -47,8 +47,6 @@ In `deloominator` editor, you can use _"query variables"_. A query variable is a
 word surrounded by `{` and `}`. By default, the following variables are
 predefined:
 
-- `{start_date}`
-- `{end_date}`
 - `{timestamp}`
 - `{today}`
 - `{yesterday}`
@@ -59,7 +57,7 @@ interactively control the value of variables before query execution.
 
 Here is an example for `{timestamp}`:
 
-![today](/docs/img/timestamp.png)
+![timestamp](/docs/img/timestamp.png)
 
 Some query variables require user input (like `{start_date}`), those have a
 sensible default to get you started when writing a query.

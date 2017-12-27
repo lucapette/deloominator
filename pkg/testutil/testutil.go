@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"reflect"
 	"strconv"
 	"strings"
 	"testing"
@@ -265,6 +266,20 @@ func SetupServer(ds db.DataSources) func() {
 		cancel()
 		server.Stop(ctx)
 	}
+}
+
+func isZeroValue(v reflect.Value) bool {
+	return v.Interface() == reflect.Zero(v.Type()).Interface()
+}
+
+// IsZeroValueByFieldName returns true if the field name on the given struct s has
+// a default value. It panics if s does not have a field name
+func IsZeroValueByFieldName(s interface{}, name string) bool {
+	structVal := reflect.ValueOf(s)
+
+	v := structVal.FieldByName(name)
+
+	return isZeroValue(v)
 }
 
 // Diff returns a string of differences between expected and actual if any
