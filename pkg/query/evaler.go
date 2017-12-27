@@ -20,6 +20,7 @@ func endOfDay() time.Time {
 
 var defaults = Variables{
 	"{timestamp}": endOfDay().Format(time.RFC3339),
+	"{date}":      endOfDay().Format(time.RFC3339),
 	"{today}":     endOfDay().Format(time.RFC3339),
 	"{yesterday}": endOfDay().Add(-24*time.Hour - time.Nanosecond).Format(time.RFC3339),
 }

@@ -48,11 +48,12 @@ word surrounded by `{` and `}`. By default, the following variables are
 predefined:
 
 - `{timestamp}`
+- `{date}`
 - `{today}`
 - `{yesterday}`
 
 Variables are evaluated by `deloominator` right before query execution.
-Questions that contain variables come with additional UI elements to
+Questions that contain variables may come with additional UI elements to
 interactively control the value of variables before query execution.
 
 Here is an example for `{timestamp}`:

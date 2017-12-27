@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import {Label, Form} from 'semantic-ui-react';
 
 class Date extends Component {
   constructor(props) {
@@ -18,8 +19,18 @@ class Date extends Component {
   };
 
   render() {
-    return <Flatpickr value={this.state.value} onChange={this.handleChange} />;
+    const {options, name} = this.props;
+    return (
+      <div className="thirteen wide field">
+        <label>{name}</label>
+        <Flatpickr options={options} value={this.state.value} onChange={this.handleChange} />
+      </div>
+    );
   }
 }
+
+Date.defaultProps = {
+  dateFormat: 'Z',
+};
 
 export default Date;
