@@ -8,6 +8,8 @@ import ApiClient from '../../services/ApiClient';
 import QueryResult from '../../components/QueryResult';
 import QuestionForm from './QuestionForm';
 
+import debounce from 'lodash/debounce';
+
 class PlaygroundPage extends Component {
   state = {
     selectedDataSource: '',
@@ -18,6 +20,21 @@ class PlaygroundPage extends Component {
     querySuccess: false,
     variables: {},
   };
+
+  evalQuery: Function;
+
+  constructor(props) {
+    super(props);
+    this.evalQuery = debounce(this.evalQuery, 200, {trailing: true});
+  }
+
+  evalQuery(query) {
+    ApiClient.post('query/evaluate', {query: query})
+      .then(response => response.json())
+      .then(({variables}) => {
+        this.setState({variables});
+      });
+  }
 
   handleQuerySuccess = value => {
     this.setState({querySuccess: value});
@@ -37,16 +54,8 @@ class PlaygroundPage extends Component {
   };
 
   handleQueryChange = query => {
-    // TODO Use settings endpoint to contruct a regex and run the endpoint only
-    // for known variables
-
-    ApiClient.post('query/evaluate', {query: query})
-      .then(response => response.json())
-      .then(({variables}) => {
-        this.setState({variables});
-      });
-
     this.setState({currentQuery: query});
+    this.evalQuery(query);
   };
 
   handleVariableChange = (key, value) => {
