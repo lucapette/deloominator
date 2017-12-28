@@ -12,15 +12,22 @@ class QueryVariables extends Component {
   render() {
     const {handleVariableChange, variables} = this.props;
 
-    return (
-      <div>
-        {Object.keys(variables).map(name => {
-          const Handler = VARIABLES[name];
+    const controllableNames = Object.keys(VARIABLES);
 
-          return <Handler key={name} name={name} value={variables[name]} handleVariableChange={handleVariableChange} />;
-        })}
-      </div>
-    );
+    return Object.keys(variables)
+      .filter(name => controllableNames.includes(name))
+      .map(name => {
+        const Handler = VARIABLES[name];
+
+        return (
+          <Handler
+            key={name}
+            name={name.replace(/[{}]/g, '')}
+            value={variables[name]}
+            handleVariableChange={handleVariableChange}
+          />
+        );
+      });
   }
 }
 

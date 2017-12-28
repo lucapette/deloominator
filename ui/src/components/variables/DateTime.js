@@ -6,6 +6,6 @@ import Date from './Date';
 
 class DateTime extends Date {}
 
-DateTime.defaultProps = Object.assign({}, Date.defaultProps, {enableTime: true});
+DateTime.defaultProps = Object.assign({}, Date.defaultProps, {options: {enableTime: true}});
 
 export default DateTime;

@@ -21,7 +21,7 @@ class Date extends Component {
   render() {
     const {options, name} = this.props;
     return (
-      <div className="thirteen wide field">
+      <div className="field">
         <label>{name}</label>
         <Flatpickr options={options} value={this.state.value} onChange={this.handleChange} />
       </div>
@@ -30,7 +30,9 @@ class Date extends Component {
 }
 
 Date.defaultProps = {
-  dateFormat: 'Z',
+  options: {
+    dateFormat: 'Y-m-d',
+  },
 };
 
 export default Date;
