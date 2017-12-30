@@ -22,7 +22,7 @@ class Date extends Component {
     const {options, name} = this.props;
     return (
       <div className="field">
-        <label>{name}</label>
+        <label>{name.replace(/[{}]/g, '')}</label>
         <Flatpickr options={options} value={this.state.value} onChange={this.handleChange} />
       </div>
     );

@@ -28,17 +28,19 @@ class QuestionFormContainer extends Component {
 
   handleSave = e => {
     e.preventDefault();
-    this.props
-      .mutate({
-        variables: {
-          title: this.state.title,
-          query: this.props.currentQuery,
-          dataSource: this.props.selectedDataSource,
-        },
-      })
+    const {currentQuery, selectedDataSource, history, mutate, variables} = this.props;
+
+    mutate({
+      variables: {
+        title: this.state.title,
+        query: currentQuery,
+        dataSource: selectedDataSource,
+        variables: JSON.stringify(variables),
+      },
+    })
       .then(({data: {saveQuestion}}) => {
         const questionPath = routing.urlFor(saveQuestion, ['id', 'title']);
-        this.props.history.push(`/questions/${questionPath}`);
+        history.push(`/questions/${questionPath}`);
       })
       .catch(({error}) => {
         console.log(error);
@@ -56,6 +58,7 @@ class QuestionFormContainer extends Component {
       currentQuery,
       querySuccess,
       handleVariableChange,
+      variables,
     } = this.props;
 
     return (
@@ -83,7 +86,7 @@ class QuestionFormContainer extends Component {
           )}
         </Form.Group>
         <Form.Group>
-          <QueryVariables variables={this.props.variables} handleVariableChange={handleVariableChange} />
+          <QueryVariables variables={variables} handleVariableChange={handleVariableChange} />
         </Form.Group>
         <Form.Group>
           <Editor code={currentQuery} onChange={handleQueryChange} />
@@ -94,8 +97,8 @@ class QuestionFormContainer extends Component {
 }
 
 const SaveQuestion = gql`
-  mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!) {
-    saveQuestion(title: $title, query: $query, dataSource: $dataSource) {
+  mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!, $variables: String) {
+    saveQuestion(title: $title, query: $query, dataSource: $dataSource, variables: $variables) {
       id
       title
     }

@@ -28,8 +28,8 @@ class PlaygroundPage extends Component {
     this.evalQuery = debounce(this.evalQuery, 200, {trailing: true});
   }
 
-  evalQuery(query) {
-    ApiClient.post('query/evaluate', {query: query})
+  evalQuery(query, variables) {
+    ApiClient.post('query/evaluate', {query, variables})
       .then(response => response.json())
       .then(({variables}) => {
         this.setState({variables});
@@ -55,13 +55,11 @@ class PlaygroundPage extends Component {
 
   handleQueryChange = query => {
     this.setState({currentQuery: query});
-    this.evalQuery(query);
+    this.evalQuery(query, this.state.variables);
   };
 
   handleVariableChange = (key, value) => {
-    let variables = Object.assign({}, this.state.variables);
-
-    variables[key] = value;
+    const variables = Object.assign({}, this.state.variables, {[key]: value});
 
     this.setState({variables});
   };

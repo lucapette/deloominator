@@ -9,6 +9,7 @@ import (
 
 	"github.com/lucapette/deloominator/pkg/api/graphql"
 	"github.com/lucapette/deloominator/pkg/db"
+	"github.com/lucapette/deloominator/pkg/db/storage"
 	"github.com/lucapette/deloominator/pkg/testutil"
 )
 
@@ -178,7 +179,11 @@ const Question = `
 func TestGraphQL_Question(t *testing.T) {
 	storages := testutil.NewStorages(t)
 	for _, s := range storages {
-		q, err := s.InsertQuestion("the answer is 42", "select * from answer", "source")
+		q, err := s.InsertQuestion(&storage.Question{
+			Title:      "the answer is 42",
+			Query:      "select * from answer",
+			DataSource: "source",
+		})
 		if err != nil {
 			t.Fatalf("could not create question: %v", err)
 		}

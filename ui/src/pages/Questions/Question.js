@@ -30,7 +30,7 @@ class QuestionContainer extends Component {
           <Header as="h1">{question.title}</Header>
           <Grid.Row>
             <Grid.Column>
-              <QueryResult source={question.dataSource} query={question.query} />
+              <QueryResult source={question.dataSource} query={question.query} variables={question.variables} />
             </Grid.Column>
           </Grid.Row>
         </Container>
@@ -46,6 +46,7 @@ const Query = gql`
       title
       query
       dataSource
+      variables
     }
   }
 `;

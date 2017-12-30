@@ -19,14 +19,7 @@ class QueryVariables extends Component {
       .map(name => {
         const Handler = VARIABLES[name];
 
-        return (
-          <Handler
-            key={name}
-            name={name.replace(/[{}]/g, '')}
-            value={variables[name]}
-            handleVariableChange={handleVariableChange}
-          />
-        );
+        return <Handler key={name} name={name} value={variables[name]} handleVariableChange={handleVariableChange} />;
       });
   }
 }

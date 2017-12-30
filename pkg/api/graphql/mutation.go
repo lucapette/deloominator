@@ -7,15 +7,22 @@ import (
 
 func saveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
 	return func(p gql.ResolveParams) (interface{}, error) {
-		title := p.Args["title"].(string)
-		query := p.Args["query"].(string)
-		dataSource := p.Args["dataSource"].(string)
+		question := storage.Question{
+			Title:      p.Args["title"].(string),
+			Query:      p.Args["query"].(string),
+			DataSource: p.Args["dataSource"].(string),
+		}
 
-		question, err := s.InsertQuestion(title, query, dataSource)
+		if variables, ok := p.Args["variables"].(string); ok {
+			question.Variables = variables
+		}
+
+		q, err := s.InsertQuestion(&question)
 		if err != nil {
 			return nil, err
 		}
-		return *question, nil
+
+		return *q, nil
 	}
 }
 
@@ -32,6 +39,9 @@ func mutation(s *storage.Storage) *gql.Object {
 				},
 				"dataSource": &gql.ArgumentConfig{
 					Type: gql.NewNonNull(gql.String),
+				},
+				"variables": &gql.ArgumentConfig{
+					Type: gql.String,
 				},
 			},
 			Resolve: saveQuestion(s),
