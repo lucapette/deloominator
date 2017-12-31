@@ -65,9 +65,9 @@ func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interfa
 	return func(p gql.ResolveParams) (interface{}, error) {
 		source := p.Args["source"].(string)
 		query := p.Args["query"].(string)
-		variables, ok := p.Args["variables"].(string)
+		variables, ok := p.Args["variables"].(map[string]string)
 		if !ok {
-			variables = ""
+			variables = make(map[string]string)
 		}
 
 		logrus.WithFields(logrus.Fields{

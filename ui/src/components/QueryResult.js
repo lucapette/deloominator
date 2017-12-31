@@ -128,7 +128,7 @@ const Query = gql`
 `;
 
 const QueryResult = graphql(Query, {
-  options: ({source, query, variables}) => ({variables: {source, query, variables: JSON.stringify(variables)}}),
+  options: ({source, query, variables}) => ({variables: {source, query, variables: variables}}),
 })(QueryResultContainer);
 
 export default QueryResult;

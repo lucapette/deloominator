@@ -31,10 +31,10 @@ type column struct {
 }
 
 type results struct {
-	Columns   []column `json:"columns"`
-	Rows      []row    `json:"rows"`
-	ChartName string   `json:"chartName"`
-	Variables string   `json:"variables"`
+	Columns   []column          `json:"columns"`
+	Rows      []row             `json:"rows"`
+	ChartName string            `json:"chartName"`
+	Variables map[string]string `json:"variables"`
 }
 
 type settings struct {

@@ -2,11 +2,9 @@ package db
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/url"
 	"sort"
-	"strconv"
 
 	"strings"
 
@@ -23,7 +21,7 @@ type DataSources map[string]*DataSource
 
 type Input struct {
 	Query     string
-	Variables string
+	Variables map[string]string
 }
 
 func NewDataSources(sources []string) (dataSources DataSources, err error) {
@@ -145,24 +143,7 @@ func (ds *DataSource) Close() {
 }
 
 func (ds *DataSource) Query(input Input) (qr QueryResult, err error) {
-	variables := make(query.Variables)
-	vars := input.Variables
-
-	if len(input.Variables) > 0 {
-		vars, err = strconv.Unquote(input.Variables)
-		if err != nil {
-			return qr, err
-		}
-	}
-
-	if len(vars) > 0 {
-		err = json.Unmarshal([]byte(vars), &variables)
-		if err != nil {
-			return qr, err
-		}
-	}
-
-	evaler := query.NewEvaler(variables)
+	evaler := query.NewEvaler(input.Variables)
 	query, err := evaler.Eval(input.Query)
 	if err != nil {
 		return qr, err
