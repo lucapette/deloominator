@@ -59,7 +59,7 @@ class PlaygroundPage extends Component {
   };
 
   handleVariableChange = (key, value) => {
-    const variables = Object.assign({}, this.state.variables, {[key]: value});
+    const variables = {...this.state.variables, [key]: value};
 
     this.setState({variables});
   };

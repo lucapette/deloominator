@@ -1,8 +1,4 @@
 {
-  "presets": [["env", { "modules": false }], "react"],
-  "env": {
-    "test": {
-      "plugins": ["transform-class-properties", "transform-flow-strip-types", "transform-es2015-modules-commonjs"]
-    }
-  }
+  "presets": ["env", "react", "flow"],
+  "plugins": ["transform-class-properties", "transform-object-rest-spread"]
 }

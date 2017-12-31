@@ -8,7 +8,6 @@ import {
   gql,
   IntrospectionFragmentMatcher,
 } from 'react-apollo';
-import {} from 'react-apollo';
 import ReactDOM from 'react-dom';
 import {Container, Menu, Grid, Loader} from 'semantic-ui-react';
 

@@ -1,3 +1,4 @@
+//@flow
 import React, {Component} from 'react';
 
 import Flatpickr from 'react-flatpickr';
@@ -6,6 +7,14 @@ import Date from './Date';
 
 class DateTime extends Date {}
 
-DateTime.defaultProps = Object.assign({}, Date.defaultProps, {options: {dateFormat: 'Z', enableTime: true}});
+DateTime.defaultProps = {
+  ...Date.defaultProps,
+  ...{
+    options: {
+      dateFormat: 'Z',
+      enableTime: true
+    }
+  }
+};
 
 export default DateTime;
