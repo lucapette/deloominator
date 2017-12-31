@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"sort"
+	"strconv"
 
 	"strings"
 
@@ -144,12 +145,18 @@ func (ds *DataSource) Close() {
 }
 
 func (ds *DataSource) Query(input Input) (qr QueryResult, err error) {
-	// We use a prepare statement here so we can force MySQL binary protocol and
-	// get real types back. See: https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
-
 	variables := make(query.Variables)
+	vars := input.Variables
+
 	if len(input.Variables) > 0 {
-		err = json.Unmarshal([]byte(input.Variables), &variables)
+		vars, err = strconv.Unquote(input.Variables)
+		if err != nil {
+			return qr, err
+		}
+	}
+
+	if len(vars) > 0 {
+		err = json.Unmarshal([]byte(vars), &variables)
 		if err != nil {
 			return qr, err
 		}
@@ -161,6 +168,8 @@ func (ds *DataSource) Query(input Input) (qr QueryResult, err error) {
 		return qr, err
 	}
 
+	// We use a prepare statement here so we can force MySQL binary protocol and get real types back. See:
+	// https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
 	statement, err := ds.DB.Prepare(query)
 	if err != nil {
 		return qr, err
