@@ -1,3 +1,4 @@
+//@flow
 import React, {Component} from 'react';
 import CodeMirror from 'react-codemirror';
 
@@ -9,7 +10,12 @@ const options = {
   lineNumbers: true,
 };
 
-class Editor extends Component {
+type Props = {
+  code: string,
+  onChange: Function,
+};
+
+class Editor extends Component<Props> {
   render() {
     const {code, onChange} = this.props;
     return <CodeMirror className="thirteen wide field" options={options} value={code} onChange={onChange} />;

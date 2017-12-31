@@ -7,12 +7,12 @@ import 'fixed-data-table-2/dist/fixed-data-table.min.css';
 
 import * as Types from '../types';
 
-class Table extends Component {
-  props: {
-    rows: Array<Types.Row>,
-    columns: Array<Types.Column>,
-  };
+type Props = {
+  rows: Array<Types.Row>,
+  columns: Array<Types.Column>,
+};
 
+class Table extends Component<Props> {
   render() {
     const {rows, columns} = this.props;
 

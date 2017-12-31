@@ -1,3 +1,4 @@
+//@flow
 import React, {Component} from 'react';
 
 import DateTime from './variables/DateTime';
@@ -8,7 +9,12 @@ const VARIABLES = {
   '{date}': Date,
 };
 
-class QueryVariables extends Component {
+type Props = {
+  handleVariableChange: Function,
+  variables: {},
+};
+
+class QueryVariables extends Component<Props> {
   render() {
     const {handleVariableChange, variables} = this.props;
 

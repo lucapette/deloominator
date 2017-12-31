@@ -16,14 +16,14 @@ const CHARTS = {
   MultiLine: MultiLine,
 };
 
-class Chart extends Component {
-  props: {
-    name: string,
-    rows: Array<Types.Row>,
-    columns: Array<Types.Column>,
-    onNewView: Object => void,
-  };
+type Props = {
+  name: string,
+  rows: Array<Types.Row>,
+  columns: Array<Types.Column>,
+  onNewView: Object => void,
+};
 
+class Chart extends Component<Props> {
   render() {
     const {name, columns, rows, onNewView} = this.props;
 

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {gql, graphql} from 'react-apollo';
+import {graphql} from 'react-apollo';
+import gql from 'graphql-tag';
 import {withRouter} from 'react-router';
 import {List, Loader} from 'semantic-ui-react';
 

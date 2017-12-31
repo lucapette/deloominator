@@ -1,28 +1,34 @@
+//@flow
 import React, {Component} from 'react';
 import VegaLite from 'react-vega-lite';
 
-const spec = {
-  description: 'A simple bar chart with embedded data.',
-  mark: 'bar',
-  encoding: {
-    x: {type: 'ordinal'},
-    y: {type: 'quantitative'},
-  },
+type Props = {
+  width: number,
+  values: Array<{}>,
+  onNewView: Function,
 };
 
-export default class SimpleBar extends Component {
+class SimpleBar extends Component<Props> {
   render() {
+    const {values, onNewView, width} = this.props;
     const data = {
-      values: this.props.values,
+      values: values,
     };
 
-    const [x, y] = Object.keys(this.props.values[0]);
+    const [x, y] = Object.keys(values[0]);
 
-    spec['encoding']['x']['field'] = x;
-    spec['encoding']['y']['field'] = y;
+    const spec = {
+      description: 'A simple bar chart with embedded data.',
+      mark: 'bar',
+      width: width || 1000,
+      encoding: {
+        x: {type: 'ordinal', field: x},
+        y: {type: 'quantitative', field: y},
+      },
+    };
 
-    spec['width'] = this.props.width || 1000;
-
-    return <VegaLite spec={spec} data={data} onNewView={this.props.onNewView} />;
+    return <VegaLite spec={spec} data={data} onNewView={onNewView} />;
   }
 }
+
+export default SimpleBar;
