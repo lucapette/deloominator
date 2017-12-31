@@ -12,9 +12,9 @@ DateTime.defaultProps = {
   ...{
     options: {
       dateFormat: 'Z',
-      enableTime: true
-    }
-  }
+      enableTime: true,
+    },
+  },
 };
 
 export default DateTime;

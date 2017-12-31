@@ -15,26 +15,26 @@ let didError = false;
 
 const files = glob.sync(patterns.join(','), {ignore});
 
+const options = prettier.resolveConfig.sync(process.cwd());
+
 files.forEach(file => {
   try {
     const input = fs.readFileSync(file, 'utf8');
 
-    prettier.resolveConfig(file).then(options => {
-      if (shouldWrite) {
-        const output = prettier.format(input, options);
-        if (output !== input) {
-          fs.writeFileSync(file, output, 'utf8');
-        }
-      } else {
-        if (!prettier.check(input, options)) {
-          if (!didWarn) {
-            console.log('Please run prettier');
-            didWarn = true;
-          }
-          console.log(file);
-        }
+    if (shouldWrite) {
+      const output = prettier.format(input, options);
+      if (output !== input) {
+        fs.writeFileSync(file, output, 'utf8');
       }
-    });
+    } else {
+      if (!prettier.check(input, options)) {
+        if (!didWarn) {
+          console.log('Please run prettier');
+          didWarn = true;
+        }
+        console.log(file);
+      }
+    }
   } catch (error) {
     didError = true;
     console.log('\n\n' + error.message);
