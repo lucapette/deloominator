@@ -1,11 +1,12 @@
-//@flow
 import {sortBy} from 'lodash';
 import React, {Component} from 'react';
-import {gql, graphql} from 'react-apollo';
+import {graphql, compose} from 'react-apollo';
+import gql from 'graphql-tag';
 import {withRouter} from 'react-router';
 import {Button, Form} from 'semantic-ui-react';
 
 import Editor from '../../components/Editor';
+import QueryVariables from '../../components/QueryVariables';
 import routing from '../../helpers/routing';
 
 class QuestionFormContainer extends Component {
@@ -27,17 +28,19 @@ class QuestionFormContainer extends Component {
 
   handleSave = e => {
     e.preventDefault();
-    this.props
-      .mutate({
-        variables: {
-          title: this.state.title,
-          query: this.props.currentQuery,
-          dataSource: this.props.selectedDataSource,
-        },
-      })
+    const {currentQuery, currentDataSource, history, saveQuestion, variables} = this.props;
+
+    saveQuestion({
+      variables: {
+        title: this.state.title,
+        query: currentQuery,
+        dataSource: currentDataSource,
+        variables: variables,
+      },
+    })
       .then(({data: {saveQuestion}}) => {
         const questionPath = routing.urlFor(saveQuestion, ['id', 'title']);
-        this.props.history.push(`/questions/${questionPath}`);
+        history.push(`/questions/${questionPath}`);
       })
       .catch(({error}) => {
         console.log(error);
@@ -50,16 +53,23 @@ class QuestionFormContainer extends Component {
       handleDataSourcesChange,
       handleRunClick,
       handleQueryChange,
-      dataSources,
-      selectedDataSource,
+      currentDataSource,
       currentQuery,
       querySuccess,
+      handleVariableChange,
+      variables,
+      data: {loading, error, dataSources},
     } = this.props;
+
+    if (error) {
+      return <p>Error!</p>;
+    }
 
     return (
       <Form>
         <Form.Group>
           <Form.Dropdown
+            loading={loading}
             placeholder="Data Source"
             search
             selection
@@ -73,12 +83,15 @@ class QuestionFormContainer extends Component {
             icon="play"
             primary
             content="Run"
-            disabled={!(selectedDataSource && currentQuery)}
+            disabled={!(currentQuery && currentQuery)}
             onClick={handleRunClick}
           />
           {saveEnabled && (
             <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={this.handleSave} />
           )}
+        </Form.Group>
+        <Form.Group>
+          <QueryVariables variables={variables} handleVariableChange={handleVariableChange} />
         </Form.Group>
         <Form.Group>
           <Editor code={currentQuery} onChange={handleQueryChange} />
@@ -89,14 +102,24 @@ class QuestionFormContainer extends Component {
 }
 
 const SaveQuestion = gql`
-  mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!) {
-    saveQuestion(title: $title, query: $query, dataSource: $dataSource) {
+  mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!, $variables: [InputVariable]) {
+    saveQuestion(title: $title, query: $query, dataSource: $dataSource, variables: $variables) {
       id
       title
     }
   }
 `;
 
-const QuestionForm = withRouter(graphql(SaveQuestion)(QuestionFormContainer));
+const Query = gql`
+  {
+    dataSources {
+      name
+    }
+  }
+`;
+
+const QuestionForm = withRouter(
+  compose(graphql(SaveQuestion, {name: 'saveQuestion'}), graphql(Query))(QuestionFormContainer),
+);
 
 export default QuestionForm;

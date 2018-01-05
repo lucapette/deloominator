@@ -1,4 +1,4 @@
-package api
+package handlers
 
 import (
 	"bytes"
@@ -14,12 +14,13 @@ import (
 	"github.com/lucapette/deloominator/pkg/db"
 )
 
-type ExportPayload struct {
+type QueryPayload struct {
 	Source string `json:"source"`
 	Query  string `json:"query"`
 }
 
-func exportHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *http.Request) {
+// Export returns an handler that exports data in CSV format
+func Export(dataSources db.DataSources) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		format := pat.Param(r, "format")
 
@@ -35,15 +36,14 @@ func exportHandler(dataSources db.DataSources) func(w http.ResponseWriter, r *ht
 			return
 		}
 
-		payload := ExportPayload{}
-
+		payload := QueryPayload{}
 		err = json.Unmarshal(query, &payload)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		qr, err := dataSources[payload.Source].Query(payload.Query)
+		qr, err := dataSources[payload.Source].Query(db.Input{Query: payload.Query})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

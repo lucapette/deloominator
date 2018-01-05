@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/lucapette/deloominator/pkg/query"
 )
 
 type DataSource struct {
@@ -17,6 +18,11 @@ type DataSource struct {
 }
 
 type DataSources map[string]*DataSource
+
+type Input struct {
+	Query     string
+	Variables []query.Variable
+}
 
 func NewDataSources(sources []string) (dataSources DataSources, err error) {
 	dataSources = make(DataSources, len(sources))
@@ -76,7 +82,7 @@ func NewDataSource(source string) (ds *DataSource, err error) {
 
 // Tables returns the names of the available tables in the data source
 func (ds *DataSource) Tables() (names []string, err error) {
-	queryResult, err := ds.Query(ds.TablesQuery())
+	queryResult, err := ds.Query(Input{Query: ds.TablesQuery()})
 	if err != nil {
 		return names, err
 	}
@@ -136,10 +142,20 @@ func (ds *DataSource) Close() {
 	}
 }
 
-func (ds *DataSource) Query(input string) (qr QueryResult, err error) {
-	// We use a prepare statement here so we can force MySQL binary protocol and
-	// get real types back. See: https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
-	statement, err := ds.DB.Prepare(input)
+func (ds *DataSource) Query(input Input) (qr QueryResult, err error) {
+	evaler := query.NewEvaler(input.Variables)
+
+	query := evaler.Eval(input.Query)
+
+	logrus.WithFields(logrus.Fields{
+		"storage_name": ds.DBName(),
+		"input":        input,
+		"query":        query,
+	}).Print("running query")
+
+	// We use a prepare statement here so we can force MySQL binary protocol and get real types back. See:
+	// https://github.com/go-sql-driver/mysql/issues/407#issuecomment-172583652
+	statement, err := ds.DB.Prepare(query)
 	if err != nil {
 		return qr, err
 	}

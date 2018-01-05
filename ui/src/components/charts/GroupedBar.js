@@ -1,34 +1,37 @@
+//@flow
 import React, {Component} from 'react';
 import VegaLite from 'react-vega-lite';
 
-const spec = {
-  description: 'A multiple columns bar chart.',
-  mark: 'bar',
-  encoding: {
-    column: {type: 'ordinal'},
-    x: {type: 'nominal', scale: {rangeStep: 9}, axis: {title: ''}},
-    y: {type: 'quantitative', axis: {grid: false}},
-    color: {type: 'nominal'},
-  },
-  config: {facet: {cell: {strokeWidth: 0}}},
+type Props = {
+  values: Array<{}>,
+  width: number,
+  onNewView: Function,
 };
 
-export default class GroupedBar extends Component {
+class GroupedBar extends Component<Props> {
   render() {
+    const {values, onNewView, width} = this.props;
     const data = {
-      values: this.props.values,
+      values: values,
     };
 
-    const [x, y, z] = Object.keys(this.props.values[0]);
+    const [x, y, z] = Object.keys(values[0]);
 
-    spec['encoding']['x']['field'] = x;
-    spec['encoding']['color']['field'] = x;
-    spec['encoding']['y']['field'] = z;
-    spec['encoding']['y']['axis']['title'] = z;
-    spec['encoding']['column']['field'] = y;
+    const spec = {
+      description: 'A multiple columns bar chart.',
+      mark: 'bar',
+      transform: [{calculate: `datum.${x}`, as: x}],
+      encoding: {
+        column: {type: 'ordinal', field: y},
+        x: {type: 'nominal', scale: {rangeStep: 9}, axis: {title: ''}, field: x},
+        y: {type: 'quantitative', axis: {grid: false, title: z}, field: z},
+        color: {type: 'nominal', field: x},
+      },
+      config: {facet: {cell: {strokeWidth: 0}}},
+    };
 
-    spec['transform'] = [{calculate: `datum.${x}`, as: x}];
-
-    return <VegaLite spec={spec} data={data} onNewView={this.props.onNewView} />;
+    return <VegaLite spec={spec} data={data} onNewView={onNewView} />;
   }
 }
+
+export default GroupedBar;

@@ -5,7 +5,6 @@ ui/node_modules
 pkg/api/static.go
 ui/dist/App.js
 ui/dist/App.js.map
-pkg/db/migrations.go
-pkg/api/api-packr.go
+pkg/api/handlers/handlers-packr.go
 .vscode
 dist/

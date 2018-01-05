@@ -23,7 +23,7 @@ func Handler(dataSources db.DataSources, storage *storage.Storage) func(w http.R
 			return
 		}
 
-		payload := Payload{}
+		payload := payload{}
 
 		err = json.Unmarshal(query, &payload)
 		if err != nil {

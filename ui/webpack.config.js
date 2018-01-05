@@ -21,10 +21,6 @@ const config = {
       {
         test: /\.(js|jsx)$/,
         loader: 'babel-loader',
-        options: {
-          presets: ['es2015', 'react'],
-          plugins: ['transform-flow-strip-types', 'transform-class-properties'],
-        },
         exclude: /node_modules/,
       },
       {

@@ -16,14 +16,6 @@ type Storage struct {
 	orm        *gorm.DB
 }
 
-// Question stores q&a
-type Question struct {
-	ID         int    `json:"id"`
-	Title      string `json:"title,omitempty"`
-	Query      string `json:"query,omitempty"`
-	DataSource string `json:"dataSource,omitempty"`
-}
-
 // NewStorage initializes deloominator own storage using source
 func NewStorage(source string) (*Storage, error) {
 	dataSource, err := db.NewDataSource(source)
@@ -55,34 +47,6 @@ func (s *Storage) AutoUpgrade() error {
 	}
 
 	return nil
-}
-
-func (s *Storage) InsertQuestion(title, query, dataSource string) (*Question, error) {
-	question := &Question{Title: title, Query: query, DataSource: dataSource}
-
-	if err := s.orm.Create(question).Error; err != nil {
-		return nil, err
-	}
-
-	return question, nil
-}
-
-func (s *Storage) FindQuestion(id int) (*Question, error) {
-	question := &Question{ID: id}
-
-	if err := s.orm.Find(question).Error; err != nil {
-		return nil, err
-	}
-
-	return question, nil
-}
-
-func (s *Storage) AllQuestions() (questions []*Question, err error) {
-	if err := s.orm.Order("title").Find(&questions).Error; err != nil {
-		return nil, err
-	}
-
-	return questions, nil
 }
 
 // Close closes the underlining DB connection

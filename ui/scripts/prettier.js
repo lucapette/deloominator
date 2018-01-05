@@ -7,62 +7,39 @@ const fs = require('fs');
 const mode = process.argv[2] || 'check';
 const shouldWrite = mode === 'write';
 
-const defaultOptions = {
-  bracketSpacing: false,
-  singleQuote: true,
-  jsxBracketSameLine: true,
-  trailingComma: 'all',
-  printWidth: 120,
-};
-const config = {
-  default: {
-    patterns: ['**/*.js'],
-    ignore: ['**/node_modules/**'],
-    options: {
-      trailingComma: 'es5',
-    },
-  },
-};
+const patterns = ['**/*.js'];
+const ignore = ['**/node_modules/**', 'dist/**'];
 
 let didWarn = false;
 let didError = false;
 
-Object.keys(config).forEach(key => {
-  const patterns = config[key].patterns;
-  const options = config[key].options;
-  const ignore = config[key].ignore;
+const files = glob.sync(patterns.join(','), {ignore});
 
-  const globPattern = patterns.length > 1 ? `{${patterns.join(',')}}` : `${patterns.join(',')}`;
-  const files = glob.sync(globPattern, {ignore});
+const options = prettier.resolveConfig.sync(process.cwd());
 
-  if (!files.length) {
-    return;
-  }
+files.forEach(file => {
+  try {
+    const input = fs.readFileSync(file, 'utf8');
 
-  const args = Object.assign({}, defaultOptions, options);
-  files.forEach(file => {
-    try {
-      const input = fs.readFileSync(file, 'utf8');
-      if (shouldWrite) {
-        const output = prettier.format(input, args);
-        if (output !== input) {
-          fs.writeFileSync(file, output, 'utf8');
-        }
-      } else {
-        if (!prettier.check(input, args)) {
-          if (!didWarn) {
-            console.log('Please run prettier');
-            didWarn = true;
-          }
-          console.log(file);
-        }
+    if (shouldWrite) {
+      const output = prettier.format(input, options);
+      if (output !== input) {
+        fs.writeFileSync(file, output, 'utf8');
       }
-    } catch (error) {
-      didError = true;
-      console.log('\n\n' + error.message);
-      console.log(file);
+    } else {
+      if (!prettier.check(input, options)) {
+        if (!didWarn) {
+          console.log('Please run prettier');
+          didWarn = true;
+        }
+        console.log(file);
+      }
     }
-  });
+  } catch (error) {
+    didError = true;
+    console.log('\n\n' + error.message);
+    console.log(file);
+  }
 });
 
 if (didWarn || didError) {

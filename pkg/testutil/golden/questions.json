@@ -1,0 +1,1 @@
+{"data":{"questions":[{"dataSource":"source","id":"1","query":"select * from answer","title":"the answer is 42","variables":[{"name":"date","value":"2017-10-15"}]}]}}

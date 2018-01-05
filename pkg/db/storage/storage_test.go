@@ -32,7 +32,7 @@ func TestStorage_AutoUpgrade_DBExists(t *testing.T) {
 				t.Errorf("expected AutoUpgrade to not return error, but did: %v", err)
 			}
 
-			qr, err := ds.Query(ds.TablesQuery())
+			qr, err := ds.Query(db.Input{Query: ds.TablesQuery()})
 			if err != nil {
 				t.Errorf("could not query tables: %v", err)
 			}
@@ -66,7 +66,7 @@ func TestStorage_AutoUpgrade_DBNotExist(t *testing.T) {
 				t.Errorf("expected AutoUpgrade to not return error, but did: %v", err)
 			}
 
-			qr, err := ds.Query(ds.TablesQuery())
+			qr, err := ds.Query(db.Input{Query: ds.TablesQuery()})
 			if err != nil {
 				t.Errorf("could not query tables: %v", err)
 			}

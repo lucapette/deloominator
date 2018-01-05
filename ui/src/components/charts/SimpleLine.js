@@ -1,28 +1,33 @@
+//@flow
 import React, {Component} from 'react';
 import VegaLite from 'react-vega-lite';
 
-const spec = {
-  description: 'A simple line chart with embedded data.',
-  mark: 'line',
-  encoding: {
-    x: {type: 'temporal', axis: {shortTimeLabels: true}},
-    y: {type: 'quantitative'},
-  },
+type Props = {
+  width: number,
+  values: Array<{}>,
+  onNewView: Function,
 };
 
-export default class SimpleLine extends Component {
+class SimpleLine extends Component<Props> {
   render() {
+    const {values, onNewView, width} = this.props;
     const data = {
-      values: this.props.values,
+      values: values,
     };
 
-    const [x, y] = Object.keys(this.props.values[0]);
+    const [x, y] = Object.keys(values[0]);
+    const spec = {
+      description: 'A simple line chart with embedded data.',
+      mark: 'line',
+      width: width || 1000,
+      encoding: {
+        x: {type: 'temporal', axis: {shortTimeLabels: true}, field: x},
+        y: {type: 'quantitative', field: y},
+      },
+    };
 
-    spec['encoding']['x']['field'] = x;
-    spec['encoding']['y']['field'] = y;
-
-    spec['width'] = this.props.width || 1000;
-
-    return <VegaLite spec={spec} data={data} onNewView={this.props.onNewView} />;
+    return <VegaLite spec={spec} data={data} onNewView={onNewView} />;
   }
 }
+
+export default SimpleLine;

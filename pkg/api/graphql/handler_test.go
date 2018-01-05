@@ -17,6 +17,12 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
+type payload struct {
+	Query         string                 `json:"query"`
+	OperationName string                 `json:"operationName,omitempty"`
+	Variables     map[string]interface{} `json:"variables,omitempty"`
+}
+
 type testServer struct {
 	s           *storage.Storage
 	dataSources db.DataSources
@@ -29,7 +35,7 @@ func NewTestServer(t *testing.T, dataSources db.DataSources, s *storage.Storage)
 }
 
 func (ts *testServer) do(query string, variables vars) string {
-	json, err := json.Marshal(graphql.Payload{Query: query, Variables: variables})
+	json, err := json.Marshal(payload{Query: query, Variables: variables})
 	if err != nil {
 		ts.tt.Fatalf("could not marshal payload: %v", err)
 	}

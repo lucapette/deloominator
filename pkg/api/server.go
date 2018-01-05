@@ -7,6 +7,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/lucapette/deloominator/pkg/api/graphql"
+	"github.com/lucapette/deloominator/pkg/api/handlers"
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/lucapette/deloominator/pkg/db/storage"
 	"github.com/rs/cors"
@@ -61,7 +62,7 @@ func (s *Server) Start() {
 	router := goji.NewMux()
 
 	if s.debug {
-		router.Use(debugHandler)
+		router.Use(handlers.Debug)
 	}
 
 	c := cors.New(cors.Options{
@@ -72,13 +73,14 @@ func (s *Server) Start() {
 		logrus.Warn("server running in read-only mode")
 	}
 
-	router.Use(logHandler)
+	router.Use(handlers.Log)
 	router.Use(c.Handler)
 
 	router.HandleFunc(pat.Post("/graphql"), graphql.Handler(s.dataSources, s.storage))
-	router.HandleFunc(pat.Get("/:name.:ext"), assetsHandler)
-	router.HandleFunc(pat.Post("/export/:format"), exportHandler(s.dataSources))
-	router.HandleFunc(pat.Get("/*"), uiHandler)
+	router.HandleFunc(pat.Get("/:name.:ext"), handlers.Static)
+	router.HandleFunc(pat.Post("/export/:format"), handlers.Export(s.dataSources))
+	router.HandleFunc(pat.Post("/query/evaluate"), handlers.QueryEvaluator)
+	router.HandleFunc(pat.Get("/*"), handlers.UI)
 
 	s.srv = &http.Server{Addr: s.port, Handler: router}
 
