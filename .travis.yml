@@ -11,6 +11,8 @@ before_script:
 cache:
   directories:
   - ui/node_modules
+  - $GOPATH/src
+  - $GOPATH/pkg
 services:
   - mysql
   - postgresql

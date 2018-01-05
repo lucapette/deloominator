@@ -4,9 +4,9 @@ TEST_OPTIONS?=
 
 setup: ## Install all the build and lint dependencies
 	go get -u --insecure github.com/golang/dep/cmd/dep
-	go get -u golang.org/x/tools/cmd/stringer
-	go get -u github.com/gobuffalo/packr/...
-	go get -u github.com/alecthomas/gometalinter
+	go get golang.org/x/tools/cmd/stringer
+	go get github.com/gobuffalo/packr/...
+	go get github.com/alecthomas/gometalinter
 	gometalinter --install
 	dep ensure
 
