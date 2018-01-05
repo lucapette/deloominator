@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import DocumentTitle from 'react-document-title';
-import {Container, Message, Loader, Grid, Header, Form} from 'semantic-ui-react';
+import {Container, Loader, Grid, Header, Form} from 'semantic-ui-react';
 
 import QueryResult from '../../components/QueryResult';
 import QueryVariables from '../../components/QueryVariables';
@@ -49,7 +49,9 @@ class QuestionContainer extends Component {
       return <p>Error!</p>;
     }
 
-    const {title, dataSource, query, variables} = question;
+    const {title, dataSource, query} = question;
+
+    const {variables} = this.state;
 
     return (
       <DocumentTitle title={title}>
@@ -59,14 +61,14 @@ class QuestionContainer extends Component {
             <Grid.Column>
               <Form>
                 <Form.Group>
-                  <QueryVariables variables={this.state.variables} handleVariableChange={this.handleVariableChange} />
+                  <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
                 </Form.Group>
               </Form>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              <QueryResult source={dataSource} query={query} variables={this.state.variables} />
+              <QueryResult source={dataSource} query={query} variables={variables} />
             </Grid.Column>
           </Grid.Row>
         </Container>

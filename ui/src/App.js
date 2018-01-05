@@ -1,13 +1,13 @@
-import React, {Component} from 'react';
+import React from 'react';
 import gql from 'graphql-tag';
 import {ApolloClient} from 'apollo-client';
 import {createHttpLink} from 'apollo-link-http';
 import {InMemoryCache, IntrospectionFragmentMatcher} from 'apollo-cache-inmemory';
 import {ApolloProvider, graphql} from 'react-apollo';
 import ReactDOM from 'react-dom';
-import {Container, Menu, Grid, Loader} from 'semantic-ui-react';
+import {Container, Loader} from 'semantic-ui-react';
 
-import {BrowserRouter as Router, Route, NavLink} from 'react-router-dom';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 
 import 'semantic-ui-css/semantic.min.css';
 import 'semantic-ui-css/semantic.min.js';
@@ -51,6 +51,9 @@ const SettingsQuery = gql`
 const App = graphql(SettingsQuery)(({data: {loading, error, settings}}) => {
   if (loading) {
     return <Loader active />;
+  }
+  if (error) {
+    return <p>error!</p>;
   }
   return (
     <Router>

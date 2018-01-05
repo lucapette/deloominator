@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, Segment, List, Message, Divider} from 'semantic-ui-react';
+import {Container, Segment, List, Message} from 'semantic-ui-react';
 
 const Footer = ({settings}) => {
   return (

@@ -16,8 +16,6 @@ class Table extends Component<Props> {
   render() {
     const {rows, columns} = this.props;
 
-    const columnWidth = 100;
-
     const tableWidth = columns.length > 11 ? 1127 : columns.length * 100;
 
     return (

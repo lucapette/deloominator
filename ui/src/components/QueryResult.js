@@ -10,20 +10,18 @@ import Chart from './Chart';
 import Table from './Table';
 
 class QueryResultContainer extends Component {
-  view: Object;
-
-  componentWillUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps) {
     const {data: {loading, error, query}, handleQuerySuccess} = nextProps;
     if (handleQuerySuccess) {
       handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == 'queryError'));
     }
   }
 
-  onNewView = (view: Object) => {
+  onNewView = view => {
     this.view = view;
   };
 
-  exportCSV = (e: MouseEvent) => {
+  exportCSV = e => {
     e.preventDefault();
     const {source, query} = this.props;
 
@@ -38,24 +36,19 @@ class QueryResultContainer extends Component {
       });
   };
 
-  exportPNG = (e: MouseEvent) => {
+  exportPNG = e => {
     e.preventDefault();
-    this.view
-      .toImageURL('png')
-      .then(url => {
-        let link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('target', '_blank');
-        link.setAttribute('download', 'chart.png');
-        link.dispatchEvent(new MouseEvent('click'));
-      })
-      .catch(function(error) {
-        /* error handling */
-      });
+    this.view.toImageURL('png').then(url => {
+      let link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('download', 'chart.png');
+      link.dispatchEvent(new MouseEvent('click'));
+    });
   };
 
   render() {
-    const {data: {loading, error, query}, handleQuerySuccess} = this.props;
+    const {data: {loading, error, query}} = this.props;
 
     if (loading) {
       return (

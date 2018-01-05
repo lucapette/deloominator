@@ -41,6 +41,7 @@ lint: embed ## Run all the linters
 	--enable=structcheck \
 	--enable=maligned \
 	./...
+	cd ui && npm run eslint
 	cd ui && npm run prettier:check
 
 run-server: build-server ## Run the API server

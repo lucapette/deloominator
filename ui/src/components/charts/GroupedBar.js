@@ -10,7 +10,7 @@ type Props = {
 
 class GroupedBar extends Component<Props> {
   render() {
-    const {values, onNewView, width} = this.props;
+    const {values, onNewView} = this.props;
     const data = {
       values: values,
     };

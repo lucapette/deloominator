@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import {graphql} from 'react-apollo';
-import gql from 'graphql-tag';
 import DocumentTitle from 'react-document-title';
 import {Grid} from 'semantic-ui-react';
 
@@ -11,20 +9,19 @@ import QuestionForm from './QuestionForm';
 import debounce from 'lodash/debounce';
 
 class Playground extends Component {
-  state = {
-    currentDataSource: '',
-    currentQuery: '',
-    dataSource: '',
-    query: '',
-    showResult: false,
-    querySuccess: false,
-    variables: [],
-  };
-
-  evalQuery: Function;
-
   constructor(props) {
     super(props);
+
+    this.state = {
+      currentDataSource: '',
+      currentQuery: '',
+      dataSource: '',
+      query: '',
+      showResult: false,
+      querySuccess: false,
+      variables: [],
+    };
+
     this.evalQuery = debounce(this.evalQuery, 200, {trailing: true});
   }
 
