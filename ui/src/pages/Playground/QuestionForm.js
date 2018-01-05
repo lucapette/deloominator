@@ -14,7 +14,7 @@ class QuestionFormContainer extends Component {
     title: 'Untitled visualization',
   };
 
-  dataSourcesOptions = (dataSources: [string]) => {
+  dataSourcesOptions = dataSources => {
     return sortBy(dataSources || [], ['name'], ['asc']).map(s => ({
       name: s.name,
       text: s.name,
@@ -37,14 +37,10 @@ class QuestionFormContainer extends Component {
         dataSource: currentDataSource,
         variables: variables,
       },
-    })
-      .then(({data: {saveQuestion}}) => {
-        const questionPath = routing.urlFor(saveQuestion, ['id', 'title']);
-        history.push(`/questions/${questionPath}`);
-      })
-      .catch(({error}) => {
-        console.log(error);
-      });
+    }).then(({data: {saveQuestion}}) => {
+      const questionPath = routing.urlFor(saveQuestion, ['id', 'title']);
+      history.push(`/questions/${questionPath}`);
+    });
   };
 
   render() {
@@ -53,7 +49,6 @@ class QuestionFormContainer extends Component {
       handleDataSourcesChange,
       handleRunClick,
       handleQueryChange,
-      currentDataSource,
       currentQuery,
       querySuccess,
       handleVariableChange,

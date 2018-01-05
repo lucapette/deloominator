@@ -1,8 +1,8 @@
+//@flow
 import React, {Component} from 'react';
 
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import {Label, Form} from 'semantic-ui-react';
 
 import {capitalize} from 'lodash';
 
