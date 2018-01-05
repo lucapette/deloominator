@@ -4,6 +4,8 @@ import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import {Label, Form} from 'semantic-ui-react';
 
+import {capitalize} from 'lodash';
+
 type Props = {
   name: string,
   handleVariableChange: Function,
@@ -39,7 +41,7 @@ class Date extends Component<Props, State> {
     const {options, name} = this.props;
     return (
       <div className="field">
-        <label>{name.replace(/[{}]/g, '')}</label>
+        <label>{capitalize(name.replace(/[{}]/g, ''))}</label>
         <Flatpickr options={options} value={this.state.value} onChange={this.handleChange} />
       </div>
     );
