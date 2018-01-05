@@ -30,7 +30,6 @@ class QuestionFormContainer extends Component {
     e.preventDefault();
     const {currentQuery, selectedDataSource, history, mutate, variables} = this.props;
 
-    console.log(variables);
     mutate({
       variables: {
         title: this.state.title,

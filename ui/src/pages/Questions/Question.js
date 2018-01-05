@@ -24,13 +24,19 @@ class QuestionContainer extends Component {
       return <p>Error!</p>;
     }
 
+    const {title, dataSource, query, variables} = question;
+
     return (
-      <DocumentTitle title={question.title}>
+      <DocumentTitle title={title}>
         <Container>
-          <Header as="h1">{question.title}</Header>
+          <Header as="h1">{title}</Header>
           <Grid.Row>
             <Grid.Column>
-              <QueryResult source={question.dataSource} query={question.query} variables={question.variables} />
+              <QueryResult
+                source={dataSource}
+                query={query}
+                variables={variables.map(v => ({name: v.name, value: v.value, isControllable: v.isControllable}))}
+              />
             </Grid.Column>
           </Grid.Row>
         </Container>
@@ -46,6 +52,11 @@ const Query = gql`
       title
       query
       dataSource
+      variables {
+        name
+        value
+        isControllable
+      }
     }
   }
 `;
