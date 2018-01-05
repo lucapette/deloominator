@@ -10,9 +10,9 @@ import QuestionForm from './QuestionForm';
 
 import debounce from 'lodash/debounce';
 
-class PlaygroundPage extends Component {
+class Playground extends Component {
   state = {
-    selectedDataSource: '',
+    currentDataSource: '',
     currentQuery: '',
     dataSource: '',
     query: '',
@@ -41,16 +41,12 @@ class PlaygroundPage extends Component {
   };
 
   handleDataSourcesChange = (e, {value}) => {
-    this.setState({selectedDataSource: value});
+    this.setState({currentDataSource: value});
   };
 
   handleRunClick = e => {
     e.preventDefault();
-    this.setState({
-      showResult: true,
-      query: this.state.currentQuery,
-      dataSource: this.state.selectedDataSource,
-    });
+    this.setState({showResult: true, query: this.state.currentQuery});
   };
 
   handleQueryChange = query => {
@@ -76,11 +72,10 @@ class PlaygroundPage extends Component {
             <Grid.Column>
               <QuestionForm
                 saveEnabled={!settings.isReadOnly}
-                dataSources={this.props.data.dataSources}
                 handleDataSourcesChange={this.handleDataSourcesChange}
                 handleQueryChange={this.handleQueryChange}
                 handleRunClick={this.handleRunClick}
-                selectedDataSource={this.state.selectedDataSource}
+                currentDataSource={this.state.currentDataSource}
                 currentQuery={this.state.currentQuery}
                 querySuccess={this.state.querySuccess}
                 variables={this.state.variables}
@@ -93,7 +88,7 @@ class PlaygroundPage extends Component {
               {this.state.showResult && (
                 <QueryResult
                   handleQuerySuccess={this.handleQuerySuccess}
-                  source={this.state.dataSource}
+                  source={this.state.currentDataSource}
                   query={this.state.query}
                   variables={this.state.variables}
                 />
@@ -105,15 +100,5 @@ class PlaygroundPage extends Component {
     );
   }
 }
-
-const Query = gql`
-  {
-    dataSources {
-      name
-    }
-  }
-`;
-
-const Playground = graphql(Query)(PlaygroundPage);
 
 export default Playground;

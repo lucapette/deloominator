@@ -1,6 +1,6 @@
 import {sortBy} from 'lodash';
 import React, {Component} from 'react';
-import {graphql} from 'react-apollo';
+import {graphql, compose} from 'react-apollo';
 import gql from 'graphql-tag';
 import {withRouter} from 'react-router';
 import {Button, Form} from 'semantic-ui-react';
@@ -28,13 +28,13 @@ class QuestionFormContainer extends Component {
 
   handleSave = e => {
     e.preventDefault();
-    const {currentQuery, selectedDataSource, history, mutate, variables} = this.props;
+    const {currentQuery, currentDataSource, history, saveQuestion, variables} = this.props;
 
-    mutate({
+    saveQuestion({
       variables: {
         title: this.state.title,
         query: currentQuery,
-        dataSource: selectedDataSource,
+        dataSource: currentDataSource,
         variables: variables,
       },
     })
@@ -53,18 +53,23 @@ class QuestionFormContainer extends Component {
       handleDataSourcesChange,
       handleRunClick,
       handleQueryChange,
-      dataSources,
-      selectedDataSource,
+      currentDataSource,
       currentQuery,
       querySuccess,
       handleVariableChange,
       variables,
+      data: {loading, error, dataSources},
     } = this.props;
+
+    if (error) {
+      return <p>Error!</p>;
+    }
 
     return (
       <Form>
         <Form.Group>
           <Form.Dropdown
+            loading={loading}
             placeholder="Data Source"
             search
             selection
@@ -78,7 +83,7 @@ class QuestionFormContainer extends Component {
             icon="play"
             primary
             content="Run"
-            disabled={!(selectedDataSource && currentQuery)}
+            disabled={!(currentQuery && currentQuery)}
             onClick={handleRunClick}
           />
           {saveEnabled && (
@@ -105,6 +110,16 @@ const SaveQuestion = gql`
   }
 `;
 
-const QuestionForm = withRouter(graphql(SaveQuestion)(QuestionFormContainer));
+const Query = gql`
+  {
+    dataSources {
+      name
+    }
+  }
+`;
+
+const QuestionForm = withRouter(
+  compose(graphql(SaveQuestion, {name: 'saveQuestion'}), graphql(Query))(QuestionFormContainer),
+);
 
 export default QuestionForm;
