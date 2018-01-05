@@ -18,7 +18,7 @@ class PlaygroundPage extends Component {
     query: '',
     showResult: false,
     querySuccess: false,
-    variables: {},
+    variables: [],
   };
 
   evalQuery: Function;
@@ -59,9 +59,11 @@ class PlaygroundPage extends Component {
   };
 
   handleVariableChange = (key, value) => {
-    const variables = {...this.state.variables, [key]: value};
-
-    this.setState({variables});
+    const {variables} = this.state;
+    const index = variables.findIndex(e => e['name'] == key);
+    this.setState({
+      variables: variables.map((item, i) => (index !== i ? item : {...item, value: value})),
+    });
   };
 
   render() {

@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/lucapette/deloominator/pkg/api/handlers"
 	"github.com/lucapette/deloominator/pkg/testutil"
@@ -65,19 +64,10 @@ func TestQueryEvaluatorVariables(t *testing.T) {
 		query string
 		field string
 	}{
-		{"select * from film where last_update > {timestamp}", "Timestamp"},
-		{"select * from film where last_update > {today}", "Today"},
-		{"select * from film where last_update > {yesterday}", "Yesterday"},
+		{"select * from film where last_update > {timestamp}", "timestamp"},
+		{"select * from film where last_update > {today}", "today"},
+		{"select * from film where last_update > {yesterday}", "yesterday"},
 	}
-
-	type payload struct {
-		Variables struct {
-			Timestamp time.Time `json:"{timestamp}"`
-			Today     string    `json:"{today}"`
-			Yesterday string    `json:"{yesterday}"`
-		} `json:"variables"`
-	}
-
 	for _, test := range tests {
 		for _, dataSource := range dataSources {
 			t.Run(dataSource.Dialect.DriverName()+test.field, func(t *testing.T) {
@@ -100,14 +90,23 @@ func TestQueryEvaluatorVariables(t *testing.T) {
 					t.Errorf("expected 200, but got %v", resp.StatusCode)
 				}
 
-				p := payload{}
+				p := handlers.QueryEvaluatorPayload{}
 				err = json.Unmarshal(body, &p)
 				if err != nil {
 					t.Errorf("could not parse json response: %v", err)
 				}
 
-				if testutil.IsZeroValueByFieldName(p.Variables, test.field) {
-					t.Errorf("expected %s to have a value, but did not", test.field)
+				found := false
+
+				for _, v := range p.Variables {
+					if v.Name == test.field {
+						found = true
+						break
+					}
+				}
+
+				if !found {
+					t.Errorf("expected to find %s in %v, but did not", test.field, p.Variables)
 				}
 			})
 		}

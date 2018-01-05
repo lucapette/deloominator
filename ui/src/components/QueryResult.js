@@ -105,7 +105,7 @@ class QueryResultContainer extends Component {
 }
 
 const Query = gql`
-  query Query($source: String!, $query: String!, $variables: String) {
+  query Query($source: String!, $query: String!, $variables: [InputVariable]) {
     query(source: $source, query: $query, variables: $variables) {
       ... on results {
         chartName
@@ -118,7 +118,11 @@ const Query = gql`
             value
           }
         }
-        variables
+        variables {
+          name
+          value
+          isControllable
+        }
       }
       ... on queryError {
         message

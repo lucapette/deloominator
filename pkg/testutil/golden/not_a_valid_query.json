@@ -1,1 +1,1 @@
-{"data":null,"errors":[{"message":"Cannot query field \"notAValidQuery\" on type \"query\".","locations":[{"line":1,"column":3}]}]}
+{"data":null,"errors":[{"message":"Cannot query field \"notAValidQuery\" on type \"Query\".","locations":[{"line":1,"column":3}]}]}

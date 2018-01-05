@@ -1,4 +1,3 @@
-//@flow
 import React, {Component} from 'react';
 
 import Flatpickr from 'react-flatpickr';
@@ -30,10 +29,10 @@ class Date extends Component<Props, State> {
     };
   }
 
-  handleChange = (selectedDates: Array<string>) => {
+  handleChange = (selectedDates: Array<Date>, selected: string) => {
     const {name, handleVariableChange} = this.props;
 
-    handleVariableChange(name, selectedDates[0]);
+    handleVariableChange(name, selected);
   };
 
   render() {

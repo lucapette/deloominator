@@ -30,27 +30,33 @@ type column struct {
 	Type string `json:"type"`
 }
 
+type variable struct {
+	Name           string `json:"name"`
+	Value          string `json:"value"`
+	IsControllable bool   `json:"isControllable"`
+}
+
 type results struct {
-	Columns   []column          `json:"columns"`
-	Rows      []row             `json:"rows"`
-	ChartName string            `json:"chartName"`
-	Variables map[string]string `json:"variables"`
+	Columns   []column   `json:"columns"`
+	Rows      []row      `json:"rows"`
+	ChartName string     `json:"chartName"`
+	Variables []variable `json:"variables"`
 }
 
 type settings struct {
 	IsReadOnly bool `json:"isReadOnly"`
 }
 
-type Table struct {
+type table struct {
 	Name string `json:"name"`
 }
 
-type DataSource struct {
+type dataSource struct {
 	Name   string   `json:"name"`
-	Tables []*Table `json:"tables"`
+	Tables []*table `json:"tables"`
 }
 
-type Payload struct {
+type payload struct {
 	Query         string                 `json:"query"`
 	OperationName string                 `json:"operationName,omitempty"`
 	Variables     map[string]interface{} `json:"variables,omitempty"`
@@ -73,10 +79,77 @@ func convertToChartTypes(columns []db.Column) (types charts.DataTypes) {
 	return types
 }
 
+func mutationRoot(s *storage.Storage) *gql.Object {
+	fields := gql.Fields{
+		"saveQuestion": &gql.Field{
+			Type: questionType,
+			Args: gql.FieldConfigArgument{
+				"title": &gql.ArgumentConfig{
+					Type: gql.NewNonNull(gql.String),
+				},
+				"query": &gql.ArgumentConfig{
+					Type: gql.NewNonNull(gql.String),
+				},
+				"dataSource": &gql.ArgumentConfig{
+					Type: gql.NewNonNull(gql.String),
+				},
+				"variables": &gql.ArgumentConfig{
+					Type: gql.NewList(inputVariableType),
+				},
+			},
+			Resolve: saveQuestion(s),
+		},
+	}
+	return gql.NewObject(gql.ObjectConfig{Name: "Mutation", Fields: fields})
+}
+
+func queryRoot(dataSources db.DataSources, s *storage.Storage) *gql.Object {
+	fields := gql.Fields{
+		"settings": &gql.Field{
+			Type:    settingsType,
+			Resolve: resolveSettings(s),
+		},
+		"dataSources": &gql.Field{
+			Type:    gql.NewList(dataSourceType),
+			Resolve: resolveDataSources(dataSources),
+		},
+		"question": &gql.Field{
+			Type: questionType,
+			Args: gql.FieldConfigArgument{
+				"id": &gql.ArgumentConfig{
+					Type: gql.NewNonNull(gql.ID),
+				},
+			},
+			Resolve: resolveQuestion(s),
+		},
+		"questions": &gql.Field{
+			Type:    gql.NewList(questionType),
+			Resolve: resolveQuestions(s),
+		},
+		"query": &gql.Field{
+			Type: queryResultType,
+			Args: gql.FieldConfigArgument{
+				"source": &gql.ArgumentConfig{
+					Type: gql.NewNonNull(gql.String),
+				},
+				"query": &gql.ArgumentConfig{
+					Type: gql.NewNonNull(gql.String),
+				},
+				"variables": &gql.ArgumentConfig{
+					Type: gql.NewList(inputVariableType),
+				},
+			},
+			Resolve: resolveQuery(dataSources),
+		},
+	}
+
+	return gql.NewObject(gql.ObjectConfig{Name: "Query", Fields: fields})
+}
+
 func createSchema(dataSources db.DataSources, storage *storage.Storage) (schema gql.Schema) {
 	schemaConfig := gql.SchemaConfig{
-		Query:    query(dataSources, storage),
-		Mutation: mutation(storage),
+		Query:    queryRoot(dataSources, storage),
+		Mutation: mutationRoot(storage),
 	}
 
 	schema, err := gql.NewSchema(schemaConfig)

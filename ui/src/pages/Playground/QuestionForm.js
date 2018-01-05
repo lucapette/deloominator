@@ -30,12 +30,13 @@ class QuestionFormContainer extends Component {
     e.preventDefault();
     const {currentQuery, selectedDataSource, history, mutate, variables} = this.props;
 
+    console.log(variables);
     mutate({
       variables: {
         title: this.state.title,
         query: currentQuery,
         dataSource: selectedDataSource,
-        variables: JSON.stringify(variables),
+        variables: variables,
       },
     })
       .then(({data: {saveQuestion}}) => {
@@ -97,7 +98,7 @@ class QuestionFormContainer extends Component {
 }
 
 const SaveQuestion = gql`
-  mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!, $variables: String) {
+  mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!, $variables: [InputVariable]) {
     saveQuestion(title: $title, query: $query, dataSource: $dataSource, variables: $variables) {
       id
       title

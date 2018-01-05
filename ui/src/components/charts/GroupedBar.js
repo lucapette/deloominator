@@ -4,12 +4,13 @@ import VegaLite from 'react-vega-lite';
 
 type Props = {
   values: Array<{}>,
+  width: number,
   onNewView: Function,
 };
 
 class GroupedBar extends Component<Props> {
   render() {
-    const {values, onNewView} = this.props;
+    const {values, onNewView, width} = this.props;
     const data = {
       values: values,
     };
@@ -23,7 +24,7 @@ class GroupedBar extends Component<Props> {
       encoding: {
         column: {type: 'ordinal', field: y},
         x: {type: 'nominal', scale: {rangeStep: 9}, axis: {title: ''}, field: x},
-        y: {type: 'quantitative', axis: {grid: false, title: z}, filed: z},
+        y: {type: 'quantitative', axis: {grid: false, title: z}, field: z},
         color: {type: 'nominal', field: x},
       },
       config: {facet: {cell: {strokeWidth: 0}}},

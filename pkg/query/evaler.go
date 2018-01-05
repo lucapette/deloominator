@@ -5,11 +5,14 @@ import (
 	"time"
 )
 
-// Variables is map of "query variables"
-type Variables map[string]string
+// Variable maps a single query variable
+type Variable struct {
+	Name  string
+	Value string
+}
 
 type Evaler struct {
-	Variables
+	vars map[string]string
 }
 
 func endOfDay() time.Time {
@@ -18,45 +21,46 @@ func endOfDay() time.Time {
 	return now.Truncate(time.Hour).Add(d).Add(24*time.Hour - time.Second)
 }
 
-var defaults = Variables{
-	"{timestamp}": endOfDay().Format(time.RFC3339),
-	"{date}":      endOfDay().Format("2006-01-02"),
-	"{today}":     endOfDay().Format("2006-01-02"),
-	"{yesterday}": endOfDay().Add(-24*time.Hour - time.Nanosecond).Format("2006-01-02"),
+var defaults = map[string]string{
+	"timestamp": endOfDay().Format(time.RFC3339),
+	"date":      endOfDay().Format("2006-01-02"),
+	"today":     endOfDay().Format("2006-01-02"),
+	"yesterday": endOfDay().Add(-24*time.Hour - time.Nanosecond).Format("2006-01-02"),
 }
 
-func NewEvaler(vars Variables) *Evaler {
-	merged := make(Variables, len(defaults))
+func NewEvaler(vars []Variable) *Evaler {
+	merged := make(map[string]string, len(defaults))
+
 	for k, v := range defaults {
 		merged[k] = v
 	}
 
-	for k, v := range vars {
-		merged[k] = v
+	for _, v := range vars {
+		merged[v.Name] = v.Value
 	}
-	return &Evaler{Variables: merged}
+	return &Evaler{vars: merged}
 }
 
 // Eval takes a query and evaluates it using vars
-func (e *Evaler) Eval(query string) (string, error) {
-	for key, value := range e.Variables {
-		reg := regexp.MustCompile(key)
+func (e *Evaler) Eval(query string) (evaled string) {
+	evaled = query
+	for k, v := range e.vars {
+		reg := regexp.MustCompile("{" + k + "}")
 
-		query = reg.ReplaceAllString(query, "'"+value+"'")
+		evaled = reg.ReplaceAllString(evaled, "'"+v+"'")
 	}
-	return query, nil
+	return evaled
 }
 
-// ExtractVariables extracts variables from a query
-func ExtractVariables(query string) (variables Variables) {
-	variables = make(Variables, 1)
-	for key, value := range defaults {
-		reg := regexp.MustCompile(key)
+// Eval takes a query and returns the used query variables
+func (e *Evaler) ExtractVariables(query string) (variables []Variable) {
+	variables = make([]Variable, 0)
+	for k, v := range e.vars {
+		reg := regexp.MustCompile("{" + k + "}")
 
-		if match := reg.FindString(query); len(match) > 0 {
-			variables[key] = value
+		if reg.MatchString(query) {
+			variables = append(variables, Variable{Name: k, Value: v})
 		}
-
 	}
 	return variables
 }

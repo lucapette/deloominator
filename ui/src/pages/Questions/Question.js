@@ -46,7 +46,6 @@ const Query = gql`
       title
       query
       dataSource
-      variables
     }
   }
 `;

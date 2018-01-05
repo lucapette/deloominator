@@ -7,16 +7,21 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/lucapette/deloominator/pkg/api/graphql"
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/lucapette/deloominator/pkg/db/storage"
 	"github.com/lucapette/deloominator/pkg/testutil"
 )
 
 func TestGraphQL_DataSources(t *testing.T) {
+	type dataSourceType struct {
+		Name   string `json:"name"`
+		Tables []*struct {
+			Name string `json:"name"`
+		} `json:"tables"`
+	}
 	type response struct {
 		Data struct {
-			DataSources []graphql.DataSource `json:"dataSources"`
+			DataSources []dataSourceType
 		} `json:"data"`
 	}
 	dataSources, cleanup := testutil.SetupDataSources(t)
@@ -36,7 +41,7 @@ func TestGraphQL_DataSources(t *testing.T) {
 	}
 
 	for _, dataSource := range dataSources {
-		found := &graphql.DataSource{}
+		found := &dataSourceType{}
 		for _, ds := range actual {
 
 			if dataSource.DBName() == ds.Name {
@@ -165,32 +170,83 @@ func TestGraphQL_Query(t *testing.T) {
 	}
 }
 
-const Question = `
+func TestGraphQL_Question(t *testing.T) {
+	question := `
   query Question($id: ID!) {
     question(id: $id) {
       id
       title
 			query
 			dataSource
+			variables {
+				name
+				value
+				isControllable
+			}
     }
   }
 `
 
-func TestGraphQL_Question(t *testing.T) {
 	storages := testutil.NewStorages(t)
 	for _, s := range storages {
 		q, err := s.InsertQuestion(&storage.Question{
 			Title:      "the answer is 42",
 			Query:      "select * from answer",
 			DataSource: "source",
+			Variables:  `[{"name": "date", "value": "2017-10-15"}]`,
 		})
 		if err != nil {
 			t.Fatalf("could not create question: %v", err)
 		}
 		testServer := NewTestServer(t, db.DataSources{}, s)
-		actual := testServer.do(Question, vars{"id": q.ID})
+		actual := testServer.do(question, vars{"id": q.ID})
 
 		tf := testutil.NewGoldenFile(t, "question_with_results.json")
+
+		expected := tf.Load()
+
+		if *update {
+			expected = actual
+			tf.Write(actual)
+		}
+
+		if !reflect.DeepEqual(expected, actual) {
+			t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
+		}
+	}
+}
+
+func TestGraphQL_Questions(t *testing.T) {
+	query := `
+  query Questions {
+    questions {
+      id
+      title
+			query
+			dataSource
+			variables {
+				name
+				value
+			}
+    }
+  }
+`
+
+	storages := testutil.NewStorages(t)
+	for _, s := range storages {
+		_, err := s.InsertQuestion(&storage.Question{
+			Title:      "the answer is 42",
+			Query:      "select * from answer",
+			DataSource: "source",
+			Variables:  `[{"name": "date", "value": "2017-10-15"}]`,
+		})
+		if err != nil {
+			t.Fatalf("could not create question: %v", err)
+		}
+		testServer := NewTestServer(t, db.DataSources{}, s)
+		actual := testServer.do(query, vars{})
+
+		tf := testutil.NewGoldenFile(t, "questions.json")
 
 		expected := tf.Load()
 

@@ -6,10 +6,10 @@ import (
 	"github.com/lucapette/deloominator/pkg/query"
 )
 
-var variables = query.Variables{
-	"{timestamp}": "2017-10-13T23:59:59Z",
-	"{today}":     "2017-10-15",
-	"{yesterday}": "2015-04-15",
+var variables = []query.Variable{
+	{Name: "timestamp", Value: "2017-10-13T23:59:59Z"},
+	{Name: "today", Value: "2017-10-15"},
+	{Name: "yesterday", Value: "2015-04-15"},
 }
 
 func TestEval(t *testing.T) {
@@ -42,10 +42,7 @@ func TestEval(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			evaler := query.NewEvaler(variables)
-			got, err := evaler.Eval(test.query)
-			if err != nil {
-				t.Errorf("could not eval: %v", err)
-			}
+			got := evaler.Eval(test.query)
 
 			if got != test.want {
 				t.Errorf("Eval() = %v, want %v", got, test.want)
