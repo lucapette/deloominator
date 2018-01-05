@@ -106,7 +106,7 @@ func main() {
 	}
 
 	sgn := make(chan os.Signal, 1)
-	signal.Notify(sgn, os.Interrupt, os.Kill)
+	signal.Notify(sgn, os.Interrupt)
 	<-sgn
 
 	logrus.WithFields(logrus.Fields{

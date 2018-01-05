@@ -35,6 +35,11 @@ lint: embed ## Run all the linters
 	--enable=vet \
 	--enable=gofmt \
 	--enable=errcheck \
+	--enable=deadcode \
+	--enable=staticcheck \
+	--enable=gosimple \
+	--enable=structcheck \
+	--enable=maligned \
 	./...
 	cd ui && npm run prettier:check
 

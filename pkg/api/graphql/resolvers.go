@@ -35,7 +35,7 @@ func resolveDataSources(dbDataSources db.DataSources) func(p gql.ResolveParams) 
 			logrus.WithFields(logrus.Fields{
 				"schema_name": ds.DBName(),
 				"n_tables":    len(names),
-				"spent":       time.Now().Sub(start),
+				"spent":       time.Since(start),
 			}).Info("tables loaded")
 
 			dataSources = append(dataSources, &dataSource{Name: ds.DBName(), Tables: ts})
