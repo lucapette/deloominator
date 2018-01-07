@@ -28,11 +28,13 @@ class QueryResultContainer extends Component {
     ApiClient.post('export/csv', {Source: source, Query: query})
       .then(response => response.blob())
       .then(blob => {
-        const url = window.URL.createObjectURL(blob);
+        const url = window.URL.createObjectURL(new Blob([blob], {type: {type: 'text/csv;charset=utf-8;'}}));
         let a = document.createElement('a');
         a.href = url;
         a.download = 'chart.csv';
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
       });
   };
 
