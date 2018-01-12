@@ -7,6 +7,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	gql "github.com/graphql-go/graphql"
+	ast "github.com/graphql-go/graphql/language/ast"
 	"github.com/lucapette/deloominator/pkg/charts"
 	"github.com/lucapette/deloominator/pkg/db"
 	"github.com/lucapette/deloominator/pkg/db/storage"
@@ -46,11 +47,25 @@ func resolveDataSources(dbDataSources db.DataSources) func(p gql.ResolveParams) 
 }
 
 type question struct {
-	ID         int        `json:"id"`
-	Title      string     `json:"title"`
-	DataSource string     `json:"dataSource"`
-	Query      string     `json:"query"`
-	Variables  []variable `json:"variables"`
+	ID         int         `json:"id"`
+	Title      string      `json:"title"`
+	CreatedAt  string      `json:"createdAt"`
+	UpdatedAt  string      `json:"updatedAt"`
+	DataSource string      `json:"dataSource"`
+	Query      string      `json:"query"`
+	Variables  []variable  `json:"variables"`
+	Results    interface{} `json:"results"`
+}
+
+func needsResults(p gql.ResolveParams) bool {
+	for _, v := range p.Info.FieldASTs {
+		for _, s := range v.SelectionSet.Selections {
+			if f, ok := s.(*ast.Field); ok && f.Name.Value == "results" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func convertQuestion(in *storage.Question) (out question, err error) {
@@ -59,17 +74,19 @@ func convertQuestion(in *storage.Question) (out question, err error) {
 		Title:      in.Title,
 		DataSource: in.DataSource,
 		Query:      in.Query,
+		CreatedAt:  in.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:  in.UpdatedAt.Format(time.RFC3339),
 	}
 
 	if len(in.Variables) > 0 {
-		err := json.Unmarshal([]byte(in.Variables), &out.Variables)
-		return out, err
+		if err := json.Unmarshal([]byte(in.Variables), &out.Variables); err != nil {
+			return out, err
+		}
 	}
-
 	return out, nil
 }
 
-func resolveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
+func resolveQuestion(dataSources db.DataSources, s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
 	return func(p gql.ResolveParams) (interface{}, error) {
 		id, err := strconv.Atoi(p.Args["id"].(string))
 		if err != nil {
@@ -80,22 +97,58 @@ func resolveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{},
 		if err != nil {
 			return nil, err
 		}
-		return convertQuestion(in)
+
+		question, err := convertQuestion(in)
+		if err != nil {
+			return question, err
+		}
+
+		if needsResults(p) {
+			queryResultResolver := resolveQuery(dataSources)
+			question.Results, err = queryResultResolver(gql.ResolveParams{
+				Args: map[string]interface{}{
+					"source":    question.DataSource,
+					"query":     question.Query,
+					"variables": question.Variables,
+				},
+			})
+
+			if err != nil {
+				return question, err
+			}
+		}
+		return question, nil
 	}
 }
 
-func resolveQuestions(s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
+func resolveQuestions(dataSources db.DataSources, s *storage.Storage) func(p gql.ResolveParams) (interface{}, error) {
 	return func(p gql.ResolveParams) (interface{}, error) {
 		dbQuestions, err := s.AllQuestions()
 		if err != nil {
 			return nil, err
 		}
+		needsResults := needsResults(p)
+		queryResultResolver := resolveQuery(dataSources)
+
 		questions := make([]question, len(dbQuestions))
 		for i, q := range dbQuestions {
-			questions[i], err = convertQuestion(q)
+			question, err := convertQuestion(q)
 			if err != nil {
 				return nil, err
 			}
+			if needsResults {
+				question.Results, err = queryResultResolver(gql.ResolveParams{
+					Args: map[string]interface{}{
+						"source":    question.DataSource,
+						"query":     question.Query,
+						"variables": question.Variables,
+					},
+				})
+				if err != nil {
+					return nil, err
+				}
+			}
+			questions[i] = question
 		}
 		return questions, nil
 	}

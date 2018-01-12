@@ -29,7 +29,7 @@ test-ui: ## Run UI tests
 
 test: test-server test-ui ## Run all the tests
 
-lint: embed ## Run all the linters
+lint-server: embed ## Run golang linters
 	gometalinter --vendor --disable-all \
 	-e packr \
 	--enable=vet \
@@ -40,9 +40,14 @@ lint: embed ## Run all the linters
 	--enable=gosimple \
 	--enable=structcheck \
 	--enable=maligned \
+	--enable=unparam \
 	./...
+
+lint-ui: ## Run JS linters
 	cd ui && npm run eslint
 	cd ui && npm run prettier:check
+
+lint: lint-server lint-ui ## Rull all linters
 
 run-server: build-server ## Run the API server
 	bin/run deloominator

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 )
@@ -25,6 +26,9 @@ func (my *MySQL) ExtractCellInfo(data interface{}) (cell Cell, colType Type) {
 		value := string(data.([]uint8))
 		cell = Cell{Value: value}
 		colType = inferType(value)
+	case time.Time:
+		cell = Cell{Value: data.(time.Time).Format(timeFormat)}
+		colType = Time
 	case nil:
 		cell = Cell{}
 		colType = UnknownType
@@ -59,6 +63,8 @@ func NewMySQLDialect(u *url.URL) (*MySQL, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	config.ParseTime = true
 
 	return &MySQL{cfg: config}, nil
 }

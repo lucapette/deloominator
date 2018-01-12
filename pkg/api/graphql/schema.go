@@ -116,11 +116,11 @@ func queryRoot(dataSources db.DataSources, s *storage.Storage) *gql.Object {
 					Type: gql.NewNonNull(gql.ID),
 				},
 			},
-			Resolve: resolveQuestion(s),
+			Resolve: resolveQuestion(dataSources, s),
 		},
 		"questions": &gql.Field{
 			Type:    gql.NewList(questionType),
-			Resolve: resolveQuestions(s),
+			Resolve: resolveQuestions(dataSources, s),
 		},
 		"query": &gql.Field{
 			Type: queryResultType,

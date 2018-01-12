@@ -189,30 +189,32 @@ func TestGraphQL_Question(t *testing.T) {
 
 	storages := testutil.NewStorages(t)
 	for _, s := range storages {
-		q, err := s.InsertQuestion(&storage.Question{
-			Title:      "the answer is 42",
-			Query:      "select * from answer",
-			DataSource: "source",
-			Variables:  `[{"name": "date", "value": "2017-10-15"}]`,
+		t.Run(s.String(), func(t *testing.T) {
+			q, err := s.InsertQuestion(&storage.Question{
+				Title:      "the answer is 42",
+				Query:      "select * from answer",
+				DataSource: "source",
+				Variables:  `[{"name": "date", "value": "2017-10-15"}]`,
+			})
+			if err != nil {
+				t.Fatalf("could not create question: %v", err)
+			}
+			testServer := NewTestServer(t, db.DataSources{}, s)
+			actual := testServer.do(question, vars{"id": q.ID})
+
+			tf := testutil.NewGoldenFile(t, "question_with_results.json")
+
+			expected := tf.Load()
+
+			if *update {
+				expected = actual
+				tf.Write(actual)
+			}
+
+			if !reflect.DeepEqual(expected, actual) {
+				t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
+			}
 		})
-		if err != nil {
-			t.Fatalf("could not create question: %v", err)
-		}
-		testServer := NewTestServer(t, db.DataSources{}, s)
-		actual := testServer.do(question, vars{"id": q.ID})
-
-		tf := testutil.NewGoldenFile(t, "question_with_results.json")
-
-		expected := tf.Load()
-
-		if *update {
-			expected = actual
-			tf.Write(actual)
-		}
-
-		if !reflect.DeepEqual(expected, actual) {
-			t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
-		}
 	}
 }
 
@@ -234,29 +236,31 @@ func TestGraphQL_Questions(t *testing.T) {
 
 	storages := testutil.NewStorages(t)
 	for _, s := range storages {
-		_, err := s.InsertQuestion(&storage.Question{
-			Title:      "the answer is 42",
-			Query:      "select * from answer",
-			DataSource: "source",
-			Variables:  `[{"name": "date", "value": "2017-10-15"}]`,
+		t.Run(s.String(), func(t *testing.T) {
+			_, err := s.InsertQuestion(&storage.Question{
+				Title:      "the answer is 42",
+				Query:      "select * from answer",
+				DataSource: "source",
+				Variables:  `[{"name": "date", "value": "2017-10-15"}]`,
+			})
+			if err != nil {
+				t.Fatalf("could not create question: %v", err)
+			}
+			testServer := NewTestServer(t, db.DataSources{}, s)
+			actual := testServer.do(query, vars{})
+
+			tf := testutil.NewGoldenFile(t, "questions.json")
+
+			expected := tf.Load()
+
+			if *update {
+				expected = actual
+				tf.Write(actual)
+			}
+
+			if !reflect.DeepEqual(expected, actual) {
+				t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
+			}
 		})
-		if err != nil {
-			t.Fatalf("could not create question: %v", err)
-		}
-		testServer := NewTestServer(t, db.DataSources{}, s)
-		actual := testServer.do(query, vars{})
-
-		tf := testutil.NewGoldenFile(t, "questions.json")
-
-		expected := tf.Load()
-
-		if *update {
-			expected = actual
-			tf.Write(actual)
-		}
-
-		if !reflect.DeepEqual(expected, actual) {
-			t.Fatalf("Unexpected result, diff: %v", testutil.Diff(expected, actual))
-		}
 	}
 }

@@ -2,9 +2,30 @@ import React, {Component} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import {withRouter} from 'react-router';
-import {List, Loader} from 'semantic-ui-react';
+import {Loader, Card, Icon} from 'semantic-ui-react';
+
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
+import parse from 'date-fns/parse';
 
 import routing from '../../helpers/routing';
+
+const ExtraContent = ({question: {results}}) => {
+  const iconName = results.chartName == 'UnknownChart' ? 'table' : 'area chart';
+
+  return (
+    <Card.Content extra>
+      {results.__typename == 'queryError' ? (
+        <p>
+          <Icon name="broken chain" /> No results
+        </p>
+      ) : (
+        <p>
+          <Icon name={iconName} /> {results.rows.length}
+        </p>
+      )}
+    </Card.Content>
+  );
+};
 
 class QuestionListContainer extends Component {
   handleClick = (e, question) => {
@@ -28,15 +49,20 @@ class QuestionListContainer extends Component {
     }
 
     return (
-      <List selection verticalAlign="middle">
+      <Card.Group>
         {questions.map(question => (
-          <List.Item key={question.id} onClick={e => this.handleClick(e, question)}>
-            <List.Content>
-              <List.Header>{question.title}</List.Header>
-            </List.Content>
-          </List.Item>
+          <Card key={question.id} onClick={e => this.handleClick(e, question)}>
+            <Card.Content>
+              <Card.Header>{question.title}</Card.Header>
+              <Card.Meta>{question.dataSource}</Card.Meta>
+              <Card.Description>
+                Created <span className="date">{distanceInWordsToNow(parse(question.createdAt))}</span> ago
+              </Card.Description>
+              <ExtraContent question={question} />
+            </Card.Content>
+          </Card>
         ))}
-      </List>
+      </Card.Group>
     );
   }
 }
@@ -46,6 +72,22 @@ const Query = gql`
     questions {
       id
       title
+      dataSource
+      createdAt
+      updatedAt
+      results {
+        ... on results {
+          chartName
+          rows {
+            cells {
+              value
+            }
+          }
+        }
+        ... on queryError {
+          message
+        }
+      }
     }
   }
 `;

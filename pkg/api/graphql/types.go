@@ -1,8 +1,6 @@
 package graphql
 
 import (
-	"fmt"
-
 	gql "github.com/graphql-go/graphql"
 )
 
@@ -136,7 +134,7 @@ var queryResultType = gql.NewUnion(gql.UnionConfig{
 
 var tableType = gql.NewObject(gql.ObjectConfig{
 	Name:        "Table",
-	Description: fmt.Sprintf("A table of a data source"),
+	Description: "A table of a data source",
 	Fields: gql.Fields{
 		"name": &gql.Field{
 			Type: gql.NewNonNull(gql.String),
@@ -169,11 +167,20 @@ var questionType = gql.NewObject(gql.ObjectConfig{
 		"query": &gql.Field{
 			Type: gql.String,
 		},
+		"createdAt": &gql.Field{
+			Type: gql.String,
+		},
+		"updatedAt": &gql.Field{
+			Type: gql.String,
+		},
 		"dataSource": &gql.Field{
 			Type: gql.String,
 		},
 		"variables": &gql.Field{
 			Type: gql.NewList(variableType),
+		},
+		"results": &gql.Field{
+			Type: queryResultType,
 		},
 	},
 })

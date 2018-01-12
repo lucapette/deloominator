@@ -20,6 +20,7 @@
     "babel-preset-react": "^6.22.0",
     "codemirror": "^5.33.0",
     "css-loader": "^0.28.8",
+    "date-fns": "^1.29.0",
     "file-loader": "^1.1.6",
     "fixed-data-table-2": "^0.8.8",
     "flow-typed": "^2.2.3",
