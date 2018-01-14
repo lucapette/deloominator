@@ -26,6 +26,8 @@
     "flow-typed": "^2.2.3",
     "graphql": "^0.12.3",
     "graphql-tag": "^2.6.1",
+    "html-webpack-plugin": "^2.30.1",
+    "interpolate-html-plugin": "^2.0.0",
     "prettier": "^1.9.2",
     "react": "^16.2.0",
     "react-apollo": "^2.0.4",
@@ -47,8 +49,8 @@
     "webpack-dev-server": "^2.9.7"
   },
   "scripts": {
-    "start": "webpack-dev-server --progress --port 8080",
-    "build": "webpack --progress -p --config webpack.config.js",
+    "start": "webpack-dev-server --progress --port 8080 --config config/webpack.dev.js",
+    "build": "webpack --progress -p --config config/webpack.production.js",
     "flow": "flow --show-all-errors; test $? -eq 0 -o $? -eq 2",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -67,6 +69,7 @@
     "flow-bin": "^0.62.0",
     "flowtype-loader": "^0.2.2",
     "jest": "^22.0.4",
-    "jest-cli": "^22.0.4"
+    "jest-cli": "^22.0.4",
+    "webpack-merge": "^4.1.1"
   }
 }

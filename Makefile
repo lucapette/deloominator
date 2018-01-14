@@ -53,7 +53,7 @@ run-server: build-server ## Run the API server
 	bin/run deloominator
 
 run-ui: ## Run the UI application
-	cd ui && npm run start
+	cd ui && ../bin/run npm run start
 
 # For now, it does not make sense to build the UI on CI as there no tests that
 # rely on that.

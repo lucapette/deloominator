@@ -1,13 +1,12 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import {ApolloClient} from 'apollo-client';
-import {createHttpLink} from 'apollo-link-http';
-import {InMemoryCache, IntrospectionFragmentMatcher} from 'apollo-cache-inmemory';
-import {ApolloProvider, graphql} from 'react-apollo';
 import ReactDOM from 'react-dom';
 import {Container, Loader} from 'semantic-ui-react';
-
+import {ApolloProvider, graphql} from 'react-apollo';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
+
+import AppConfig from './services/AppConfig';
+import GraphqlClient from './services/GraphqlClient';
 
 import 'semantic-ui-css/semantic.min.css';
 import 'semantic-ui-css/semantic.min.js';
@@ -20,25 +19,6 @@ import Footer from './layout/Footer';
 import Home from './pages/Home';
 import Playground from './pages/Playground';
 import Questions from './pages/Questions';
-
-const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData: {
-    __schema: {
-      types: [
-        {
-          kind: 'UNION',
-          name: 'QueryResult',
-          possibleTypes: [{name: 'queryError'}, {name: 'results'}],
-        },
-      ],
-    },
-  },
-});
-
-const client = new ApolloClient({
-  link: createHttpLink({uri: 'http://localhost:3000/graphql'}),
-  cache: new InMemoryCache({fragmentMatcher}),
-});
 
 const SettingsQuery = gql`
   {
@@ -76,8 +56,8 @@ const App = graphql(SettingsQuery)(({data: {loading, error, settings}}) => {
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
+  <ApolloProvider client={GraphqlClient({port: AppConfig.port()})}>
     <App />
   </ApolloProvider>,
-  document.getElementById('root'),
+  AppConfig.root(),
 );

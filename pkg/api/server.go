@@ -19,7 +19,7 @@ type Server struct {
 	srv         *http.Server
 	debug       bool
 	dataSources db.DataSources
-	port        string
+	port        int
 	storage     *storage.Storage
 }
 
@@ -27,7 +27,7 @@ type Option func(*Server)
 
 func Port(port int) Option {
 	return func(s *Server) {
-		s.port = ":" + strconv.Itoa(port)
+		s.port = port
 	}
 }
 
@@ -77,12 +77,12 @@ func (s *Server) Start() {
 	router.Use(c.Handler)
 
 	router.HandleFunc(pat.Post("/graphql"), graphql.Handler(s.dataSources, s.storage))
-	router.HandleFunc(pat.Get("/:name.:ext"), handlers.Static)
+	router.HandleFunc(pat.Get("/:name.:ext"), handlers.Static())
 	router.HandleFunc(pat.Post("/export/:format"), handlers.Export(s.dataSources))
 	router.HandleFunc(pat.Post("/query/evaluate"), handlers.QueryEvaluator)
-	router.HandleFunc(pat.Get("/*"), handlers.UI)
+	router.HandleFunc(pat.Get("/*"), handlers.UI(s.port))
 
-	s.srv = &http.Server{Addr: s.port, Handler: router}
+	s.srv = &http.Server{Addr: ":" + strconv.Itoa(s.port), Handler: router}
 
 	go func() {
 		if err := s.srv.ListenAndServe(); err != nil {
