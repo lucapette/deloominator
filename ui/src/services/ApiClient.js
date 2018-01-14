@@ -1,7 +1,8 @@
+//@flow
 import AppConfig from './AppConfig';
 
 class ApiClient {
-  static post(url, data) {
+  static post(url: string, data: {}) {
     return fetch(`http://localhost:${AppConfig.port()}/${url}`, {
       method: 'POST',
       headers: {

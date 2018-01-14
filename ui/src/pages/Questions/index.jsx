@@ -1,9 +1,20 @@
+//@flow
 import React from 'react';
 
 import Question from './Question';
 import QuestionList from './QuestionList';
 
-const Questions = ({settings, match}) => {
+import type {Match} from 'react-router';
+
+import * as types from '../../types';
+
+type Props = {
+  settings: types.Settings,
+  match: Match,
+};
+
+const Questions = (props: Props) => {
+  const {match, settings} = props;
   const question = match.params.question;
   if (question) {
     const [id] = question.split('-');
