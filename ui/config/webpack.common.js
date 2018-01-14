@@ -3,11 +3,10 @@ const webpack = require('webpack');
 
 const FlowtypePlugin = require('flowtype-loader/plugin');
 
-const config = {
-  devtool: 'cheap-module-source-map',
+module.exports = {
   entry: './src/App.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve('..', 'dist'),
     filename: 'App.js',
   },
   module: {
@@ -39,10 +38,4 @@ const config = {
     }),
     new FlowtypePlugin(),
   ],
-  devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    historyApiFallback: true,
-  },
 };
-
-module.exports = config;

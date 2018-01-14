@@ -1,6 +1,8 @@
+import AppConfig from './AppConfig';
+
 class ApiClient {
   static post(url, data) {
-    return fetch(`http://localhost:3000/${url}`, {
+    return fetch(`http://localhost:${AppConfig.port()}/${url}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

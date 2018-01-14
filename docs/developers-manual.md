@@ -88,9 +88,9 @@ $ make run-server # runs the API server
 $ make run-ui # runs the UI application
 ```
 
-Please *note* that `make run-server` relies on a small bash script called
-`bin/run`. There is an example file [here](bin/run.example). You can create your
-own script with the following command:
+Please *note* that both `make run-server` and `make run-ui` rely on a small bash
+script called `./bin/run`. There is an example file [here](bin/run.example). You
+can create your own script with the following command:
 
 ```sh
 cp bin/run{.example,}
