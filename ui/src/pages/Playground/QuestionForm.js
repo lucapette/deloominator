@@ -50,6 +50,7 @@ class QuestionFormContainer extends Component {
       handleRunClick,
       handleQueryChange,
       currentQuery,
+      currentDataSource,
       querySuccess,
       handleVariableChange,
       variables,
@@ -78,7 +79,7 @@ class QuestionFormContainer extends Component {
             icon="play"
             primary
             content="Run"
-            disabled={!(currentQuery && currentQuery)}
+            disabled={!(currentDataSource && currentQuery)}
             onClick={handleRunClick}
           />
           {saveEnabled && (
