@@ -40,8 +40,8 @@ class Date extends Component<Props, State> {
   render() {
     const {options, name} = this.props;
     return (
-      <div className="field">
-        <label>{capitalize(name.replace(/[{}]/g, ''))}</label>
+      <div className="ui labeled input">
+        <div className="ui label">{capitalize(name.replace(/[{}]/g, ''))}</div>
         <Flatpickr options={options} value={this.state.value} onChange={this.handleChange} />
       </div>
     );

@@ -2,10 +2,14 @@ import React, {Component} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import DocumentTitle from 'react-document-title';
-import {Container, Loader, Grid, Header, Form} from 'semantic-ui-react';
+import {Container, Loader, Grid, Header, Dropdown, Menu} from 'semantic-ui-react';
+
+import ApiClient from '../../services/ApiClient';
 
 import QueryResult from '../../components/QueryResult';
 import QueryVariables from '../../components/QueryVariables';
+
+import routing from '../../helpers/routing';
 
 class QuestionContainer extends Component {
   constructor(props) {
@@ -32,6 +36,40 @@ class QuestionContainer extends Component {
     const index = variables.findIndex(e => e['name'] == key);
     this.setState({variables: variables.map((item, i) => (index !== i ? item : {...item, value: value}))});
   };
+
+  exportCSV = e => {
+    e.preventDefault();
+    const {data: {question}} = this.props;
+
+    ApiClient.post('export/csv', {Source: question.dataSource, Query: question.query})
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(new Blob([blob], {type: {type: 'text/csv;charset=utf-8;'}}));
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = `${routing.urlFor(question, ['title'])}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+  };
+
+  onNewView = view => {
+    this.view = view;
+  };
+
+  exportPNG = e => {
+    const {data: {question}} = this.props;
+    e.preventDefault();
+    this.view.toImageURL('png').then(url => {
+      let link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('download', `${routing.urlFor(question, ['title'])}.png`);
+      link.dispatchEvent(new MouseEvent('click'));
+    });
+  };
+
   render() {
     const {data: {loading, error, question}} = this.props;
 
@@ -56,21 +94,26 @@ class QuestionContainer extends Component {
     return (
       <DocumentTitle title={title}>
         <Container>
-          <Header as="h1">{title}</Header>
+          <Header as="h1">
+            {title}
+            <Header.Subheader>{dataSource}</Header.Subheader>
+          </Header>
           <Grid.Row>
-            <Grid.Column>
-              <Form>
-                <Form.Group>
-                  <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
-                </Form.Group>
-              </Form>
-            </Grid.Column>
+            <Menu borderless secondary>
+              <Menu.Item>
+                <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
+              </Menu.Item>
+              <Menu.Menu position="right">
+                <Dropdown item icon="download">
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={this.exportPNG}>PNG</Dropdown.Item>
+                    <Dropdown.Item onClick={this.exportCSV}>CSV</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Menu.Menu>
+            </Menu>
           </Grid.Row>
-          <Grid.Row>
-            <Grid.Column>
-              <QueryResult source={dataSource} query={query} variables={variables} />
-            </Grid.Column>
-          </Grid.Row>
+          <QueryResult source={dataSource} query={query} variables={variables} onNewView={this.onNewView} />
         </Container>
       </DocumentTitle>
     );

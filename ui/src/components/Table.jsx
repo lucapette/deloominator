@@ -1,7 +1,6 @@
 //@flow
 import {Table as FixedTable, Column, Cell} from 'fixed-data-table-2';
-import React, {Component} from 'react';
-import {Statistic} from 'semantic-ui-react';
+import React, {Component, Fragment} from 'react';
 
 import 'fixed-data-table-2/dist/fixed-data-table.min.css';
 
@@ -19,9 +18,10 @@ class Table extends Component<Props> {
     const tableWidth = columns.length > 11 ? 1127 : columns.length * 100;
 
     return (
-      <div>
-        <Statistic size="mini" value={rows.length} label="rows" horizontal />
-
+      <Fragment>
+        <span>
+          <i>{rows.length}</i> results found.
+        </span>
         <FixedTable rowHeight={50} rowsCount={rows.length} maxHeight={600} width={tableWidth} headerHeight={50}>
           {columns.map((column, i) => (
             <Column
@@ -32,7 +32,7 @@ class Table extends Component<Props> {
             />
           ))}
         </FixedTable>
-      </div>
+      </Fragment>
     );
   }
 }
