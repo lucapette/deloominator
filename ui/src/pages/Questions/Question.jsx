@@ -2,13 +2,14 @@ import React, {Component} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import DocumentTitle from 'react-document-title';
-import {Container, Loader, Grid, Header, Dropdown} from 'semantic-ui-react';
+import {Container, Loader, Grid, Header, Dropdown, Menu} from 'semantic-ui-react';
 
 import ApiClient from '../../services/ApiClient';
 
 import QueryResult from '../../components/QueryResult';
 import QueryVariables from '../../components/QueryVariables';
-import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu/Menu';
+
+import routing from '../../helpers/routing';
 
 class QuestionContainer extends Component {
   constructor(props) {
@@ -38,15 +39,15 @@ class QuestionContainer extends Component {
 
   exportCSV = e => {
     e.preventDefault();
-    const {data: {question: {dataSource, query}}} = this.props;
+    const {data: {question}} = this.props;
 
-    ApiClient.post('export/csv', {Source: dataSource, Query: query})
+    ApiClient.post('export/csv', {Source: question.dataSource, Query: question.query})
       .then(response => response.blob())
       .then(blob => {
         const url = window.URL.createObjectURL(new Blob([blob], {type: {type: 'text/csv;charset=utf-8;'}}));
         let a = document.createElement('a');
         a.href = url;
-        a.download = 'chart.csv';
+        a.download = `${routing.urlFor(question, ['title'])}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -58,12 +59,13 @@ class QuestionContainer extends Component {
   };
 
   exportPNG = e => {
+    const {data: {question}} = this.props;
     e.preventDefault();
     this.view.toImageURL('png').then(url => {
       let link = document.createElement('a');
       link.setAttribute('href', url);
       link.setAttribute('target', '_blank');
-      link.setAttribute('download', 'chart.png');
+      link.setAttribute('download', `${routing.urlFor(question, ['title'])}.png`);
       link.dispatchEvent(new MouseEvent('click'));
     });
   };
