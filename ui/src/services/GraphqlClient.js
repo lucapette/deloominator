@@ -1,3 +1,4 @@
+//@flow
 import {ApolloClient} from 'apollo-client';
 import {createHttpLink} from 'apollo-link-http';
 import {InMemoryCache, IntrospectionFragmentMatcher} from 'apollo-cache-inmemory';
@@ -16,7 +17,12 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
   },
 });
 
-const GraphqlClient = ({port}) => {
+type Options = {
+  port: number,
+};
+
+const GraphqlClient = (options: Options) => {
+  const {port} = options;
   return new ApolloClient({
     link: createHttpLink({uri: `http://localhost:${port}/graphql`}),
     cache: new InMemoryCache({fragmentMatcher}),

@@ -1,3 +1,4 @@
+//@flow
 import React from 'react';
 import {NavLink} from 'react-router-dom';
 import {Container, Menu} from 'semantic-ui-react';

@@ -1,7 +1,11 @@
+//@flow
+
 import React, {Component} from 'react';
 import DocumentTitle from 'react-document-title';
 
-export default class Home extends Component {
+type Props = {};
+
+class Home extends Component<Props> {
   render() {
     return (
       <DocumentTitle title="Home">
@@ -10,3 +14,5 @@ export default class Home extends Component {
     );
   }
 }
+
+export default Home;

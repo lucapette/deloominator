@@ -1,7 +1,15 @@
+//@flow
 import React from 'react';
 import {Container, Segment, List, Message} from 'semantic-ui-react';
 
-const Footer = ({settings}) => {
+import * as types from '../types';
+
+type Props = {
+  settings: types.Settings,
+};
+
+const Footer = (props: Props) => {
+  const {settings} = props;
   return (
     <div className="footer">
       <Segment attached>

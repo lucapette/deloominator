@@ -9,6 +9,9 @@ module.exports = {
     path: path.resolve('..', 'dist'),
     filename: 'App.js',
   },
+  resolve: {
+    extensions: ['.js', '.jsx'],
+  },
   module: {
     rules: [
       {
