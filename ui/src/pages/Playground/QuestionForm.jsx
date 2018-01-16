@@ -31,6 +31,7 @@ class QuestionFormContainer extends Component {
     const {currentQuery, currentDataSource, history, saveQuestion, variables} = this.props;
 
     saveQuestion({
+      refetchQueries: ['questions'],
       variables: {
         title: this.state.title,
         query: currentQuery,
