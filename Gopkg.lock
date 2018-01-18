@@ -26,6 +26,18 @@
   version = "v1.3"
 
 [[projects]]
+  name = "github.com/gobuffalo/envy"
+  packages = ["."]
+  revision = "e613c80275b86293880eddeb27417c9a7c670ff3"
+  version = "v1.3.0"
+
+[[projects]]
+  name = "github.com/gobuffalo/packr"
+  packages = ["."]
+  revision = "e75b84227ebcc6713f8bfd1a4d154a1c005ded1c"
+  version = "v1.10.1"
+
+[[projects]]
   name = "github.com/graphql-go/graphql"
   packages = [
     ".",
@@ -40,8 +52,8 @@
     "language/typeInfo",
     "language/visitor"
   ]
-  revision = "0c7d73fea519ce6751ecb4d5835c5a87a384cf6c"
-  version = "v0.7.3"
+  revision = "5e7dd4fc3e87341229fa03d8f79d2ab5455963fb"
+  version = "v0.7.4"
 
 [[projects]]
   name = "github.com/jinzhu/gorm"
@@ -54,6 +66,12 @@
   name = "github.com/jinzhu/inflection"
   packages = ["."]
   revision = "1c35d901db3da928c72a72d8458480cc9ade058f"
+
+[[projects]]
+  name = "github.com/joho/godotenv"
+  packages = ["."]
+  revision = "a79fa1e548e2c689c241d10173efd51e5d689d5b"
+  version = "v1.2.0"
 
 [[projects]]
   name = "github.com/kelseyhightower/envconfig"
@@ -80,7 +98,19 @@
     ".",
     "oid"
   ]
-  revision = "83612a56d3dd153a94a629cd64925371c9adad78"
+  revision = "27ea5d92de30060e7121ddd543fe14e9a327e0cc"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mitchellh/go-homedir"
+  packages = ["."]
+  revision = "b8bc1bf767474819792c23f32d8286a45736f1c6"
+
+[[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -121,7 +151,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "d585fd2cc9195196078f516b69daff6744ef5e84"
+  revision = "13931e22f9e72ea58bb73048bc752b48c6d4d4ac"
 
 [[projects]]
   branch = "master"
@@ -130,11 +160,11 @@
     "unix",
     "windows"
   ]
-  revision = "571f7bbbe08da2a8955aed9d4db316e78630e9a3"
+  revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7fae02873b7c49b01772cc83664facc337546fe1e2e9a8535999176cd1a1a509"
+  inputs-digest = "925835a4529abb4e85de83b93b364472d3d9660fe576e2e3ae792b91a1939096"
   solver-name = "gps-cdcl"
   solver-version = 1
