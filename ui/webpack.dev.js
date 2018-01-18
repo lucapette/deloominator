@@ -8,7 +8,7 @@ const InterpolateHtmlPlugin = require('interpolate-html-plugin');
 
 module.exports = merge(common, {
   devtool: 'cheap-module-source-map',
-  entry: './src/App.js',
+  entry: './src/index.js',
   plugins: [
     new InterpolateHtmlPlugin(env),
     new HtmlWebpackPlugin({

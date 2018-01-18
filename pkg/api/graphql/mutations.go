@@ -3,8 +3,6 @@ package graphql
 import (
 	"encoding/json"
 
-	"github.com/Sirupsen/logrus"
-
 	gql "github.com/graphql-go/graphql"
 	"github.com/lucapette/deloominator/pkg/db/storage"
 )
@@ -21,8 +19,11 @@ func saveQuestion(s *storage.Storage) func(p gql.ResolveParams) (interface{}, er
 		if err != nil {
 			return nil, err
 		}
-		logrus.Infof("%v", string(variables))
 		question.Variables = string(variables)
+
+		if description, ok := p.Args["description"].(string); ok {
+			question.Description = description
+		}
 
 		q, err := s.InsertQuestion(&question)
 		if err != nil {

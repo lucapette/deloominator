@@ -164,6 +164,9 @@ var questionType = gql.NewObject(gql.ObjectConfig{
 		"title": &gql.Field{
 			Type: gql.String,
 		},
+		"description": &gql.Field{
+			Type: gql.String,
+		},
 		"query": &gql.Field{
 			Type: gql.String,
 		},

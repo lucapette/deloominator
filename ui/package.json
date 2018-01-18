@@ -35,6 +35,7 @@
     "react-document-title": "^2.0.2",
     "react-dom": "^16.2.0",
     "react-flatpickr": "^3.6.3",
+    "react-remarkable": "^1.1.3",
     "react-router-dom": "^4.0.0",
     "react-vega": "^3.1.1",
     "react-vega-lite": "^1.0.1",
@@ -49,8 +50,8 @@
     "webpack-dev-server": "^2.9.7"
   },
   "scripts": {
-    "start": "webpack-dev-server --progress --port 8080 --config config/webpack.dev.js",
-    "build": "webpack --progress -p --config config/webpack.production.js",
+    "start": "webpack-dev-server --progress --port 8080 --config webpack.dev.js",
+    "build": "webpack --progress -p --config webpack.production.js",
     "flow": "flow --show-all-errors; test $? -eq 0 -o $? -eq 2",
     "test": "jest",
     "test:watch": "jest --watch",

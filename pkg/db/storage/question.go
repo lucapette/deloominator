@@ -4,13 +4,14 @@ import "time"
 
 // Question stores q&a
 type Question struct {
-	ID         int       `json:"id"`
-	Title      string    `json:"title,omitempty"`
-	Query      string    `json:"query,omitempty"`
-	DataSource string    `json:"dataSource,omitempty"`
-	Variables  string    `json:"variables,omitempty"`
-	CreatedAt  time.Time `json:"createdAt"`
-	UpdatedAt  time.Time `json:"updatedAt"`
+	ID          int       `json:"id"`
+	Title       string    `json:"title,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Query       string    `json:"query,omitempty"`
+	DataSource  string    `json:"dataSource,omitempty"`
+	Variables   string    `json:"variables,omitempty"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 // InsertQuestion stores a question into the storage

@@ -4,9 +4,8 @@ const webpack = require('webpack');
 const FlowtypePlugin = require('flowtype-loader/plugin');
 
 module.exports = {
-  entry: './src/App.js',
   output: {
-    path: path.resolve('..', 'dist'),
+    path: path.resolve('dist'),
     filename: 'App.js',
   },
   resolve: {

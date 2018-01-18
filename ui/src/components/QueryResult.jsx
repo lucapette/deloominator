@@ -2,7 +2,7 @@ import React, {Component, Fragment} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 
-import {Message, Loader, Grid} from 'semantic-ui-react';
+import {Message, Loader, Grid, Divider} from 'semantic-ui-react';
 
 import Chart from './Chart';
 import Table from './Table';
@@ -45,6 +45,7 @@ class QueryResultContainer extends Component {
           <Grid.Row>
             <Chart name={query.chartName} columns={query.columns} rows={query.rows} onNewView={onNewView} />
           </Grid.Row>
+          <Divider hidden />
           <Grid.Row>
             <Table columns={query.columns} rows={query.rows} />
           </Grid.Row>

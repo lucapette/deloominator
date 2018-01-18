@@ -11,11 +11,12 @@ import (
 )
 
 const SaveQuestion = `
-mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!, $variables: [InputVariable]) {
-  saveQuestion(title: $title, query: $query, dataSource: $dataSource, variables: $variables) {
+mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!, $description: String, $variables: [InputVariable]) {
+  saveQuestion(title: $title, query: $query, dataSource: $dataSource, description: $description, variables: $variables) {
     id
     title
 	query
+	description
 	variables {
 		name
 		value
@@ -33,9 +34,10 @@ func TestGraphQL_SaveQuestion(t *testing.T) {
 			SaveQuestion,
 			"save_question_success.json",
 			vars{
-				"title":      "the answer is 42",
-				"query":      "select * from answer",
-				"dataSource": "dataSource",
+				"title":       "the answer is 42",
+				"query":       "select * from answer",
+				"dataSource":  "dataSource",
+				"description": "great description",
 				"variables": []map[string]string{
 					{"name": "date", "value": "2017-10-15"},
 				},
