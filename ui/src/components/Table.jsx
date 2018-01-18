@@ -20,7 +20,10 @@ class Table extends Component<Props> {
     return (
       <Fragment>
         <span>
-          <i>{rows.length}</i> results found.
+          <b>
+            <i>{rows.length}</i>
+          </b>{' '}
+          results found.
         </span>
         <FixedTable rowHeight={50} rowsCount={rows.length} maxHeight={600} width={tableWidth} headerHeight={50}>
           {columns.map((column, i) => (

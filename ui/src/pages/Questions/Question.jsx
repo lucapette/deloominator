@@ -3,6 +3,7 @@ import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import DocumentTitle from 'react-document-title';
 import {Container, Loader, Grid, Header, Dropdown, Menu} from 'semantic-ui-react';
+import Markdown from 'react-remarkable';
 
 import ApiClient from '../../services/ApiClient';
 
@@ -87,7 +88,7 @@ class QuestionContainer extends Component {
       return <p>Error!</p>;
     }
 
-    const {title, dataSource, query} = question;
+    const {title, dataSource, query, description} = question;
 
     const {variables} = this.state;
 
@@ -98,6 +99,9 @@ class QuestionContainer extends Component {
             {title}
             <Header.Subheader>{dataSource}</Header.Subheader>
           </Header>
+          <Grid.Row>
+            <Markdown source={description} />
+          </Grid.Row>
           <Grid.Row>
             <Menu borderless secondary>
               <Menu.Item>
@@ -125,6 +129,7 @@ const Query = gql`
     question(id: $id) {
       id
       title
+      description
       query
       dataSource
       variables {

@@ -47,14 +47,15 @@ func resolveDataSources(dbDataSources db.DataSources) func(p gql.ResolveParams) 
 }
 
 type question struct {
-	ID         int         `json:"id"`
-	Title      string      `json:"title"`
-	CreatedAt  string      `json:"createdAt"`
-	UpdatedAt  string      `json:"updatedAt"`
-	DataSource string      `json:"dataSource"`
-	Query      string      `json:"query"`
-	Variables  []variable  `json:"variables"`
-	Results    interface{} `json:"results"`
+	ID          int         `json:"id"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+	CreatedAt   string      `json:"createdAt"`
+	UpdatedAt   string      `json:"updatedAt"`
+	DataSource  string      `json:"dataSource"`
+	Query       string      `json:"query"`
+	Variables   []variable  `json:"variables"`
+	Results     interface{} `json:"results"`
 }
 
 func needsResults(p gql.ResolveParams) bool {
@@ -70,12 +71,13 @@ func needsResults(p gql.ResolveParams) bool {
 
 func convertQuestion(in *storage.Question) (out question, err error) {
 	out = question{
-		ID:         in.ID,
-		Title:      in.Title,
-		DataSource: in.DataSource,
-		Query:      in.Query,
-		CreatedAt:  in.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:  in.UpdatedAt.Format(time.RFC3339),
+		ID:          in.ID,
+		Title:       in.Title,
+		Description: in.Description,
+		DataSource:  in.DataSource,
+		Query:       in.Query,
+		CreatedAt:   in.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   in.UpdatedAt.Format(time.RFC3339),
 	}
 
 	if len(in.Variables) > 0 {

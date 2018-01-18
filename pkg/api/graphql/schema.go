@@ -83,6 +83,9 @@ func mutationRoot(s *storage.Storage) *gql.Object {
 				"title": &gql.ArgumentConfig{
 					Type: gql.NewNonNull(gql.String),
 				},
+				"description": &gql.ArgumentConfig{
+					Type: gql.String,
+				},
 				"query": &gql.ArgumentConfig{
 					Type: gql.NewNonNull(gql.String),
 				},

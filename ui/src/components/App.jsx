@@ -1,24 +1,20 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import ReactDOM from 'react-dom';
 import {Container, Loader} from 'semantic-ui-react';
-import {ApolloProvider, graphql} from 'react-apollo';
+import {graphql} from 'react-apollo';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
-
-import AppConfig from './services/AppConfig';
-import GraphqlClient from './services/GraphqlClient';
 
 import 'semantic-ui-css/semantic.min.css';
 import 'semantic-ui-css/semantic.min.js';
 
 import './app.css';
 
-import NavMenu from './layout/NavMenu';
-import Footer from './layout/Footer';
+import NavMenu from './../layout/NavMenu';
+import Footer from './../layout/Footer';
 
-import Home from './pages/Home';
-import Playground from './pages/Playground';
-import Questions from './pages/Questions';
+import Home from './../pages/Home';
+import Playground from './../pages/Playground';
+import Questions from './../pages/Questions';
 
 const SettingsQuery = gql`
   {
@@ -55,9 +51,4 @@ const App = graphql(SettingsQuery)(({data: {loading, error, settings}}) => {
   );
 });
 
-ReactDOM.render(
-  <ApolloProvider client={GraphqlClient({port: AppConfig.port()})}>
-    <App />
-  </ApolloProvider>,
-  AppConfig.root(),
-);
+export default App;

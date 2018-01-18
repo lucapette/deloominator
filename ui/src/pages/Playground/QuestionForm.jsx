@@ -3,17 +3,13 @@ import React, {Component} from 'react';
 import {graphql, compose} from 'react-apollo';
 import gql from 'graphql-tag';
 import {withRouter} from 'react-router';
-import {Button, Form} from 'semantic-ui-react';
+import {Button, Form, Modal} from 'semantic-ui-react';
 
 import Editor from '../../components/Editor';
 import QueryVariables from '../../components/QueryVariables';
 import routing from '../../helpers/routing';
 
 class QuestionFormContainer extends Component {
-  state = {
-    title: 'Untitled visualization',
-  };
-
   dataSourcesOptions = dataSources => {
     return sortBy(dataSources || [], ['name'], ['asc']).map(s => ({
       name: s.name,
@@ -22,8 +18,14 @@ class QuestionFormContainer extends Component {
     }));
   };
 
-  handleTitleChange = e => {
-    this.setState({title: e.target.value});
+  handleInputChange = event => {
+    const target = event.target;
+    const name = target.name;
+    const value = target.value;
+
+    this.setState({
+      [name]: value,
+    });
   };
 
   handleSave = e => {
@@ -34,6 +36,7 @@ class QuestionFormContainer extends Component {
       refetchQueries: ['questions'],
       variables: {
         title: this.state.title,
+        description: this.state.description,
         query: currentQuery,
         dataSource: currentDataSource,
         variables: variables,
@@ -73,9 +76,6 @@ class QuestionFormContainer extends Component {
             onChange={handleDataSourcesChange}
             options={this.dataSourcesOptions(dataSources)}
           />
-        </Form.Group>
-        <Form.Group>
-          <Form.Input onChange={this.handleTitleChange} value={this.state.title} width={13} />
           <Button
             icon="play"
             primary
@@ -84,7 +84,31 @@ class QuestionFormContainer extends Component {
             onClick={handleRunClick}
           />
           {saveEnabled && (
-            <Button icon="save" primary content="Save" disabled={!querySuccess} onClick={this.handleSave} />
+            <Modal trigger={<Button icon="save" primary content="Save" disabled={!querySuccess} />}>
+              <Modal.Header content="Save question" />
+              <Modal.Content>
+                <Form>
+                  <Form.Group widths="equal">
+                    <Form.Input
+                      fluid
+                      required
+                      name="title"
+                      label="Title"
+                      placeholder="Untitled question"
+                      onChange={this.handleInputChange}
+                    />
+                  </Form.Group>
+                  <Form.Group widths="equal">
+                    <Form.TextArea name="description" label="Description" onChange={this.handleInputChange} />
+                  </Form.Group>
+                </Form>
+
+                <Modal.Actions>
+                  <Button primary icon="save" content="Save" onClick={this.handleSave} />
+                  <Button content="Cancel" />
+                </Modal.Actions>
+              </Modal.Content>
+            </Modal>
           )}
         </Form.Group>
         <Form.Group>
@@ -99,8 +123,20 @@ class QuestionFormContainer extends Component {
 }
 
 const SaveQuestion = gql`
-  mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!, $variables: [InputVariable]) {
-    saveQuestion(title: $title, query: $query, dataSource: $dataSource, variables: $variables) {
+  mutation SaveQuestion(
+    $title: String!
+    $query: String!
+    $dataSource: String!
+    $description: String
+    $variables: [InputVariable]
+  ) {
+    saveQuestion(
+      title: $title
+      query: $query
+      dataSource: $dataSource
+      description: $description
+      variables: $variables
+    ) {
       id
       title
     }
