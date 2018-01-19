@@ -7,6 +7,7 @@ import 'codemirror/mode/sql/sql';
 
 const options = {
   mode: 'text/x-sql',
+  viewport: Infinity,
   lineNumbers: true,
 };
 
@@ -18,7 +19,7 @@ type Props = {
 class Editor extends Component<Props> {
   render() {
     const {code, onChange} = this.props;
-    return <CodeMirror className="thirteen wide field" options={options} value={code} onChange={onChange} />;
+    return <CodeMirror className="sixteen wide field" options={options} value={code} onChange={onChange} />;
   }
 }
 

@@ -114,7 +114,7 @@ class QuestionFormContainer extends Component {
         <Form.Group>
           <QueryVariables variables={variables} handleVariableChange={handleVariableChange} />
         </Form.Group>
-        <Form.Group>
+        <Form.Group widths={16}>
           <Editor code={currentQuery} onChange={handleQueryChange} />
         </Form.Group>
       </Form>

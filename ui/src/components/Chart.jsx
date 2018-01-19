@@ -1,6 +1,7 @@
 //@flow
 import {map, zipObject} from 'lodash';
 import React, {Component} from 'react';
+import {Segment} from 'semantic-ui-react';
 
 import SimpleBar from './charts/SimpleBar';
 import SimpleLine from './charts/SimpleLine';
@@ -37,7 +38,11 @@ class Chart extends Component<Props> {
       return zipObject(columnNames, cells);
     });
 
-    return <Handler values={values} onNewView={onNewView} />;
+    return (
+      <Segment>
+        <Handler values={values} onNewView={onNewView} />
+      </Segment>
+    );
   }
 }
 
