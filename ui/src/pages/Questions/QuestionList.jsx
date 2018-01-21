@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import {withRouter} from 'react-router';
+import DocumentTitle from 'react-document-title';
 import {Loader, Card, Icon} from 'semantic-ui-react';
 
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
@@ -49,20 +50,22 @@ class QuestionListContainer extends Component {
     }
 
     return (
-      <Card.Group>
-        {questions.map(question => (
-          <Card key={question.id} onClick={e => this.handleClick(e, question)}>
-            <Card.Content>
-              <Card.Header>{question.title}</Card.Header>
-              <Card.Meta>{question.dataSource}</Card.Meta>
-              <Card.Description>
-                Created <span className="date">{distanceInWordsToNow(parse(question.createdAt))}</span> ago
-              </Card.Description>
-              <ExtraContent question={question} />
-            </Card.Content>
-          </Card>
-        ))}
-      </Card.Group>
+      <DocumentTitle title="Q&A">
+        <Card.Group>
+          {questions.map(question => (
+            <Card key={question.id} onClick={e => this.handleClick(e, question)}>
+              <Card.Content>
+                <Card.Header>{question.title}</Card.Header>
+                <Card.Meta>{question.dataSource}</Card.Meta>
+                <Card.Description>
+                  Created <span className="date">{distanceInWordsToNow(parse(question.createdAt))}</span> ago
+                </Card.Description>
+                <ExtraContent question={question} />
+              </Card.Content>
+            </Card>
+          ))}
+        </Card.Group>
+      </DocumentTitle>
     );
   }
 }

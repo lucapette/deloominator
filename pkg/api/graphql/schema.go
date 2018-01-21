@@ -128,7 +128,7 @@ func queryRoot(dataSources db.DataSources, s *storage.Storage) *gql.Object {
 		"query": &gql.Field{
 			Type: queryResultType,
 			Args: gql.FieldConfigArgument{
-				"source": &gql.ArgumentConfig{
+				"dataSource": &gql.ArgumentConfig{
 					Type: gql.NewNonNull(gql.String),
 				},
 				"query": &gql.ArgumentConfig{

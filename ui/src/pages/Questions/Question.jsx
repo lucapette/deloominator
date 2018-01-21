@@ -103,11 +103,14 @@ class QuestionContainer extends Component {
             <Markdown source={description} />
           </Grid.Row>
           <Grid.Row>
-            <Menu borderless secondary>
-              <Menu.Item>
-                <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
-              </Menu.Item>
+            <Menu attached="top">
+              {variables.length > 0 && (
+                <Menu.Item>
+                  <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
+                </Menu.Item>
+              )}
               <Menu.Menu position="right">
+                <Menu.Item icon="edit" onClick={this.handleEdit} />
                 <Dropdown item icon="download">
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={this.exportPNG}>PNG</Dropdown.Item>
@@ -116,8 +119,8 @@ class QuestionContainer extends Component {
                 </Dropdown>
               </Menu.Menu>
             </Menu>
+            <QueryResult dataSource={dataSource} query={query} variables={variables} onNewView={this.onNewView} />
           </Grid.Row>
-          <QueryResult source={dataSource} query={query} variables={variables} onNewView={this.onNewView} />
         </Container>
       </DocumentTitle>
     );

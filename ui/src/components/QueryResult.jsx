@@ -39,31 +39,23 @@ class QueryResultContainer extends Component {
       );
     }
 
-    if (query.chartName !== 'UnknownChart') {
-      return (
-        <Fragment>
-          <Grid.Row>
-            <Chart name={query.chartName} columns={query.columns} rows={query.rows} onNewView={onNewView} />
-          </Grid.Row>
-          <Divider hidden />
-          <Grid.Row>
-            <Table columns={query.columns} rows={query.rows} />
-          </Grid.Row>
-        </Fragment>
-      );
-    }
-
     return (
-      <Grid.Row>
-        <Table columns={query.columns} rows={query.rows} />
-      </Grid.Row>
+      <Fragment>
+        {query.chartName !== 'UnknownChart' && (
+          <Chart name={query.chartName} columns={query.columns} rows={query.rows} onNewView={onNewView} />
+        )}
+        <Divider hidden />
+        <Grid.Row>
+          <Table columns={query.columns} rows={query.rows} />
+        </Grid.Row>
+      </Fragment>
     );
   }
 }
 
 const Query = gql`
-  query Query($source: String!, $query: String!, $variables: [InputVariable]) {
-    query(source: $source, query: $query, variables: $variables) {
+  query Query($dataSource: String!, $query: String!, $variables: [InputVariable]) {
+    query(dataSource: $dataSource, query: $query, variables: $variables) {
       ... on results {
         chartName
         columns {
@@ -89,7 +81,7 @@ const Query = gql`
 `;
 
 const QueryResult = graphql(Query, {
-  options: ({source, query, variables}) => ({variables: {source, query, variables: variables}}),
+  options: ({dataSource, query, variables}) => ({variables: {dataSource, query, variables: variables}}),
 })(QueryResultContainer);
 
 export default QueryResult;

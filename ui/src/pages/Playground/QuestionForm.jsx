@@ -1,23 +1,15 @@
-import {sortBy} from 'lodash';
 import React, {Component} from 'react';
-import {graphql, compose} from 'react-apollo';
+import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import {withRouter} from 'react-router';
 import {Button, Form, Modal} from 'semantic-ui-react';
 
 import Editor from '../../components/Editor';
+import DataSources from '../../components/DataSources';
 import QueryVariables from '../../components/QueryVariables';
 import routing from '../../helpers/routing';
 
-class QuestionFormContainer extends Component {
-  dataSourcesOptions = dataSources => {
-    return sortBy(dataSources || [], ['name'], ['asc']).map(s => ({
-      name: s.name,
-      text: s.name,
-      value: s.name,
-    }));
-  };
-
+class SaveModal extends Component {
   handleInputChange = event => {
     const target = event.target;
     const name = target.name;
@@ -28,18 +20,59 @@ class QuestionFormContainer extends Component {
     });
   };
 
-  handleSave = e => {
+  handleSumbit = e => {
     e.preventDefault();
-    const {currentQuery, currentDataSource, history, saveQuestion, variables} = this.props;
+    const {handleSave} = this.props;
 
-    saveQuestion({
+    const {title, description} = this.state;
+
+    handleSave(title, description);
+  };
+
+  render() {
+    const {querySuccess} = this.props;
+
+    return (
+      <Modal trigger={<Button icon="save" primary content="Save" disabled={!querySuccess} />}>
+        <Modal.Header content="Save question" />
+        <Modal.Content>
+          <Form>
+            <Form.Group widths="equal">
+              <Form.Input
+                fluid
+                required
+                name="title"
+                label="Title"
+                placeholder="Untitled question"
+                onChange={this.handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group widths="equal">
+              <Form.TextArea name="description" label="Description" onChange={this.handleInputChange} />
+            </Form.Group>
+          </Form>
+          <Modal.Actions>
+            <Button primary icon="save" content="Save" onClick={this.handleSumbit} />
+            <Button content="Cancel" />
+          </Modal.Actions>
+        </Modal.Content>
+      </Modal>
+    );
+  }
+}
+
+class QuestionFormContainer extends Component {
+  handleSave = (title, description) => {
+    const {query, dataSource, history, mutate, variables} = this.props;
+
+    mutate({
       refetchQueries: ['questions'],
       variables: {
-        title: this.state.title,
-        description: this.state.description,
-        query: currentQuery,
-        dataSource: currentDataSource,
-        variables: variables,
+        title,
+        description,
+        query,
+        dataSource,
+        variables,
       },
     }).then(({data: {saveQuestion}}) => {
       const questionPath = routing.urlFor(saveQuestion, ['id', 'title']);
@@ -53,69 +86,31 @@ class QuestionFormContainer extends Component {
       handleDataSourcesChange,
       handleRunClick,
       handleQueryChange,
-      currentQuery,
-      currentDataSource,
+      query,
+      dataSource,
       querySuccess,
       handleVariableChange,
       variables,
-      data: {loading, error, dataSources},
     } = this.props;
-
-    if (error) {
-      return <p>Error!</p>;
-    }
 
     return (
       <Form>
         <Form.Group>
-          <Form.Dropdown
-            loading={loading}
-            placeholder="Data Source"
-            search
-            selection
-            onChange={handleDataSourcesChange}
-            options={this.dataSourcesOptions(dataSources)}
-          />
-          <Button
-            icon="play"
-            primary
-            content="Run"
-            disabled={!(currentDataSource && currentQuery)}
-            onClick={handleRunClick}
-          />
+          <DataSources handleDataSourcesChange={handleDataSourcesChange} />
+          <Button icon="play" primary content="Run" disabled={!(dataSource && query)} onClick={handleRunClick} />
           {saveEnabled && (
-            <Modal trigger={<Button icon="save" primary content="Save" disabled={!querySuccess} />}>
-              <Modal.Header content="Save question" />
-              <Modal.Content>
-                <Form>
-                  <Form.Group widths="equal">
-                    <Form.Input
-                      fluid
-                      required
-                      name="title"
-                      label="Title"
-                      placeholder="Untitled question"
-                      onChange={this.handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group widths="equal">
-                    <Form.TextArea name="description" label="Description" onChange={this.handleInputChange} />
-                  </Form.Group>
-                </Form>
-
-                <Modal.Actions>
-                  <Button primary icon="save" content="Save" onClick={this.handleSave} />
-                  <Button content="Cancel" />
-                </Modal.Actions>
-              </Modal.Content>
-            </Modal>
+            <SaveModal
+              querySuccess={querySuccess}
+              handleInputChange={this.handleInputChange}
+              handleSave={this.handleSave}
+            />
           )}
         </Form.Group>
         <Form.Group>
           <QueryVariables variables={variables} handleVariableChange={handleVariableChange} />
         </Form.Group>
         <Form.Group widths={16}>
-          <Editor code={currentQuery} onChange={handleQueryChange} />
+          <Editor code={query} onChange={handleQueryChange} />
         </Form.Group>
       </Form>
     );
@@ -143,16 +138,6 @@ const SaveQuestion = gql`
   }
 `;
 
-const Query = gql`
-  {
-    dataSources {
-      name
-    }
-  }
-`;
-
-const QuestionForm = withRouter(
-  compose(graphql(SaveQuestion, {name: 'saveQuestion'}), graphql(Query))(QuestionFormContainer),
-);
+const QuestionForm = withRouter(graphql(SaveQuestion)(QuestionFormContainer));
 
 export default QuestionForm;

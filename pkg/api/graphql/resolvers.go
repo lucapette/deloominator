@@ -109,9 +109,9 @@ func resolveQuestion(dataSources db.DataSources, s *storage.Storage) func(p gql.
 			queryResultResolver := resolveQuery(dataSources)
 			question.Results, err = queryResultResolver(gql.ResolveParams{
 				Args: map[string]interface{}{
-					"source":    question.DataSource,
-					"query":     question.Query,
-					"variables": question.Variables,
+					"dataSource": question.DataSource,
+					"query":      question.Query,
+					"variables":  question.Variables,
 				},
 			})
 
@@ -141,9 +141,9 @@ func resolveQuestions(dataSources db.DataSources, s *storage.Storage) func(p gql
 			if needsResults {
 				question.Results, err = queryResultResolver(gql.ResolveParams{
 					Args: map[string]interface{}{
-						"source":    question.DataSource,
-						"query":     question.Query,
-						"variables": question.Variables,
+						"dataSource": question.DataSource,
+						"query":      question.Query,
+						"variables":  question.Variables,
 					},
 				})
 				if err != nil {
@@ -158,7 +158,7 @@ func resolveQuestions(dataSources db.DataSources, s *storage.Storage) func(p gql
 
 func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interface{}, error) {
 	return func(p gql.ResolveParams) (interface{}, error) {
-		source := p.Args["source"].(string)
+		dataSource := p.Args["dataSource"].(string)
 		q := p.Args["query"].(string)
 		b, err := json.Marshal(p.Args["variables"])
 		if err != nil {
@@ -177,13 +177,13 @@ func resolveQuery(dataSources db.DataSources) func(p gql.ResolveParams) (interfa
 		}
 
 		logrus.WithFields(logrus.Fields{
-			"source":    source,
-			"query":     q,
-			"variables": vars,
-			"args":      p.Args,
+			"dataSource": dataSource,
+			"query":      q,
+			"variables":  vars,
+			"args":       p.Args,
 		}).Infof("Query requested")
 
-		qr, err := dataSources[source].Query(db.Input{Query: q, Variables: vars})
+		qr, err := dataSources[dataSource].Query(db.Input{Query: q, Variables: vars})
 		if err != nil {
 			return queryError{Message: err.Error()}, nil
 		}

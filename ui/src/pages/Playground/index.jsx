@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import DocumentTitle from 'react-document-title';
 import {Grid} from 'semantic-ui-react';
 
@@ -64,7 +64,7 @@ class Playground extends Component {
 
     return (
       <DocumentTitle title="Playground">
-        <div>
+        <Fragment>
           <Grid.Row>
             <Grid.Column>
               <QuestionForm
@@ -72,8 +72,8 @@ class Playground extends Component {
                 handleDataSourcesChange={this.handleDataSourcesChange}
                 handleQueryChange={this.handleQueryChange}
                 handleRunClick={this.handleRunClick}
-                currentDataSource={this.state.currentDataSource}
-                currentQuery={this.state.currentQuery}
+                dataSource={this.state.currentDataSource}
+                query={this.state.currentQuery}
                 querySuccess={this.state.querySuccess}
                 variables={this.state.variables}
                 handleVariableChange={this.handleVariableChange}
@@ -85,14 +85,14 @@ class Playground extends Component {
               {this.state.showResult && (
                 <QueryResult
                   handleQuerySuccess={this.handleQuerySuccess}
-                  source={this.state.currentDataSource}
+                  dataSource={this.state.currentDataSource}
                   query={this.state.query}
                   variables={this.state.variables}
                 />
               )}
             </Grid.Column>
           </Grid.Row>
-        </div>
+        </Fragment>
       </DocumentTitle>
     );
   }
