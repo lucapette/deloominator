@@ -7,7 +7,7 @@ import {Button, Form, Modal} from 'semantic-ui-react';
 import Editor from '../../components/Editor';
 import DataSources from '../../components/DataSources';
 import QueryVariables from '../../components/QueryVariables';
-import routing from '../../helpers/routing';
+import {urlFor} from '../../helpers/routing';
 
 class SaveModal extends Component {
   handleInputChange = event => {
@@ -74,8 +74,8 @@ class QuestionFormContainer extends Component {
         dataSource,
         variables,
       },
-    }).then(({data: {saveQuestion}}) => {
-      const questionPath = routing.urlFor(saveQuestion, ['id', 'title']);
+    }).then(({data: {question}}) => {
+      const questionPath = urlFor(question, ['id', 'title']);
       history.push(`/questions/${questionPath}`);
     });
   };
@@ -125,13 +125,7 @@ const SaveQuestion = gql`
     $description: String
     $variables: [InputVariable]
   ) {
-    saveQuestion(
-      title: $title
-      query: $query
-      dataSource: $dataSource
-      description: $description
-      variables: $variables
-    ) {
+    question(title: $title, query: $query, dataSource: $dataSource, description: $description, variables: $variables) {
       id
       title
     }

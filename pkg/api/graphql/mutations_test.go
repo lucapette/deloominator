@@ -12,7 +12,7 @@ import (
 
 const SaveQuestion = `
 mutation SaveQuestion($title: String!, $query: String!, $dataSource: String!, $description: String, $variables: [InputVariable]) {
-  saveQuestion(title: $title, query: $query, dataSource: $dataSource, description: $description, variables: $variables) {
+  question(title: $title, query: $query, dataSource: $dataSource, description: $description, variables: $variables) {
     id
     title
 	query
