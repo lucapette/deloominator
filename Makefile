@@ -9,6 +9,7 @@ setup: ## Install all the build and lint dependencies
 	go get github.com/alecthomas/gometalinter
 	gometalinter --install
 	dep ensure
+	cd ui && npm install
 
 embed:
 	packr
