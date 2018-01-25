@@ -4,9 +4,11 @@ import {connect} from 'react-redux';
 import {Grid} from 'semantic-ui-react';
 
 import QueryResult from '../../components/QueryResult';
-import QuestionForm from './QuestionForm';
+import QuestionForm from '../../components/QuestionEditor';
 
 import * as actions from '../../actions/queryEditor';
+
+import SaveModal from './SaveModal';
 
 class PlaygroundContainer extends Component {
   componentWillUnmount() {
@@ -20,7 +22,7 @@ class PlaygroundContainer extends Component {
         <Fragment>
           <Grid.Row>
             <Grid.Column>
-              <QuestionForm saveEnabled={!settings.isReadOnly} />
+              <QuestionForm saveEnabled={!settings.isReadOnly} controls={<SaveModal />} />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

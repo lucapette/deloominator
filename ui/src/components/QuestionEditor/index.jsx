@@ -7,11 +7,9 @@ import * as actions from '../../actions/queryEditor';
 
 import ApiClient from '../../services/ApiClient';
 
-import Editor from '../../components/Editor';
-import DataSources from '../../components/DataSources';
-import QueryVariables from '../../components/QueryVariables';
-
-import SaveModal from './SaveModal';
+import SqlEditor from './SqlEditor';
+import DataSources from '../DataSources';
+import QueryVariables from '../QueryVariables';
 
 class QuestionFormContainer extends Component {
   constructor(props) {
@@ -50,7 +48,7 @@ class QuestionFormContainer extends Component {
   };
 
   render() {
-    const {saveEnabled, queryDraft, dataSource, variables} = this.props;
+    const {queryDraft, dataSource, variables, controls} = this.props;
 
     return (
       <Form>
@@ -63,13 +61,13 @@ class QuestionFormContainer extends Component {
             disabled={!(dataSource && queryDraft)}
             onClick={this.handleRunClick}
           />
-          {saveEnabled && <SaveModal handleInputChange={this.handleInputChange} handleSave={this.handleSave} />}
+          {controls}
         </Form.Group>
         <Form.Group>
           <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
         </Form.Group>
         <Form.Group widths={16}>
-          <Editor code={queryDraft} onChange={this.handleQueryChange} />
+          <SqlEditor code={queryDraft} onChange={this.handleQueryChange} />
         </Form.Group>
       </Form>
     );
