@@ -1,1 +1,1 @@
-{"data":{"saveQuestion":{"description":"great description","id":"1","query":"select * from answer","title":"the answer is 42","variables":[{"isControllable":false,"name":"date","value":"2017-10-15"}]}}}
+{"data":{"question":{"description":"great description","id":"1","query":"select * from answer","title":"the answer is 42","variables":[{"isControllable":false,"name":"date","value":"2017-10-15"}]}}}

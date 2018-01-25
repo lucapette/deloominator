@@ -20,18 +20,21 @@ func saveScreenshot(wd selenium.WebDriver, path string, filename string) {
 	}
 
 	if err := wd.MaximizeWindow(""); err != nil {
-		log.Fatalf("could not maximize window: %v", err)
+		log.Printf("could not maximize window: %v", err)
+		return
 	}
 
 	time.Sleep(1 * time.Second)
 
 	output, err := wd.Screenshot()
 	if err != nil {
-		log.Fatalf("could not take screenshot of the playground: %v", err)
+		log.Printf("could not take screenshot for %s : %v", filename, err)
+		return
 	}
 
 	if err := ioutil.WriteFile("./img/"+filename, output, 0644); err != nil {
-		log.Fatalf("could not write image: %v", err)
+		log.Printf("could not write image: %v", err)
+		return
 	}
 }
 

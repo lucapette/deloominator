@@ -39,7 +39,7 @@ class Chart extends Component<Props> {
     });
 
     return (
-      <Segment>
+      <Segment attached>
         <Handler values={values} onNewView={onNewView} />
       </Segment>
     );

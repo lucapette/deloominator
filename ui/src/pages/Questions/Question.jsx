@@ -2,9 +2,11 @@ import React, {Component} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import DocumentTitle from 'react-document-title';
+import {withRouter} from 'react-router';
 import {Container, Loader, Grid, Header, Dropdown, Menu} from 'semantic-ui-react';
 import Markdown from 'react-remarkable';
 
+import {urlFor} from '../../helpers/routing';
 import ApiClient from '../../services/ApiClient';
 
 import QueryResult from '../../components/QueryResult';
@@ -71,6 +73,11 @@ class QuestionContainer extends Component {
     });
   };
 
+  handleEdit = question => {
+    const questionPath = urlFor(question, ['id', 'title']);
+    this.props.history.push(`/questions/${questionPath}/edit`);
+  };
+
   render() {
     const {data: {loading, error, question}} = this.props;
 
@@ -103,11 +110,14 @@ class QuestionContainer extends Component {
             <Markdown source={description} />
           </Grid.Row>
           <Grid.Row>
-            <Menu borderless secondary>
-              <Menu.Item>
-                <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
-              </Menu.Item>
+            <Menu attached="top">
+              {variables.length > 0 && (
+                <Menu.Item>
+                  <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
+                </Menu.Item>
+              )}
               <Menu.Menu position="right">
+                <Menu.Item icon="edit" onClick={() => this.handleEdit(question)} />
                 <Dropdown item icon="download">
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={this.exportPNG}>PNG</Dropdown.Item>
@@ -116,8 +126,8 @@ class QuestionContainer extends Component {
                 </Dropdown>
               </Menu.Menu>
             </Menu>
+            <QueryResult dataSource={dataSource} query={query} variables={variables} onNewView={this.onNewView} />
           </Grid.Row>
-          <QueryResult source={dataSource} query={query} variables={variables} onNewView={this.onNewView} />
         </Container>
       </DocumentTitle>
     );
@@ -141,8 +151,10 @@ const Query = gql`
   }
 `;
 
-const Question = graphql(Query, {
-  options: ({id}) => ({variables: {id}}),
-})(QuestionContainer);
+const Question = withRouter(
+  graphql(Query, {
+    options: ({id}) => ({variables: {id}}),
+  })(QuestionContainer),
+);
 
 export default Question;

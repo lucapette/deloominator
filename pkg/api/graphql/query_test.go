@@ -74,8 +74,8 @@ func TestGraphQL_DataSources(t *testing.T) {
 }
 
 const Query = `
-  query Query($source: String!, $query: String!) {
-    query(source: $source, query: $query) {
+  query Query($dataSource: String!, $query: String!) {
+    query(dataSource: $dataSource, query: $query) {
       ... on results {
         chartName
         columns {
@@ -103,8 +103,8 @@ func TestGraphQL_QueryError(t *testing.T) {
 		t.Run(dataSource.DriverName(), func(t *testing.T) {
 			testServer := NewTestServer(t, dataSources, nil)
 			actual := testServer.do(Query, vars{
-				"source": dataSource.DBName(),
-				"query":  `select * from table_that_does_not_exist`,
+				"dataSource": dataSource.DBName(),
+				"query":      `select * from table_that_does_not_exist`,
 			})
 
 			tf := testutil.NewGoldenFile(t, fmt.Sprintf("query_error_%s.json", dataSource.DriverName()))
@@ -155,8 +155,8 @@ func TestGraphQL_Query(t *testing.T) {
 			t.Run(fmt.Sprintf("%s/%s", dataSource.DriverName(), tc.fixture), func(t *testing.T) {
 				testServer := NewTestServer(t, dataSources, nil)
 				actual := testServer.do(Query, vars{
-					"source": dataSource.DBName(),
-					"query":  tc.query,
+					"dataSource": dataSource.DBName(),
+					"query":      tc.query,
 				})
 
 				tf := testutil.NewGoldenFile(t, tc.fixture)

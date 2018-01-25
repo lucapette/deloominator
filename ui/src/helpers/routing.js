@@ -1,10 +1,11 @@
 import {kebabCase} from 'lodash';
 
-const routing = {
-  urlFor: (obj, keys = ['id']) => {
-    const values = keys.map(k => obj[k]);
-    return kebabCase(values.join('-'));
-  },
-};
+export function urlFor(obj, keys = ['id']) {
+  const values = keys.map(k => obj[k]);
+  return kebabCase(values.join('-'));
+}
 
-export default routing;
+export function idFromSlug(slug) {
+  const [id] = slug.split('-');
+  return id;
+}

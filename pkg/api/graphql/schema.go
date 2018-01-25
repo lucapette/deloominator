@@ -77,7 +77,7 @@ func convertToChartTypes(columns []db.Column) (types charts.DataTypes) {
 
 func mutationRoot(s *storage.Storage) *gql.Object {
 	fields := gql.Fields{
-		"saveQuestion": &gql.Field{
+		"question": &gql.Field{
 			Type: questionType,
 			Args: gql.FieldConfigArgument{
 				"title": &gql.ArgumentConfig{
@@ -128,7 +128,7 @@ func queryRoot(dataSources db.DataSources, s *storage.Storage) *gql.Object {
 		"query": &gql.Field{
 			Type: queryResultType,
 			Args: gql.FieldConfigArgument{
-				"source": &gql.ArgumentConfig{
+				"dataSource": &gql.ArgumentConfig{
 					Type: gql.NewNonNull(gql.String),
 				},
 				"query": &gql.ArgumentConfig{

@@ -16,11 +16,11 @@ type Props = {
   onChange: Function,
 };
 
-class Editor extends Component<Props> {
+class SqlEditor extends Component<Props> {
   render() {
     const {code, onChange} = this.props;
     return <CodeMirror className="sixteen wide field" options={options} value={code} onChange={onChange} />;
   }
 }
 
-export default Editor;
+export default SqlEditor;

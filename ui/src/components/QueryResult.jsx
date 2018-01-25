@@ -1,18 +1,19 @@
 import React, {Component, Fragment} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
+import {connect} from 'react-redux';
 
 import {Message, Loader, Grid, Divider} from 'semantic-ui-react';
 
 import Chart from './Chart';
 import Table from './Table';
+import * as actions from '../actions/queryEditor';
 
 class QueryResultContainer extends Component {
   componentWillUpdate(nextProps) {
-    const {data: {loading, error, query}, handleQuerySuccess} = nextProps;
-    if (handleQuerySuccess) {
-      handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == 'queryError'));
-    }
+    const {data: {loading, error, query}, setQueryWasSuccessful} = nextProps;
+
+    setQueryWasSuccessful(!(loading || error) && !(query != null && query.__typename == 'queryError'));
   }
 
   render() {
@@ -39,31 +40,23 @@ class QueryResultContainer extends Component {
       );
     }
 
-    if (query.chartName !== 'UnknownChart') {
-      return (
-        <Fragment>
-          <Grid.Row>
-            <Chart name={query.chartName} columns={query.columns} rows={query.rows} onNewView={onNewView} />
-          </Grid.Row>
-          <Divider hidden />
-          <Grid.Row>
-            <Table columns={query.columns} rows={query.rows} />
-          </Grid.Row>
-        </Fragment>
-      );
-    }
-
     return (
-      <Grid.Row>
-        <Table columns={query.columns} rows={query.rows} />
-      </Grid.Row>
+      <Fragment>
+        {query.chartName !== 'UnknownChart' && (
+          <Chart name={query.chartName} columns={query.columns} rows={query.rows} onNewView={onNewView} />
+        )}
+        <Divider hidden />
+        <Grid.Row>
+          <Table columns={query.columns} rows={query.rows} />
+        </Grid.Row>
+      </Fragment>
     );
   }
 }
 
 const Query = gql`
-  query Query($source: String!, $query: String!, $variables: [InputVariable]) {
-    query(source: $source, query: $query, variables: $variables) {
+  query Query($dataSource: String!, $query: String!, $variables: [InputVariable]) {
+    query(dataSource: $dataSource, query: $query, variables: $variables) {
       ... on results {
         chartName
         columns {
@@ -88,8 +81,10 @@ const Query = gql`
   }
 `;
 
-const QueryResult = graphql(Query, {
-  options: ({source, query, variables}) => ({variables: {source, query, variables: variables}}),
-})(QueryResultContainer);
+const QueryResult = connect(null, {setQueryWasSuccessful: actions.setQueryWasSuccessful})(
+  graphql(Query, {
+    options: ({dataSource, query, variables}) => ({variables: {dataSource, query, variables: variables}}),
+  })(QueryResultContainer),
+);
 
 export default QueryResult;
