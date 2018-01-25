@@ -1,5 +1,6 @@
 //@flow
 import React from 'react';
+import {connect} from 'react-redux';
 import {Container, Segment, List, Message} from 'semantic-ui-react';
 
 import * as types from '../types';
@@ -8,8 +9,8 @@ type Props = {
   settings: types.Settings,
 };
 
-const Footer = (props: Props) => {
-  const {settings} = props;
+const FooterContainer = (props: Props) => {
+  const {settings: {isReadOnly}} = props;
   return (
     <div className="footer">
       <Segment attached>
@@ -21,7 +22,7 @@ const Footer = (props: Props) => {
           </List>
         </Container>
       </Segment>
-      {settings.isReadOnly && (
+      {isReadOnly && (
         <Message attached="bottom" color="orange" className="read-only">
           <p>Running in read-only mode. Learn more here!</p>
         </Message>
@@ -29,5 +30,13 @@ const Footer = (props: Props) => {
     </div>
   );
 };
+
+const mapStateToProps = state => {
+  return {
+    settings: state.settings,
+  };
+};
+
+const Footer = connect(mapStateToProps)(FooterContainer);
 
 export default Footer;

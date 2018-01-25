@@ -9,22 +9,17 @@ import Questions from './pages/Questions';
 import Question from './pages/Questions/Question';
 import QuestionEdit from './pages/Questions/QuestionEdit';
 
-const Routes = props => {
-  const {settings} = props;
+const Routes = () => {
   return (
     <Fragment>
       <Route path="/" exact component={Home} />
-      <Route path="/playground" component={() => <Playground settings={settings} />} />
-      <Route path="/questions" exact component={() => <Questions settings={settings} />} />
-      <Route
-        path="/questions/:id"
-        exact
-        component={({match}) => <Question id={idFromSlug(match.params.id)} settings={settings} />}
-      />
+      <Route path="/playground" component={() => <Playground />} />
+      <Route path="/questions" exact component={() => <Questions />} />
+      <Route path="/questions/:id" exact component={({match}) => <Question id={idFromSlug(match.params.id)} />} />
       <Route
         path="/questions/:id/edit"
         exact
-        component={({match}) => <QuestionEdit id={idFromSlug(match.params.id)} settings={settings} />}
+        component={({match}) => <QuestionEdit id={idFromSlug(match.params.id)} />}
       />
     </Fragment>
   );

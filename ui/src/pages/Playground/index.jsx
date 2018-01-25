@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Grid} from 'semantic-ui-react';
 
 import QueryResult from '../../components/QueryResult';
-import QuestionForm from '../../components/QuestionEditor';
+import QuestionEditor from '../../components/QuestionEditor';
 
 import * as actions from '../../actions/queryEditor';
 
@@ -22,7 +22,7 @@ class PlaygroundContainer extends Component {
         <Fragment>
           <Grid.Row>
             <Grid.Column>
-              <QuestionForm saveEnabled={!settings.isReadOnly} controls={<SaveModal />} />
+              <QuestionEditor controls={settings.isReadyOnly && <SaveModal />} />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
@@ -39,6 +39,7 @@ class PlaygroundContainer extends Component {
 const mapStateToProps = state => {
   return {
     ...state.queryEditor,
+    settings: state.settings,
   };
 };
 
