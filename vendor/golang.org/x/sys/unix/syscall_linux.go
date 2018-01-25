@@ -475,6 +475,29 @@ func (sa *SockaddrHCI) sockaddr() (unsafe.Pointer, _Socklen, error) {
 	return unsafe.Pointer(&sa.raw), SizeofSockaddrHCI, nil
 }
 
+type SockaddrL2 struct {
+	PSM      uint16
+	CID      uint16
+	Addr     [6]uint8
+	AddrType uint8
+	raw      RawSockaddrL2
+}
+
+func (sa *SockaddrL2) sockaddr() (unsafe.Pointer, _Socklen, error) {
+	sa.raw.Family = AF_BLUETOOTH
+	psm := (*[2]byte)(unsafe.Pointer(&sa.raw.Psm))
+	psm[0] = byte(sa.PSM)
+	psm[1] = byte(sa.PSM >> 8)
+	for i := 0; i < len(sa.Addr); i++ {
+		sa.raw.Bdaddr[i] = sa.Addr[len(sa.Addr)-1-i]
+	}
+	cid := (*[2]byte)(unsafe.Pointer(&sa.raw.Cid))
+	cid[0] = byte(sa.CID)
+	cid[1] = byte(sa.CID >> 8)
+	sa.raw.Bdaddr_type = sa.AddrType
+	return unsafe.Pointer(&sa.raw), SizeofSockaddrL2, nil
+}
+
 // SockaddrCAN implements the Sockaddr interface for AF_CAN type sockets.
 // The RxID and TxID fields are used for transport protocol addressing in
 // (CAN_TP16, CAN_TP20, CAN_MCNET, and CAN_ISOTP), they can be left with
@@ -1195,22 +1218,6 @@ func Reboot(cmd int) (err error) {
 
 func ReadDirent(fd int, buf []byte) (n int, err error) {
 	return Getdents(fd, buf)
-}
-
-func direntIno(buf []byte) (uint64, bool) {
-	return readInt(buf, unsafe.Offsetof(Dirent{}.Ino), unsafe.Sizeof(Dirent{}.Ino))
-}
-
-func direntReclen(buf []byte) (uint64, bool) {
-	return readInt(buf, unsafe.Offsetof(Dirent{}.Reclen), unsafe.Sizeof(Dirent{}.Reclen))
-}
-
-func direntNamlen(buf []byte) (uint64, bool) {
-	reclen, ok := direntReclen(buf)
-	if !ok {
-		return 0, false
-	}
-	return reclen - uint64(unsafe.Offsetof(Dirent{}.Name)), true
 }
 
 //sys	mount(source string, target string, fstype string, flags uintptr, data *byte) (err error)
