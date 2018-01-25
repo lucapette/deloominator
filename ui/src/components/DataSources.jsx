@@ -15,7 +15,7 @@ class DataSourcesContainer extends Component<Props> {
   };
 
   render() {
-    const {data: {loading, error, dataSources}, handleDataSourcesChange} = this.props;
+    const {data: {loading, error, dataSources}, handleDataSourcesChange, dataSource} = this.props;
 
     if (error) {
       return <p>Error!</p>;
@@ -29,6 +29,7 @@ class DataSourcesContainer extends Component<Props> {
         selection
         onChange={handleDataSourcesChange}
         options={this.dataSourcesOptions(dataSources)}
+        value={dataSource}
       />
     );
   }

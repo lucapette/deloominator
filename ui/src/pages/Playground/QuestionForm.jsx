@@ -1,137 +1,89 @@
 import React, {Component} from 'react';
-import {graphql} from 'react-apollo';
-import gql from 'graphql-tag';
-import {withRouter} from 'react-router';
-import {Button, Form, Modal} from 'semantic-ui-react';
+import {Button, Form} from 'semantic-ui-react';
+import {connect} from 'react-redux';
+import debounce from 'lodash/debounce';
+
+import * as actions from '../../actions/queryEditor';
+
+import ApiClient from '../../services/ApiClient';
 
 import Editor from '../../components/Editor';
 import DataSources from '../../components/DataSources';
 import QueryVariables from '../../components/QueryVariables';
-import {urlFor} from '../../helpers/routing';
 
-class SaveModal extends Component {
-  handleInputChange = event => {
-    const target = event.target;
-    const name = target.name;
-    const value = target.value;
-
-    this.setState({
-      [name]: value,
-    });
-  };
-
-  handleSumbit = e => {
-    e.preventDefault();
-    const {handleSave} = this.props;
-
-    const {title, description} = this.state;
-
-    handleSave(title, description);
-  };
-
-  render() {
-    const {querySuccess} = this.props;
-
-    return (
-      <Modal trigger={<Button icon="save" primary content="Save" disabled={!querySuccess} />}>
-        <Modal.Header content="Save question" />
-        <Modal.Content>
-          <Form>
-            <Form.Group widths="equal">
-              <Form.Input
-                fluid
-                required
-                name="title"
-                label="Title"
-                placeholder="Untitled question"
-                onChange={this.handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group widths="equal">
-              <Form.TextArea name="description" label="Description" onChange={this.handleInputChange} />
-            </Form.Group>
-          </Form>
-          <Modal.Actions>
-            <Button primary icon="save" content="Save" onClick={this.handleSumbit} />
-            <Button content="Cancel" />
-          </Modal.Actions>
-        </Modal.Content>
-      </Modal>
-    );
-  }
-}
+import SaveModal from './SaveModal';
 
 class QuestionFormContainer extends Component {
-  handleSave = (title, description) => {
-    const {query, dataSource, history, mutate, variables} = this.props;
+  constructor(props) {
+    super(props);
 
-    mutate({
-      refetchQueries: ['questions'],
-      variables: {
-        title,
-        description,
-        query,
-        dataSource,
-        variables,
-      },
-    }).then(({data: {question}}) => {
-      const questionPath = urlFor(question, ['id', 'title']);
-      history.push(`/questions/${questionPath}`);
-    });
+    this.evalQuery = debounce(this.evalQuery, 200, {trailing: true});
+  }
+
+  evalQuery() {
+    const {queryDraft, variables, setVariables} = this.props;
+
+    ApiClient.post('query/evaluate', {query: queryDraft, variables})
+      .then(response => response.json())
+      .then(({variables}) => {
+        setVariables(variables);
+      });
+  }
+
+  handleVariableChange = (key, value) => {
+    this.props.setVariable(key, value);
+  };
+
+  handleDataSourcesChange = (e, {value}) => {
+    this.props.setInputValue('dataSource', value);
+  };
+
+  handleRunClick = e => {
+    e.preventDefault();
+    const {setInputValue, queryDraft} = this.props;
+    setInputValue('query', queryDraft);
+  };
+
+  handleQueryChange = queryDraft => {
+    this.props.setInputValue('queryDraft', queryDraft);
+    this.evalQuery();
   };
 
   render() {
-    const {
-      saveEnabled,
-      handleDataSourcesChange,
-      handleRunClick,
-      handleQueryChange,
-      query,
-      dataSource,
-      querySuccess,
-      handleVariableChange,
-      variables,
-    } = this.props;
+    const {saveEnabled, queryDraft, dataSource, variables} = this.props;
 
     return (
       <Form>
         <Form.Group>
-          <DataSources handleDataSourcesChange={handleDataSourcesChange} />
-          <Button icon="play" primary content="Run" disabled={!(dataSource && query)} onClick={handleRunClick} />
-          {saveEnabled && (
-            <SaveModal
-              querySuccess={querySuccess}
-              handleInputChange={this.handleInputChange}
-              handleSave={this.handleSave}
-            />
-          )}
+          <DataSources handleDataSourcesChange={this.handleDataSourcesChange} dataSource={dataSource} />
+          <Button
+            icon="play"
+            primary
+            content="Run"
+            disabled={!(dataSource && queryDraft)}
+            onClick={this.handleRunClick}
+          />
+          {saveEnabled && <SaveModal handleInputChange={this.handleInputChange} handleSave={this.handleSave} />}
         </Form.Group>
         <Form.Group>
-          <QueryVariables variables={variables} handleVariableChange={handleVariableChange} />
+          <QueryVariables variables={variables} handleVariableChange={this.handleVariableChange} />
         </Form.Group>
         <Form.Group widths={16}>
-          <Editor code={query} onChange={handleQueryChange} />
+          <Editor code={queryDraft} onChange={this.handleQueryChange} />
         </Form.Group>
       </Form>
     );
   }
 }
 
-const SaveQuestion = gql`
-  mutation SaveQuestion(
-    $title: String!
-    $query: String!
-    $dataSource: String!
-    $description: String
-    $variables: [InputVariable]
-  ) {
-    question(title: $title, query: $query, dataSource: $dataSource, description: $description, variables: $variables) {
-      id
-      title
-    }
-  }
-`;
+const mapStateToProps = state => {
+  return {...state.queryEditor};
+};
 
-const QuestionForm = withRouter(graphql(SaveQuestion)(QuestionFormContainer));
+const QuestionForm = connect(mapStateToProps, {
+  setInputValue: actions.setInputValue,
+  setVariables: actions.setVariables,
+  setVariable: actions.setVariable,
+})(QuestionFormContainer);
 
 export default QuestionForm;

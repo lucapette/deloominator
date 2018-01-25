@@ -1,18 +1,19 @@
 import React, {Component, Fragment} from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
+import {connect} from 'react-redux';
 
 import {Message, Loader, Grid, Divider} from 'semantic-ui-react';
 
 import Chart from './Chart';
 import Table from './Table';
+import * as actions from '../actions/queryEditor';
 
 class QueryResultContainer extends Component {
   componentWillUpdate(nextProps) {
-    const {data: {loading, error, query}, handleQuerySuccess} = nextProps;
-    if (handleQuerySuccess) {
-      handleQuerySuccess(!(loading || error) && !(query != null && query.__typename == 'queryError'));
-    }
+    const {data: {loading, error, query}, setQueryWasSuccessful} = nextProps;
+
+    setQueryWasSuccessful(!(loading || error) && !(query != null && query.__typename == 'queryError'));
   }
 
   render() {
@@ -80,8 +81,10 @@ const Query = gql`
   }
 `;
 
-const QueryResult = graphql(Query, {
-  options: ({dataSource, query, variables}) => ({variables: {dataSource, query, variables: variables}}),
-})(QueryResultContainer);
+const QueryResult = connect(null, {setQueryWasSuccessful: actions.setQueryWasSuccessful})(
+  graphql(Query, {
+    options: ({dataSource, query, variables}) => ({variables: {dataSource, query, variables: variables}}),
+  })(QueryResultContainer),
+);
 
 export default QueryResult;
