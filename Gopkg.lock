@@ -14,10 +14,10 @@
   version = "v3.5.1"
 
 [[projects]]
-  branch = "master"
   name = "github.com/felixge/httpsnoop"
   packages = ["."]
   revision = "eadd4fad6aac69ae62379194fe0219f3dbc80fd3"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -98,7 +98,7 @@
     ".",
     "oid"
   ]
-  revision = "27ea5d92de30060e7121ddd543fe14e9a327e0cc"
+  revision = "19c8e9ad00952ce0c64489b60e8df88bb16dd514"
 
 [[projects]]
   branch = "master"
@@ -134,7 +134,7 @@
     "internal/zip",
     "log"
   ]
-  revision = "4bc91b5ff036f1cd12f315fd6042ecff6d94e512"
+  revision = "3ab953b61942936b9c7cb9580986e609814be054"
 
 [[projects]]
   name = "goji.io"
@@ -151,7 +151,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "13931e22f9e72ea58bb73048bc752b48c6d4d4ac"
+  revision = "3d37316aaa6bd9929127ac9a527abf408178ea7b"
 
 [[projects]]
   branch = "master"
@@ -160,7 +160,7 @@
     "unix",
     "windows"
   ]
-  revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
+  revision = "ef802241c90f84d84d644a2d8d0de8ee96038c9c"
 
 [solve-meta]
   analyzer-name = "dep"
